@@ -1,0 +1,21 @@
+@startuml
+left to right direction
+
+component "Web Application" as WA {
+    component "Frontend" as FE
+    component "Backend" as BE
+}
+
+component "Supabase Micro-service" as AS {
+    component "Supabase" as SB
+    database "Database" as DB
+}
+
+FE --> BE
+FE --> SB : User Auth/Permissions
+BE --> SB 
+BE --( Stripe : Payment Processing
+BE --> DB : Data Storage/Retrieval
+DB -0)- SB
+
+@enduml
