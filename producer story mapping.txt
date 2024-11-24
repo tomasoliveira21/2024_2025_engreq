@@ -1,0 +1,122 @@
+PRODUCER STORY MAPPING
+
+EPIC: Define product catalog / customize it (1)
+	USER STORIES:
+	View a summary of all products in my catalog.
+	Add a new product to my catalog (name, description, type, price, and quantity). 
+	Add a basket of products
+	Add a certificate
+	Edit an existing product's details (name, description, price, and quantity)
+	Remove a product from the catalog
+	Update a product's category or type
+	Temporarily hide a product from the catalog without deleting it
+	Add stock for an existing product
+	Mark a product as "out of stock."
+	Add a discount to a product for a specific period.
+	Search for a specific product in my catalog.
+
+EPIC: Manage Product Baskets
+	User Stories:
+	Create a new product basket with a set of products.
+	Define the price for the product basket.
+	Edit the contents of an existing product basket.
+	Remove a product basket from my catalog.
+	View the list of all my product baskets.
+	
+EPIC: Manage Orders
+	USER STORIES:
+	View a list of incoming orders awaiting payment.
+	View a list of pending orders awaiting delivery.
+	View a list of completed orders.
+	Filter orders by timeline or status (e.g., pending, completed).
+	View details of a specific order (products, quantities, consumer details).
+	Update the status of an order to "ready for delivery."
+	Notify consumers about the delivery timeline for an order.
+
+EPIC: Create Product Offers for Subscription Periods (3)
+	USER STORIES:
+	Define Delivery Dates
+	As a Producer, I want to choose specific dates within the subscription period on which I will deliver products so that I can organize my delivery schedule.
+
+	Select Products from Catalog
+	As a Producer, I want to select specific products from my catalog for each delivery date so that I can offer a tailored product selection to consumers.
+
+	Define Quantities per Delivery Date
+	As a Producer, I want to specify the quantity of each product for each delivery date so that I can manage my stock effectively.
+
+	Define Payment Methods
+	As a Producer, I want to set the available payment methods (e.g., credit card, PayPal, bank transfer) for consumers to use so that I can facilitate transactions.
+
+	Define Payment Terms
+	As a Producer, I want to define how payments can be split (e.g., in full or in installments) so that I can offer flexibility to consumers.
+
+	Review Product Offer Before Publishing
+	As a Producer, I want to review the details of my product offer (dates, products, quantities, and payment terms) before confirming it so that I can ensure accuracy.
+
+	Publish Product Offer
+	As a Producer, I want to publish the product offer for the subscription period so that consumers can view and place orders.
+
+	Edit Product Offer
+	As a Producer, I want to edit the details of a product offer before the subscription period starts so that I can adjust to any changes in my inventory or schedule.
+
+	Notify Consumers of Product Offers
+	As a Producer, I want to automatically notify consumers when my product offer is published so that they are aware of the available options.
+		
+EPIC: Handle Deliveries
+	USER STORIES:
+	View a list of upcoming deliveries.
+	Confirm the details of a delivery (location, consumer, products).
+	Notify consumers when a delivery is confirmed.
+	Mark a delivery as completed.
+	Automatically generate a delivery summary report.
+	View a history of past deliveries.
+	
+EPIC: Manage Producer's Profile
+	User Stories:
+	View my profile details (name, email, certificates, NIF, etc.).
+	Edit my profile details (name, email, NIF, etc.).
+	Add or update my location details (address, city, postal code, latitude, longitude).
+	Upload a new certificate for product compliance.
+	View the list of my certificates and their expiration dates.
+	Remove an expired or invalid certificate.
+	
+EPIC: Manage Notifications
+	User Stories:
+	Receive a notification for new orders.
+	Receive a notification when an order is paid.
+	Receive a notification when a delivery is completed.
+	Receive reminders for expiring certificates.
+	Send custom notifications to consumers about changes in delivery timelines.
+	
+EPIC: Analyze Sales and Products
+	User Stories:
+	View a dashboard showing sales metrics (total sales, revenue, etc.).
+	View the most popular products in my catalog.
+	Analyze the performance of product baskets.
+	Download a report of my sales for a given time period.
+	Monitor trends in order volume over time.
+	
+EPIC: Manage AMAP Membership
+	User Stories:
+	Apply to create an AMAP organization.
+	View the status of my AMAP application.
+	Receive notifications about my application status.
+	Edit details of my AMAP application (e.g., name, location).
+	View and manage members of my AMAP organization.
+	
+EPIC: Handle Product Reviews
+	User Stories:
+	View reviews for my products.
+	Respond to a review for one of my products.
+	Flag inappropriate reviews for moderation.
+	View a summary of the average rating for each product.
+	Analyze feedback trends for improving my product catalog.
+	
+EPIC: Manage Payments
+	User Stories:
+	View a list of payments associated with my orders.
+	Filter payments by status (paid, pending).
+	View payment details (amount, consumer, payment method, etc.).
+	Receive notifications when a payment is confirmed.
+	Download a payment summary for a specific time period.
+	
