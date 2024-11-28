@@ -1,0 +1,8 @@
+services:
+  nextjs:
+    build: .
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=https://nehhxxvmxmxohsqdbcxv.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5laGh4eHZteG14b2hzcWRiY3h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NjYwODEsImV4cCI6MjA0ODI0MjA4MX0.kEVA7MpSyH0xKko1N8cVatjI1BBIcqmKADkoNZHrAbw
+    ports:
+      - "3000:3000"
