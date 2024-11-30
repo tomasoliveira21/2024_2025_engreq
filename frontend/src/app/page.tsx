@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import "react-toastify/dist/ReactToastify.css";
+import Sidebar from "../../components/Sidebar";
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
@@ -22,8 +23,11 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <h1>Homepage</h1>
+    <div className="lg:max-w-6xl mx-auto mx-h-screen overflow-hidden">
+      <main className="grid grid-cols-9">
+        <Sidebar/>
+        'Teste'
+      </main>
     </div>
   );
 }
