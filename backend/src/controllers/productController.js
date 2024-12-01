@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const {requestProductsByUser, requestProductsByAmap, requestProductDetails} = require("../services/productService");
+const {requestProductsByUser, requestProductsByAmap, requestProductDetails, insertNewProduct} = require("../services/productService");
 
 /**
  * Get user products
@@ -71,4 +71,56 @@ const getProductDetails = async (req, res, next) => {
     }
 };
 
-module.exports = { getProductsByUser, getProductsByAmap, getProductDetails};
+/**
+ * Controller function to create a new product.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const createProduct = async (req, res, next) => {
+
+    // Logger
+    logger.info(`createProduct`);
+
+    try {
+        // Arguments
+        const { name, description, type, price, producerId } = req.body;
+
+        // Validate data
+        if (!name || !description || !type || !price || !producerId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name, description, type, and price are required.'
+            });
+        }
+
+        // Data
+        const productData = { name, description, type, price, producerId };
+
+        // Insert product
+        const newProduct = await insertNewProduct(productData);
+
+        // Insert new approval request
+        // TODO
+
+        // New notifications
+        // TODO
+
+        // Return response
+        return res.status(201).json({
+            success: true,
+            message: 'Product created successfully',
+            product: newProduct
+        });
+    } catch (err) {
+        // Error
+        logger.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
+    }
+};
+
+module.exports = { getProductsByUser, getProductsByAmap, getProductDetails, createProduct};

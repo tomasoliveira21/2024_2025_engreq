@@ -107,8 +107,47 @@ const requestProductDetails = async (productID) => {
     }
 };
 
+/**
+ * Create new product
+ * @param productData
+ * @returns {Promise<*>}
+ */
+const insertNewProduct = async (productData) => {
+    // Logger
+    logger.info(`insertNewProduct`);
+
+    // Data to insert
+    const { name, description, type, price, producerId } = productData;
+
+    try {
+        // Insert product
+        const { data, error } = await supabase
+            .from('products')
+            .insert([
+                {
+                    name,
+                    description,
+                    type,
+                    price,
+                    producer_id: producerId
+                }
+            ])
+            .single();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        // Return the created product
+        return data;
+    } catch (err) {
+        throw new Error(`Failed to create product: ${err.message}`);
+    }
+};
+
 module.exports = {
     requestProductsByUser,
     requestProductsByAmap,
-    requestProductDetails
+    requestProductDetails,
+    insertNewProduct
 };
