@@ -1,13 +1,12 @@
 version: "3.8"
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  backend:
+    image: backend:latest
+    env_file:
+      - .env
     ports:
       - "3001:3001"
     environment:
-      - NODE_ENV=development
       - PORT=3001
     volumes:
       - ./logs:/logs

@@ -1,14 +1,44 @@
-const logger = require('../utils/logger');
 const express = require('express');
-const { getProducts} = require('../controllers/productController');
+const authentication = require('../middlewares/authentication');  // Import the authentication middleware
+const { getUserProducts, getProductDetails} = require('../controllers/productController');
 
 const router = express.Router();
 
-// Routes
-// Product by amap ID
-router.get('/list', getProducts);
+// Product Routes
 
-// Product details by ID
-router.get('/:id', getProducts);
+/**
+ * @swagger
+ * tags:
+ *   - name: "Products"
+ *     description: "Endpoints related to product management"
+ *
+ * /products/:
+ *   get:
+ *     summary: "Get a list of user products"
+ *     description: "This endpoint retrieves a list of all products associated with the authenticated user."
+ *     tags:
+ *       - "Products"
+ *     responses:
+ *       200:
+ *         description: "A list of products"
+ *       404:
+ *         description: "No products found"
+ */
+router.get('/', authentication, getUserProducts);
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     description: Get a product details by ID
+ *     responses:
+ *       200:
+ *         description: A product object
+ *       404:
+ *         description: Product not found
+ *     tags:
+ *      - "Products"
+ */
+router.get('/:id', authentication, getProductDetails);
 
 module.exports = router;

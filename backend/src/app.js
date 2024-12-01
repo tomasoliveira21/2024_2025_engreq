@@ -1,12 +1,41 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
+// Utils
 const logger = require('./utils/logger');
 
+// Middlewares
+const errorHandler = require('./middlewares/errorHandler');
+
+// Swagger
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const path = require('path');
+
+// Routes
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
-const errorHandler = require('./middlewares/errorHandler');
+
 const app = express();
+
+// Swagger definition
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0', // OpenAPI version
+        info: {
+            title: 'Eng-Req API',
+            version: '1.0.0',
+            description: 'This is the API documentation for the eng-req API',
+        },
+    },
+    // Path to the API routes
+    apis: [path.join(__dirname, 'routes', '*.js')],
+};
+
+// Swagger
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Logger
 app.use((req, res, next) => {

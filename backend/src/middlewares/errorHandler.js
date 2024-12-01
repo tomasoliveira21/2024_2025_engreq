@@ -1,7 +1,37 @@
+/**
+ *
+ * @param err
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
 const errorHandler = (err, req, res, next) => {
     const statusCode = err.status || 500;
 
-    // Handle 404 Errors
+    // 400
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({
+            success: false,
+            message: 'Validation Error',
+            details: err.errors,
+        });
+    }
+
+    if (err.name === 'UnauthorizedError') {
+        return res.status(401).json({
+            success: false,
+            message: 'Unauthorized - Invalid token',
+        });
+    }
+
+    if (err.name === 'ForbiddenError') {
+        return res.status(403).json({
+            success: false,
+            message: 'Forbidden - Access Denied',
+        });
+    }
+
     if (statusCode === 404) {
         return res.status(404).send(`
             <html>
@@ -21,10 +51,19 @@ const errorHandler = (err, req, res, next) => {
         `);
     }
 
-    // General Error Handling
+    if (err.code && err.code === 11000) {
+        return res.status(409).json({
+            success: false,
+            message: 'Duplicate Key Error',
+            details: err.keyValue,
+        });
+    }
+
+    // Global
     res.status(statusCode).json({
         success: false,
         message: err.message || 'Internal Server Error',
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     });
 };
 
