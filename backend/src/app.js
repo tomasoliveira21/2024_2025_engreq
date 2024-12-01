@@ -16,6 +16,7 @@ const path = require('path');
 // Routes
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
+const amapRoutes = require('./routes/amapRoutes');
 
 const app = express();
 
@@ -53,6 +54,9 @@ app.use(express.static('public'));
 // Routes
 // Product
 app.use('/products', productRoutes);
+
+// AMAP
+app.use('/amap', amapRoutes);
 
 // Users TODO
 app.use('/users', userRoutes);

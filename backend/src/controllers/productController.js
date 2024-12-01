@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const {requestUserProducts, requestProductDetails} = require("../services/productService");
+const {requestProductsByUser, requestProductsByAmap, requestProductDetails} = require("../services/productService");
 
 /**
  * Get user products
@@ -8,15 +8,39 @@ const {requestUserProducts, requestProductDetails} = require("../services/produc
  * @param next
  * @returns {Promise<void>}
  */
-const getUserProducts = async (req, res, next) => {
-    logger.info(`Get getProducts`);
-
+const getProductsByUser = async (req, res, next) => {
     // Session data
     const userId = req.user.id;
 
+    // Logger
+    logger.info(`Get getProductsByUser (User: ${userId})`);
+
     // Request access products
     try {
-        const products = await requestUserProducts(userId);
+        const products = await requestProductsByUser(userId);
+        res.status(200).json({ products: products });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Get Products by AMAP
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getProductsByAmap = async (req, res, next) => {
+    // Arguments
+    const { amapId } = req.params;
+
+    // Logger
+    logger.info(`Get getProductsByAmap (amapId: ${amapId})`);
+
+    // Request access products
+    try {
+        const products = await requestProductsByAmap(amapId);
         res.status(200).json({ products: products });
     } catch (error) {
         next(error);
@@ -32,11 +56,11 @@ const getUserProducts = async (req, res, next) => {
  */
 const getProductDetails = async (req, res, next) => {
 
-    // Variables
+    // Arguments
     const { productId } = req.params;
 
     // Logger
-    logger.info(`Get getProductDetails`);
+    logger.info(`Get getProductDetails (ID: ${productId})`);
 
     // Request access products
     try {
@@ -47,4 +71,4 @@ const getProductDetails = async (req, res, next) => {
     }
 };
 
-module.exports = { getUserProducts, getProductDetails};
+module.exports = { getProductsByUser, getProductsByAmap, getProductDetails};
