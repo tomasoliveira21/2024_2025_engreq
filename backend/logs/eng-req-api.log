@@ -1,4 +1,0 @@
-{"level":"info","message":"Server is running at http://localhost:3001","timestamp":"2024-11-29T20:47:02.983Z"}
-{"level":"info","message":"Incoming request: GET /","timestamp":"2024-11-29T20:47:07.240Z"}
-{"level":"info","message":"Incoming request: GET /css/styles.css","timestamp":"2024-11-29T20:47:07.622Z"}
-{"level":"info","message":"Incoming request: GET /favicon.ico","timestamp":"2024-11-29T20:47:08.382Z"}
