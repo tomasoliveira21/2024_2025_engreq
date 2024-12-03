@@ -9,7 +9,7 @@ interface CardTypes {
 
 const Card = ({ header, description, footer }: CardTypes) => {
   return (
-    <div className="bg-blue-900 text-white rounded-lg p-5 text-center w-80">
+    <div className="bg-blue-900 text-white rounded-lg p-6 text-center w-full shadow-lg transition-transform transform hover:scale-105">
       <div className="text-2xl font-bold mb-4">{header}</div>
       <div className="text-base mb-6">{description}</div>
       <div className="text-sm">

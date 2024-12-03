@@ -49,23 +49,20 @@ export default function Home() {
     return <div>Loading data...</div>;
   }
 
-  console.log("amaps: ", amaps);
-  console.log("amaps: ", amaps.length);
-
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
       <main className="grid grid-cols-12 gap-8">
         <div className="col-span-3">
           <Sidebar />
         </div>
-        <div className="col-span-9 grid grid-cols-3 gap-8">
+        <div className="col-span-9 grid grid-cols-3 gap-8 mt-8">
           {amaps.length > 0 ? (
             amaps.map((amap) => (
               <Card
                 key={amap.id}
                 header={amap.name}
                 description={amap.description}
-                footer="" // Info vazia por enquanto
+                footer=""
               />
             ))
           ) : (
