@@ -1,5 +1,6 @@
 const supabase = require('../utils/supabase');
 const logger = require("../utils/logger");
+const {getUserData} = require("../services/userService");
 
 const authentication = async (req, res, next) => {
     const authorizationHeader = req.headers['authorization'];
@@ -30,8 +31,17 @@ const authentication = async (req, res, next) => {
             return res.status(401).json({ message: 'Invalid or expired token', details: error.message });
         }
 
+        // Request extra data Session
+        const sessionExtraData = await getUserData(user.user.email);
+
         // Set Session
-        req.user = user;
+        req.user = {
+            id: user.user.id,
+            email: user.user.email,
+            phone: user.user.phone,
+            role: sessionExtraData.role,
+            amapId: sessionExtraData.AMAPId,
+        }
 
         next();
     } catch (err) {

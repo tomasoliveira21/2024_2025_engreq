@@ -1,10 +1,12 @@
 const logger = require('../utils/logger');
 const supabase = require('../utils/supabase');
+const User = require('../domain/classes/User');
 
 /**
  * Get all Users
  * @returns {Promise<*>}
  */
+// TODO TO REMOVE
 const getAllUsers = async () => {
     logger.info(`Request database getAllUsers`);
     const { data, error } = await supabase.from('user').select('*');
@@ -17,33 +19,33 @@ const getAllUsers = async () => {
 
 
 /**
- * Check user token
- * @param token
- * @returns {Promise<*|null>}
+ * Get user data
+ * @param userEmail
+ * @returns {Promise<*|*[]>}
  */
-const userAuthentication = async (token) => {
-    logger.info(`Fetching user info for token: `, token);
+const getUserData = async (userEmail) => {
+    logger.info(`Fetching data user: `, userEmail);
+
     try {
-        const { data: user, error } = await supabase
-            .from('user')
-            .select('*')
-            .eq('bearer_token', token)
-            .single(); // Fetch a single user record
+        // Query data
+        const userData = await User.findOne({
+            attributes: ['email', 'role', 'AMAPId'], // Only select these columns
+            where: {
+                email: userEmail,
+            },
+        });
 
-        if (error) {
-            logger.error(`Error fetching user from Supabase: ${error.message}`);
-            return null;
-        }
+        // Logger
+        logger.info(`Retrieved user data: ${JSON.stringify(userData)}`);
 
-        return user;
-
-    } catch (err) {
-        logger.error(`Unexpected error fetching user info: ${err.message}`);
-        return null;
+        return userData;
+    } catch (error) {
+        logger.error('Error fetching user data:', error.message);
+        return [];
     }
 };
 
 module.exports = {
     getAllUsers,
-    userAuthentication,
+    getUserData,
 };
