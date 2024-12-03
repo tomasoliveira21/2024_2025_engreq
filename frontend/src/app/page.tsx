@@ -5,9 +5,11 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../components/Sidebar";
 import Card from "../../components/Cart";
+import { fetchAmaps } from "@/api/fetchAmaps";
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
+  const [amaps, setAmaps] = useState([]);
 
   useEffect(() => {
     async function getSession() {
@@ -19,9 +21,26 @@ export default function Home() {
     getSession();
   }, []);
 
+  useEffect(() => {
+    const getAmaps = async () => {
+      if (session) {
+        try {
+          const fetchedAmaps = await fetchAmaps(session.access_token);
+          setAmaps(fetchedAmaps || []);
+        } catch (error) {
+          console.error("Error fetching amaps:", error);
+        }
+      }
+    };
+
+    getAmaps();
+  }, [session]);
+
   if (!session) {
     return <div>Loading...</div>;
   }
+
+  console.log("amaps: ", amaps);
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
