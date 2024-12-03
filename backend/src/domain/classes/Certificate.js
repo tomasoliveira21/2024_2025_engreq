@@ -1,6 +1,5 @@
 const { Model,DataTypes } = require('sequelize');
 const sequelize = require('../../utils/db-connect');
-const { Producer } = require('./Producer');
 
 class Certificate extends Model {}
 Certificate.init({

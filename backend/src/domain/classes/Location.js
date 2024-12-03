@@ -1,6 +1,5 @@
 const { Model,DataTypes } = require('sequelize');
 const sequelize = require('../../utils/db-connect');
-const { Delivery } = require('./Delivery');
 
 class Location extends Model {}
 Location.init({
