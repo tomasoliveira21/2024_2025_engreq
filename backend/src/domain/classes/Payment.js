@@ -1,6 +1,5 @@
 const { Model,DataTypes } = require('sequelize');
 const sequelize = require('../../utils/db-connect');
-const { User } = require('./User');
 
 class Payment extends Model {}
 Payment.init({

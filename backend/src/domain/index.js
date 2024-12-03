@@ -1,21 +1,22 @@
 // map the classes and associations to each other
 const { Sequelize } = require('sequelize');
+
 const sequelize = require('../utils/db-connect');
-const AMAP = require('./AMAP');
-const Certificate = require('./Certificate');
-const Consumer = require('./Consumer');
-const Delivery = require('./Delivery');
-const Location = require('./Location');
-const Order = require('./Order');
-const Payment = require('./Payment');
-const Producer = require('./Producer');
-const Product = require('./Product');
-const Stock = require('./Stock');
-const User = require('./User');
+const AMAP = require('./classes/AMAP');
+const Certificate = require('./classes/Certificate');
+const Consumer = require('./classes/Consumer');
+const Delivery = require('./classes/Delivery');
+const Location = require('./classes/Location');
+const Order = require('./classes/Order');
+const Payment = require('./classes/Payment');
+const Producer = require('./classes/Producer');
+const Product = require('./classes/Product');
+const Stock = require('./classes/Stock');
+const User = require('./classes/User');
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
-User.belongsTo(AMAP, { foreignKey: 'amapId' });
+User.belongsTo(AMAP, { foreignKey: 'AMAPId' });
 User.hasMany(Payment, { foreignKey: 'userId' });
 
 Stock.belongsTo(Producer, { foreignKey: 'producerId' });
@@ -43,20 +44,3 @@ Consumer.hasMany(Order, { foreignKey: 'consumerId' });
 Certificate.belongsTo(Producer, { foreignKey: 'producerId' });
 
 AMAP.hasMany(User, { as: 'members' });
-
-// Export models
-module.exports = {
-    sequelize,
-    AMAP,
-    Certificate,
-    Consumer,
-    Delivery,
-    Location,
-    Order,
-    Payment,
-    Producer,
-    Product,
-    Stock,
-    User
-};
-

@@ -1,6 +1,5 @@
 const { Model,DataTypes } = require('sequelize');
 const sequelize = require('../../utils/db-connect');
-const { User } = require('./User');
 
 class AMAP extends Model {}
 AMAP.init({
