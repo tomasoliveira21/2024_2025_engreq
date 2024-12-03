@@ -1,37 +1,49 @@
 const logger = require('../utils/logger');
-const supabase = require('../utils/supabase');
+const AMAPs = require('../domain/classes/AMAP');
 
 /**
- * Get all AMAP's
- * @returns {Promise<*>}
+ * Get all AMAP's from the database
+ * @returns {Promise<*|*[]>}
  */
 const requestAllAmaps = async () => {
+    logger.info(`Request AMAP data`);
+
     try {
-        // TODO MOCK DATA
-        return [
-            { id: 1, name: "AMAP Porto", description: "AMAP Porto description"},
-            { id: 2, name: "AMAP Braga", description: "AMAP Braga description"},
-        ];
+        // Query data
+        const amapData = await AMAPs.findAll();
 
-        // TODO FINISH QUERY
-        // QUERY GET ALL REGISTER AMAPS
-        const { data: amapData, error } = await supabase
-            .from('amap')
-            .select('*');
-
-        if (error) {
-            logger.error(`Error fetching user from Supabase: ${error.message}`);
-            return null;
-        }
+        // Logger
+        logger.info(`Retrieved AMAP data: ${JSON.stringify(amapData)}`);
 
         return amapData;
+    } catch (error) {
+        logger.error('Error fetching AMAP data:', error.message);
+        return [];
+    }
+};
 
-    } catch (err) {
-        logger.error(`Unexpected error fetching user info: ${err.message}`);
-        return null;
+/**
+ * Get user AMAPs
+ * @returns {Promise<*|*[]>}
+ */
+const requestUserAmaps = async () => {
+    logger.info(`Request user AMAP data`);
+
+    try {
+        // Query data
+        const amapData = await AMAPs.findAll();
+
+        // Logger
+        logger.info(`Retrieved user AMAP data: ${JSON.stringify(amapData)}`);
+
+        return amapData;
+    } catch (error) {
+        logger.error('Error fetching user AMAP data:', error.message);
+        return [];
     }
 };
 
 module.exports = {
     requestAllAmaps,
+    requestUserAmaps
 };

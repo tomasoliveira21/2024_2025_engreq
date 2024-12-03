@@ -1,6 +1,7 @@
 const express = require('express');
-const authentication = require('../middlewares/authentication');  // Import the authentication middleware
-const { getProductsByUser, getProductsByAmap, getProductDetails, createProduct} = require('../controllers/productController');
+const authentication = require('../middlewares/authentication');
+const checkAMAPAccess = require('../middlewares/permissions');
+const { getProductsByUser, getProductsByAmap, getProductDetails} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -44,7 +45,7 @@ router.get('/', authentication, getProductsByUser);
  *       404:
  *         description: "No products found"
  */
-router.get('/amap/:amapId', authentication, getProductsByAmap);
+router.get('/amap/:amapId', authentication, checkAMAPAccess, getProductsByAmap);
 
 /**
  * @swagger

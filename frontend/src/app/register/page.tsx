@@ -7,10 +7,14 @@ import { useState } from "react"
 export default function Register() {
   const [data, setData] = useState<{
     email: string,
-    password: string
+    password: string,
+    role: string,  // New role state
+    nif: number
   }>({
     email: '',
-    password: ''
+    password: '',
+    role: 'Co-Producer',  // Default role,
+    nif: 0
   })
 
   const [message, setMessage] = useState<string | null>(null);
@@ -22,6 +26,12 @@ export default function Register() {
       const { data: user, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
+        options: {
+          data: {
+            role: data.role,  // New role data
+            nif: data.nif
+          },
+      },
       })
 
       if (user) {
@@ -42,7 +52,7 @@ export default function Register() {
       [name]: value,
     }))
   }
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="bg-gray-800 p-8 rounded-lg shadow-md w-[400px]">
@@ -69,6 +79,34 @@ export default function Register() {
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
           />
         </div>
+
+        <div className="grid mb-6">
+          <label className="mb-2 text-gray-300">NIF</label>
+          <input
+            type="tel"
+            name="nif"
+            value={data?.nif}
+            onChange={handleChange}
+            maxLength={9}
+            pattern="[0-9]{9}"
+            className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+          />
+        </div>
+        
+        {/* Add Role Selector */}
+        <div className="grid mb-6">
+          <label className="mb-2 text-gray-300">Role</label>
+          <select
+            name="role"
+            value={data?.role}
+            onChange={handleChange}
+            className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+          >
+            <option value="Producer">Producer</option>
+            <option value="Co-Producer">Co-Producer</option>
+          </select>
+        </div>
+        
         {message && <div className="mb-4 text-center text-white">{message}</div>}
         <div>
           <button

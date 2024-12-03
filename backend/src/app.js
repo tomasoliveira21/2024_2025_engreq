@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const sequelize = require('./utils/db-connect');
+require('./domain/index');
 
 // Utils
 const logger = require('./utils/logger');
@@ -18,7 +20,16 @@ const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const amapRoutes = require('./routes/amapRoutes');
 
+// APP
 const app = express();
+
+// JSON
+app.use(express.json());
+
+// Sync models
+sequelize.sync({ force: false }) // Use `force: true` to drop and recreate tables (only for development)
+    .then(() => console.log('Database synced'))
+    .catch(err => console.error('Error syncing the database:', err));
 
 // Swagger definition
 const swaggerOptions = {

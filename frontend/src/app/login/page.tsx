@@ -26,6 +26,7 @@ export default function Login() {
       })
 
       if (dataUser) {
+        await syncUserData();
         router.push('/');
       } else if (error) {
         setMessage("Login failed: " + error.message);
@@ -35,6 +36,50 @@ export default function Login() {
       setMessage("An error occurred: " + error);
     }
   }
+
+  const syncUserData = async () => {
+    try {
+      // Fetch the authenticated session
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
+        console.error('No authenticated user found.');
+        setMessage('Please log in to complete the setup.');
+        return;
+      }
+
+      const userId = session.user.id;
+      // Retrieve role and nif from metadata
+      const role = session.user.user_metadata.role || 'Co-Producer';
+      const nif = session.user.user_metadata.nif || null;
+
+      // Insert or update the user's data in the `public.user` table
+      const { error: insertError } = await supabase
+        .from('user')
+        .upsert([
+          {
+            id: userId,
+            email: session.user.email,
+            role: role,
+            nif: nif,
+          },
+        ]);
+
+      if (insertError) {
+        console.error('Data sync error:', insertError);
+        setMessage(`Error syncing user data: ${insertError.message}`);
+        return;
+      }
+
+      console.log('User data synchronized successfully!');
+    } catch (error) {
+      console.error('Unexpected error during data sync:', error);
+      setMessage(`An error occurred during data sync: ${error}`);
+    }
+  };
+
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
