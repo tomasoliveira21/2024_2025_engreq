@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const {requestProductsByUser, requestProductsByAmap, requestProductDetails, insertNewProduct} = require("../services/productService");
+const {requestProductsByProducer, requestProductsByAmap, requestProductDetails, insertNewProduct} = require("../services/productService");
 
 /**
  * Get user products
@@ -8,16 +8,16 @@ const {requestProductsByUser, requestProductsByAmap, requestProductDetails, inse
  * @param next
  * @returns {Promise<void>}
  */
-const getProductsByUser = async (req, res, next) => {
-    // Session data
-    const userId = req.user.id;
+const getProductsByProducer = async (req, res, next) => {
+    // Arguments
+    const { producerId } = req.params;
 
     // Logger
-    logger.info(`Get getProductsByUser (User: ${userId})`);
+    logger.info(`Get getProductsByProducer (Producer: ${producerId})`);
 
     // Request access products
     try {
-        const products = await requestProductsByUser(userId);
+        const products = await requestProductsByProducer(producerId);
         res.status(200).json({ products: products });
     } catch (error) {
         next(error);
@@ -83,22 +83,22 @@ const getProductDetails = async (req, res, next) => {
 const createProduct = async (req, res, next) => {
 
     // Logger
-    logger.info(`createProduct`);
+    logger.info(`Create new Product`);
 
     try {
         // Arguments
-        const { name, description, type, price, producerId } = req.body;
+        const { name, description, type, price, quantity, producerId } = req.body;
 
         // Validate data
-        if (!name || !description || !type || !price || !producerId) {
+        if (!name || !description || !type || !price || !quantity || !producerId) {
             return res.status(400).json({
                 success: false,
-                message: 'Name, description, type, and price are required.'
+                message: 'Name, description, type, price, quantity, and producerId are required.'
             });
         }
 
         // Data
-        const productData = { name, description, type, price, producerId };
+        const productData = { name, description, type, price, quantity, producerId };
 
         // Insert product
         const newProduct = await insertNewProduct(productData);
@@ -125,4 +125,9 @@ const createProduct = async (req, res, next) => {
     }
 };
 
-module.exports = { getProductsByUser, getProductsByAmap, getProductDetails, createProduct};
+module.exports = {
+    getProductsByProducer,
+    getProductsByAmap,
+    getProductDetails,
+    createProduct
+};

@@ -1,43 +1,45 @@
 const logger = require('../utils/logger');
-const supabase = require('../utils/supabase');
 const Product = require('../domain/classes/Product');
 const Producer = require('../domain/classes/Producer');
 const User = require('../domain/classes/User');
 
 /**
- * Get user products
- * All the products related with AMAP's that user have access
+ * Get producer products
+ * All the products by producer
  * @param userId
- * @returns {Promise<[{price: number, name: string, description: string, id: number},{price: number, name: string, description: string, id: number},{price: number, name: string, description: string, id: number}]|*|null>}
+ * @returns {Promise<*|*[]>}
  */
-const requestProductsByUser = async (userId) => {
-    logger.info(`Fetching user products (User: ${userId})`);
+const requestProductsByProducer = async (producerId) => {
+    logger.info(`Fetching producer products (User: ${producerId})`);
 
     try {
-        // TODO MOCK DATA
-        return [
-            { id: 1, name: "Batatas", description: "Batatas is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 },
-            { id: 2, name: "Cenouras", description: "Cenouras is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 3 },
-            { id: 3, name: "Carrot", description: "Carrot is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 }
-        ];
+        // Query data
+        const productList = await Product.findAll({
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
+            include: [
+                {
+                    model: Producer,
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                            where: {
+                                id: producerId,
+                            },
+                        },
+                    ],
+                },
+            ],
+        });
 
-        // TODO FINISH QUERY
-        // QUERY GET ALL APPROVE PRODUCTS AND RELATED WITH AMAP's THAT USER HAVE ACCESS
-        const { data: userProducts, error } = await supabase
-            .from('product')
-            .select('product.*,  product_request(approve)')
-            .eq('user_id', userId);
+        // Logger
+        logger.info(`Retrieved products data: ${JSON.stringify(productList)}`);
 
-        if (error) {
-            logger.error(`Error fetching user from Supabase: ${error.message}`);
-            return null;
-        }
-
-        return userProducts;
-
-    } catch (err) {
-        logger.error(`Unexpected error fetching user info: ${err.message}`);
-        return null;
+        return productList;
+    } catch (error) {
+        logger.error('Error fetching products data:', error.message);
+        return [];
     }
 };
 
@@ -127,39 +129,31 @@ const requestProductDetails = async (productID) => {
  */
 const insertNewProduct = async (productData) => {
     // Logger
-    logger.info(`insertNewProduct`);
-
-    // Data to insert
-    const { name, description, type, price, producerId } = productData;
+    logger.info(`Insert new product`);
 
     try {
-        // Insert product
-        const { data, error } = await supabase
-            .from('products')
-            .insert([
-                {
-                    name,
-                    description,
-                    type,
-                    price,
-                    producer_id: producerId
-                }
-            ])
-            .single();
+        // Create a new product
+        const newProduct = await Product.create({
+            name: productData.name,
+            description: productData.description,
+            type: productData.type,
+            price: productData.price,
+            quantity: productData.quantity,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            producerId: productData.producerId
+        });
 
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        // Return the created product
-        return data;
-    } catch (err) {
-        throw new Error(`Failed to create product: ${err.message}`);
+        logger.log('Product created successfully:', newProduct);
+        return newProduct;
+    } catch (error) {
+        logger.error('Error creating new product:', error);
+        throw error;
     }
 };
 
 module.exports = {
-    requestProductsByUser,
+    requestProductsByProducer,
     requestProductsByAmap,
     requestProductDetails,
     insertNewProduct

@@ -1,7 +1,7 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const checkAMAPAccess = require('../middlewares/permissions');
-const { getProductsByUser, getProductsByAmap, getProductDetails} = require('../controllers/productController');
+const { getProductsByProducer, getProductsByAmap, getProductDetails, createProduct} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -13,10 +13,10 @@ const router = express.Router();
  *   - name: "Products"
  *     description: "Endpoints related to product management"
  *
- * /products/:
+ * /products/producer/{producerId}:
  *   get:
- *     summary: "Get a list of user products"
- *     description: "This endpoint retrieves a list of all products associated with the authenticated user."
+ *     summary: "Get a list of producer products"
+ *     description: "This endpoint retrieves a list of products by producer."
  *     tags:
  *       - "Products"
  *     responses:
@@ -25,7 +25,7 @@ const router = express.Router();
  *       404:
  *         description: "No products found"
  */
-router.get('/', authentication, getProductsByUser);
+router.get('/producer/:producerId', authentication, getProductsByProducer);
 
 /**
  * @swagger
@@ -84,11 +84,11 @@ router.get('/:id', authentication, getProductDetails);
  *             properties:
  *               name:
  *                 type: string
- *                 example: "Bananas"
+ *                 example: "Apples"
  *                 description: "The name of the product"
  *               description:
  *                 type: string
- *                 example: "Fresh organic bananas"
+ *                 example: "Fresh organic apples"
  *                 description: "A short description of the product"
  *               type:
  *                 type: string
@@ -99,6 +99,11 @@ router.get('/:id', authentication, getProductDetails);
  *                 format: float
  *                 example: 2.5
  *                 description: "The price of the product in dollars"
+ *               quantity:
+ *                 type: number
+ *                 format: float
+ *                 example: 10
+ *                 description: "The quantity of the product"
  *               producerId:
  *                 type: integer
  *                 example: 1
