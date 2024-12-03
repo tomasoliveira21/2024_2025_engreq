@@ -1,5 +1,8 @@
 const logger = require('../utils/logger');
 const supabase = require('../utils/supabase');
+const Product = require('../domain/classes/Product');
+const Producer = require('../domain/classes/Producer');
+const User = require('../domain/classes/User');
 
 /**
  * Get user products
@@ -44,33 +47,36 @@ const requestProductsByUser = async (userId) => {
  * @returns {Promise<*|[{quantity: number, price: number, name: string, description: string, id: number, type: string},{quantity: number, price: number, name: string, description: string, id: number, type: string},{quantity: number, price: number, name: string, description: string, id: number, type: string}]|null>}
  */
 const requestProductsByAmap = async (amapId) => {
-    logger.info(`Fetching user products (AMAP: ${amapId})`);
+    logger.info(`Fetching products by AMAP (AMAP: ${amapId})`);
 
     try {
-        // TODO MOCK DATA
-        return [
-            { id: 101, name: "Batatas AMAP", description: "Batatas is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 },
-            { id: 102, name: "Cenouras AMAP", description: "Cenouras is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 },
-            { id: 103, name: "Carrot AMAP", description: "Carrot is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 }
-        ];
+        // Query data
+        const productList = await Product.findAll({
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
+            include: [
+                {
+                    model: Producer,
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                            where: {
+                                AMAPId: amapId,
+                            },
+                        },
+                    ],
+                },
+            ],
+        });
 
-        // TODO FINISH QUERY
-        // QUERY GET ALL APPROVE PRODUCTS AND RELATED WITH AMAP's THAT USER HAVE ACCESS
-        const { data: userProducts, error } = await supabase
-            .from('product')
-            .select('product.*,  product_request(approve)')
-            .eq('amap_id', amapId);
+        // Logger
+        logger.info(`Retrieved products data: ${JSON.stringify(productList)}`);
 
-        if (error) {
-            logger.error(`Error fetching user from Supabase: ${error.message}`);
-            return null;
-        }
-
-        return userProducts;
-
-    } catch (err) {
-        logger.error(`Unexpected error fetching user info: ${err.message}`);
-        return null;
+        return productList;
+    } catch (error) {
+        logger.error('Error fetching products data:', error.message);
+        return [];
     }
 };
 
@@ -80,30 +86,37 @@ const requestProductsByAmap = async (amapId) => {
  * @returns {Promise<[{price: number, name: string, description: string, id: number},{price: number, name: string, description: string, id: number},{price: number, name: string, description: string, id: number}]|*|null>}
  */
 const requestProductDetails = async (productID) => {
+
     logger.info(`Fetching product details (Product: ${productID})`);
+
     try {
-        // TODO MOCK DATA
-        return [
-            { name: "Carrot", description: "Carrot is a root vegetable", type: "Vegetable", price: "1.09", quantity:"20" },
-        ];
+        // Query data
+        const productDetails = await Product.findAll({
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
+            where: {
+                id: productID,
+            },
+            include: [
+                {
+                    model: Producer,
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                        },
+                    ],
+                },
+            ],
+        });
 
-        // TODO FINISH QUERY
-        // QUERY GET ALL APPROVE PRODUCTS AND RELATED WITH AMAP's THAT USER HAVE ACCESS
-        const { data: userProducts, error } = await supabase
-            .from('product')
-            .select('product.*,  product_request(approva)')
-            .eq('user_id', userId);
+        // Logger
+        logger.info(`Retrieved products details: ${JSON.stringify(productDetails)}`);
 
-        if (error) {
-            logger.error(`Error fetching user from Supabase: ${error.message}`);
-            return null;
-        }
-
-        return userProducts;
-
-    } catch (err) {
-        logger.error(`Unexpected error fetching user info: ${err.message}`);
-        return null;
+        return productDetails;
+    } catch (error) {
+        logger.error('Error fetching products details:', error.message);
+        return [];
     }
 };
 

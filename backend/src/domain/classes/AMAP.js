@@ -4,6 +4,7 @@ const sequelize = require('../../utils/db-connect');
 class AMAP extends Model {}
 AMAP.init({
     name: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.STRING, allowNull: false },
     type: { type: DataTypes.ENUM('type1', 'type2'), allowNull: false },
 }, { sequelize, modelName: 'AMAP' });
 
