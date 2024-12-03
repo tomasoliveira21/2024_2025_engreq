@@ -32,7 +32,7 @@ router.get('/', authentication, getProductsByUser);
  *   - name: "Products"
  *     description: "Endpoints related to product management"
  *
- * /products:
+ * /products/amap/{amapId}:
  *   get:
  *     summary: "Get a list of AMAP products"
  *     description: "This endpoint retrieves a list of products available in selected AMAP."
