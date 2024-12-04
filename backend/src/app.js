@@ -27,7 +27,7 @@ const app = express();
 app.use(express.json());
 
 // Sync models
-sequelize.sync({ force: false }) // Use `force: true` to drop and recreate tables (only for development)
+sequelize.sync({ force: true }) // Use `force: true` to drop and recreate tables (only for development)
     .then(() => console.log('Database synced'))
     .catch(err => console.error('Error syncing the database:', err));
 

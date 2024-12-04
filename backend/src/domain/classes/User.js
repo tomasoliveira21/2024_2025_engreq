@@ -5,11 +5,9 @@ class User extends Model {}
 User.init({
     name: {type: DataTypes.STRING, allowNull: false},
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    password: { type: DataTypes.STRING, allowNull: false },
-    role: { type: DataTypes.ENUM('Producer', 'Co-Producer', 'Admin', 'AMAP Admin'), allowNull: false },
     nif: { type: DataTypes.INTEGER },
     // Foreign key to Supabase auth.users
-    authUserId: {
+    authuserid: {
         type: DataTypes.UUID,
         allowNull: false,
         unique: true,
@@ -20,6 +18,9 @@ User.init({
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
     },
-}, { sequelize, modelName: 'User' });
+}, {
+    sequelize,
+    timestamps: false,
+    modelName: 'User' });
 
 module.exports = User;
