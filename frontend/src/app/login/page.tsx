@@ -18,6 +18,9 @@ export default function Login() {
 
   const router = useRouter();
 
+  // To validate if the fiels email and password are filled
+  const isLoginDisabled = !data.email || !data.password;
+
   const login = async () => {
     try {
       let { data: dataUser, error } = await supabase.auth.signInWithPassword({
@@ -46,7 +49,7 @@ export default function Login() {
 
       if (!session?.user) {
         console.error('No authenticated user found.');
-        setMessage('Please log in to complete the setup.');
+        setMessage('Invalid credentials! Please try again.');
         return;
       }
 
@@ -99,6 +102,7 @@ export default function Login() {
     }
   }
 
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="bg-gray-800 p-8 rounded-lg shadow-md w-[400px]">
@@ -139,7 +143,8 @@ export default function Login() {
           ) : (
             <button
               onClick={login}
-              className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+              disabled={isLoginDisabled}
+              className={`w-full ${isLoginDisabled ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'} text-white py-2 rounded hover:bg-blue-600 transition duration-200`}
             >
               Login
             </button>

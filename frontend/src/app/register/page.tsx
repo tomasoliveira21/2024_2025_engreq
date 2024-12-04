@@ -1,64 +1,109 @@
-"use client"
+"use client";
 
-import { supabase } from "@/lib/supabase"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Register() {
   const [data, setData] = useState<{
-    email: string,
-    password: string,
-    role: string,  // New role state
-    nif: number
+    email: string;
+    password: string;
+    role: string;
+    nif: number | null;
   }>({
-    email: '',
-    password: '',
-    role: 'Co-Producer',  // Default role,
-    nif: 0
-  })
+    email: "",
+    password: "",
+    role: "Co-Producer",
+    nif: null,
+  });
 
   const [message, setMessage] = useState<string | null>(null);
-
   const router = useRouter();
 
+  // To validate input fields on form
+  const validateInputs = () => {
+    if (!data.email.trim()) {
+      setMessage("Email is required.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      setMessage("Invalid email format.");
+      return false;
+    }
+
+    if (!data.password.trim()) {
+      setMessage("Password is required.");
+      return false;
+    }
+
+    if (data.password.length < 6) {
+      setMessage("Password must have at least 6 characters.");
+      return false;
+    }
+
+    if (data.nif === null || isNaN(data.nif)) {
+      setMessage("NIF must be a valid number.");
+      return false;
+    }
+    if (data.nif.toString().length !== 9) {
+      setMessage("NIF must have 9 digits.");
+      return false;
+    }
+    return true;
+  };
+
   const register = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     try {
       const { data: user, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
-            role: data.role,  // New role data
-            nif: data.nif
+            role: data.role,
+            nif: data.nif,
           },
-      },
-      })
+        },
+      });
 
       if (user) {
-        router.push('/');
+        router.push("/");
       } else if (error) {
         setMessage("Registration failed: " + error.message);
       }
-
     } catch (error) {
       setMessage("An error occurred: " + error);
     }
-  }
+  };
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setData((prev: any) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
   
+    if (name === "nif") {
+      // Allow only numbers or empty input, preserving the existing value
+      const validValue = value === "" || /^\d*$/.test(value) ? value : data.nif?.toString() || ""; 
+      setData((prev) => ({
+        ...prev,
+        [name]: validValue ? parseInt(validValue, 10) : null,  // Convert to number if valid
+      }));
+    } else {
+      setData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="bg-gray-800 p-8 rounded-lg shadow-md w-[400px]">
-        <h2 className="text-2xl font-bold mb-6 text-center text-white">
-          Register
-        </h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">Register</h2>
         <div className="grid mb-4">
           <label className="mb-2 text-gray-300">Email</label>
           <input
@@ -85,15 +130,14 @@ export default function Register() {
           <input
             type="tel"
             name="nif"
-            value={data?.nif}
+            value={data?.nif ?? ""}
             onChange={handleChange}
             maxLength={9}
             pattern="[0-9]{9}"
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
           />
         </div>
-        
-        {/* Add Role Selector */}
+
         <div className="grid mb-6">
           <label className="mb-2 text-gray-300">Role</label>
           <select
@@ -106,8 +150,8 @@ export default function Register() {
             <option value="Co-Producer">Co-Producer</option>
           </select>
         </div>
-        
-        {message && <div className="mb-4 text-center text-white">{message}</div>}
+
+        {message && <div className="mb-4 text-center text-red-500">{message}</div>}
         <div>
           <button
             onClick={register}
@@ -118,7 +162,7 @@ export default function Register() {
         </div>
         <div className="mt-4 text-center">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="text-blue-400 hover:underline"
           >
             Back to Login
@@ -126,5 +170,5 @@ export default function Register() {
         </div>
       </div>
     </div>
-  )
+  );
 }
