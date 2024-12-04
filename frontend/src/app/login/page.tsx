@@ -57,6 +57,7 @@ export default function Login() {
       // Retrieve role and nif from metadata
       const role = session.user.user_metadata.role || 'Co-Producer';
       const nif = session.user.user_metadata.nif || null;
+      const name = session.user.user_metadata.name || null;
 
       // Insert or update the user's data in the `public.user` table
       const { error: insertError } = await supabase
@@ -65,14 +66,34 @@ export default function Login() {
           {
             id: userId,
             email: session.user.email,
+            name: name,
             role: role,
             nif: nif,
+          },
+        ]);
+
+      // Fetch the user session so we can get the user's created_at date
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      // Insert or update the Producer or Co-Producer data in the `public.Producers` or `public.Consumers` table based on the role
+      const { error: insertUserRoleError } = await supabase
+        .from(role === 'Producer' ? 'Producers' : 'Consumers')
+        .upsert([
+          {
+            user_id: userId,
+            createdAt: user?.created_at,
           },
         ]);
 
       if (insertError) {
         console.error('Data sync error:', insertError);
         setMessage(`Error syncing user data: ${insertError.message}`);
+        return;
+      }
+
+      if (insertUserRoleError) {
+        console.error('Data sync error:', insertUserRoleError);
+        setMessage(`Error syncing producer/co-producer data: ${insertUserRoleError.message}`);
         return;
       }
 

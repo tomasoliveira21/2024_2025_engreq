@@ -8,11 +8,15 @@ export default function Register() {
   const [data, setData] = useState<{
     email: string;
     password: string;
+    confirmPassword: string;
+    name: string;
     role: string;
     nif: number | null;
   }>({
     email: "",
     password: "",
+    confirmPassword: "",
+    name: "",
     role: "Co-Producer",
     nif: null,
   });
@@ -22,6 +26,25 @@ export default function Register() {
 
   // To validate input fields on form
   const validateInputs = () => {
+    if (!data.name.trim()) {
+      setMessage("Name is required.");
+      return false;
+    }	
+
+    if (data.name.length > 35) {
+      setMessage("Name must have less than 35 characters.");
+      return false;
+    }
+
+    if (data.nif === null || isNaN(data.nif)) {
+      setMessage("NIF must be a valid number.");
+      return false;
+    }
+    if (data.nif.toString().length !== 9) {
+      setMessage("NIF must have 9 digits.");
+      return false;
+    }
+
     if (!data.email.trim()) {
       setMessage("Email is required.");
       return false;
@@ -43,14 +66,11 @@ export default function Register() {
       return false;
     }
 
-    if (data.nif === null || isNaN(data.nif)) {
-      setMessage("NIF must be a valid number.");
+    if (data.password !== data.confirmPassword) {
+      setMessage("Passwords do not match.");
       return false;
     }
-    if (data.nif.toString().length !== 9) {
-      setMessage("NIF must have 9 digits.");
-      return false;
-    }
+
     return true;
   };
 
@@ -67,6 +87,7 @@ export default function Register() {
           data: {
             role: data.role,
             nif: data.nif,
+            name: data.name,
           },
         },
       });
@@ -105,6 +126,30 @@ export default function Register() {
       <div className="bg-gray-800 p-8 rounded-lg shadow-md w-[400px]">
         <h2 className="text-2xl font-bold mb-6 text-center text-white">Register</h2>
         <div className="grid mb-4">
+          <label className="mb-2 text-gray-300">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={data?.name}
+            onChange={handleChange}
+            className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+          />
+        </div>
+
+        <div className="grid mb-6">
+          <label className="mb-2 text-gray-300">NIF</label>
+          <input
+            type="tel"
+            name="nif"
+            value={data?.nif ?? ""}
+            onChange={handleChange}
+            maxLength={9}
+            pattern="[0-9]{9}"
+            className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+          />
+        </div>
+
+        <div className="grid mb-4">
           <label className="mb-2 text-gray-300">Email</label>
           <input
             type="text"
@@ -125,15 +170,13 @@ export default function Register() {
           />
         </div>
 
-        <div className="grid mb-6">
-          <label className="mb-2 text-gray-300">NIF</label>
+        <div className="grid mb-4">
+          <label className="mb-2 text-gray-300">Confirm Password</label>
           <input
-            type="tel"
-            name="nif"
-            value={data?.nif ?? ""}
+            type="password"
+            name="confirmPassword"
+            value={data?.confirmPassword}
             onChange={handleChange}
-            maxLength={9}
-            pattern="[0-9]{9}"
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
           />
         </div>
