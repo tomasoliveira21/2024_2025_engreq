@@ -13,6 +13,7 @@ const Producer = require('./classes/Producer');
 const Product = require('./classes/Product');
 const Stock = require('./classes/Stock');
 const User = require('./classes/User');
+const Basket = require("./classes/Basket");
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
@@ -44,3 +45,8 @@ Consumer.hasMany(Order, { foreignKey: 'consumerId' });
 Certificate.belongsTo(Producer, { foreignKey: 'producerId' });
 
 AMAP.hasMany(User, { as: 'members' });
+
+Basket.belongsTo(Producer, {foreignKey: 'ProducerId' });
+Producer.hasMany(Basket, { as: 'baskets' });
+Basket.belongsToMany(Product, { through: 'BasketProducts' });
+Product.belongsToMany(Basket, { through: 'BasketProducts' });
