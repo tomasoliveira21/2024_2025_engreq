@@ -18,6 +18,9 @@ export default function Login() {
 
   const router = useRouter();
 
+  // To validate if the fiels email and password are filled
+  const isLoginDisabled = !data.email || !data.password;
+
   const login = async () => {
     try {
       let { data: dataUser, error } = await supabase.auth.signInWithPassword({
@@ -46,7 +49,7 @@ export default function Login() {
 
       if (!session?.user) {
         console.error('No authenticated user found.');
-        setMessage('Please log in to complete the setup.');
+        setMessage('Invalid credentials! Please try again.');
         return;
       }
 
@@ -54,6 +57,7 @@ export default function Login() {
       // Retrieve role and nif from metadata
       const role = session.user.user_metadata.role || 'Co-Producer';
       const nif = session.user.user_metadata.nif || null;
+      const name = session.user.user_metadata.name || null;
 
       // Insert or update the user's data in the `public.user` table
       const { error: insertError } = await supabase
@@ -62,14 +66,34 @@ export default function Login() {
           {
             id: userId,
             email: session.user.email,
+            name: name,
             role: role,
             nif: nif,
+          },
+        ]);
+
+      // Fetch the user session so we can get the user's created_at date
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      // Insert or update the Producer or Co-Producer data in the `public.Producers` or `public.Consumers` table based on the role
+      const { error: insertUserRoleError } = await supabase
+        .from(role === 'Producer' ? 'Producers' : 'Consumers')
+        .upsert([
+          {
+            user_id: userId,
+            createdAt: user?.created_at,
           },
         ]);
 
       if (insertError) {
         console.error('Data sync error:', insertError);
         setMessage(`Error syncing user data: ${insertError.message}`);
+        return;
+      }
+
+      if (insertUserRoleError) {
+        console.error('Data sync error:', insertUserRoleError);
+        setMessage(`Error syncing producer/co-producer data: ${insertUserRoleError.message}`);
         return;
       }
 
@@ -98,6 +122,7 @@ export default function Login() {
       setMessage("An error occurred: " + error);
     }
   }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
@@ -139,7 +164,8 @@ export default function Login() {
           ) : (
             <button
               onClick={login}
-              className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+              disabled={isLoginDisabled}
+              className={`w-full ${isLoginDisabled ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'} text-white py-2 rounded hover:bg-blue-600 transition duration-200`}
             >
               Login
             </button>
