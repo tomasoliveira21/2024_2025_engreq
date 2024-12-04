@@ -38,6 +38,8 @@ const getProductsByAmap = async (req, res, next) => {
     // Logger
     logger.info(`Get getProductsByAmap (amapId: ${amapId})`);
 
+    // Validate User permi
+
     // Request access products
     try {
         const products = await requestProductsByAmap(amapId);
@@ -57,14 +59,14 @@ const getProductsByAmap = async (req, res, next) => {
 const getProductDetails = async (req, res, next) => {
 
     // Arguments
-    const { productId } = req.params;
+    const { id } = req.params;
 
     // Logger
-    logger.info(`Get getProductDetails (ID: ${productId})`);
+    logger.info(`Get getProductDetails (ID: ${id})`);
 
     // Request access products
     try {
-        const productDetails = await requestProductDetails(productId);
+        const productDetails = await requestProductDetails(id);
         res.status(200).json({ productDetails: productDetails });
     } catch (error) {
         next(error);
