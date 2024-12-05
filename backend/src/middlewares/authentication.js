@@ -25,10 +25,18 @@ const authentication = async (req, res, next) => {
     try {
         // Validate token with Supabase
         const { data: user, error } = await supabase.auth.getUser(token);
+        const userEmail = user.user?.email ?? 'errorMail';
 
+        // Validate auth
         if (error) {
             logger.error('Invalid or expired token!');
             return res.status(401).json({ message: 'Invalid or expired token', details: error.message });
+        }
+
+        // Validate email
+        if (userEmail === 'errorMail') {
+            logger.error('Invalid authentication email or user!');
+            return res.status(401).json({ message: 'Invalid authentication email or user !!'});
         }
 
         // Request extra data Session
@@ -36,11 +44,11 @@ const authentication = async (req, res, next) => {
 
         // Set Session
         req.user = {
-            id: user.user.id,
-            email: user.user.email,
-            phone: user.user.phone,
-            role: sessionExtraData.role,
-            amapId: sessionExtraData.AMAPId,
+            id      : user.user.id,
+            email   : user.user.email,
+            phone   : user.user.phone,
+            role    : sessionExtraData.role,
+            amapId  : sessionExtraData.AMAPId,
         }
 
         next();

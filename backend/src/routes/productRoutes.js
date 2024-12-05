@@ -1,7 +1,7 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
-const { getProductsByAmap, getProductDetails, createProduct} = require('../controllers/productController');
+const { getProductsByAmap, getProductDetails, createProduct, getBasketsByAmap, getBasketDetails, createBasket} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -98,5 +98,130 @@ router.get('/:id', authentication, getProductDetails);
  *         description: "Internal server error"
  */
 router.post('/', authentication, checkProducerRole, createProduct);
+
+/**
+ * BASKET
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "Products"
+ *     description: "Endpoints related to products"
+ *   - name: "Basket"
+ *     description: "Endpoints related to Basket, a subsection of products"
+ *
+ * /products/basket/amap/{amapId}:
+ *   get:
+ *     summary: "Get a list of AMAP Basket"
+ *     description: "This endpoint retrieves a list of Basket available in selected AMAP."
+ *     tags:
+ *       - "Basket"
+ *     responses:
+ *       200:
+ *         description: "A list of Basket"
+ *       404:
+ *         description: "No products found"
+ */
+router.get('/basket/amap/:amapId', authentication, checkAMAPAccess, getBasketsByAmap);
+
+/**
+ * @swagger
+ * /products/basket/{id}:
+ *   get:
+ *     summary: "Get basket details"
+ *     description: Get a Basket details by ID
+ *     responses:
+ *       200:
+ *         description: A Basket object
+ *       404:
+ *         description: Basket not found
+ *     tags:
+ *      - "Basket"
+ */
+router.get('/basket/:id', authentication, getBasketDetails);
+
+/**
+ * @swagger
+ * /products/basket:
+ *     post:
+ *       summary: Create a new basket
+ *       description: Creates a new basket and associates products with it.
+ *       operationId: createBasket
+ *       tags:
+ *         - Basket
+ *       requestBody:
+ *         description: Basket data to be created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The name of the basket
+ *                   example: "Fruit basket"
+ *                 description:
+ *                   type: string
+ *                   description: A description of the basket
+ *                   example: "Fresh basket fruit"
+ *                 price:
+ *                   type: number
+ *                   format: float
+ *                   description: The price of the basket
+ *                   example: 15
+ *                 weight:
+ *                   type: number
+ *                   format: float
+ *                   description: The weight of the basket
+ *                   example: 123
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                     description: The IDs of products to associate with the basket
+ *                     example: [9, 10]
+ *       responses:
+ *         '201':
+ *           description: Basket created successfully
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: The unique ID of the newly created basket
+ *                     example: 16
+ *                   name:
+ *                     type: string
+ *                     description: The name of the basket
+ *                     example: "Fruit basket"
+ *                   description:
+ *                     type: string
+ *                     description: The description of the basket
+ *                     example: "Fresh basket fruit"
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                     description: The price of the basket
+ *                     example: 15
+ *                   weight:
+ *                     type: number
+ *                     format: float
+ *                     description: The weight of the basket
+ *                     example: 123
+ *                   products:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                       description: The IDs of products associated with the basket
+ *                       example: [9, 10]
+ *         '400':
+ *           description: Invalid input data
+ *         '500':
+ *           description: Internal server error
+*/
+router.post('/basket', authentication, checkProducerRole, createBasket);
 
 module.exports = router;

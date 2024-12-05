@@ -1,4 +1,6 @@
 const logger = require('../utils/logger');
+const Basket = require('../domain/models/Basket');
+const BasketProduct = require('../domain/models/BasketProducts');
 const Product = require('../domain/models/Product');
 const Producer = require('../domain/models/Producer');
 const User = require('../domain/models/User');
@@ -115,8 +117,150 @@ const insertNewProduct = async (productData) => {
     }
 };
 
+/**
+ * BASKETS
+ */
+
+/**
+ * Basket list by AMAP
+ * @param amapId
+ * @returns {Promise<*|*[]>}
+ */
+const requestBasketsByAmap = async (amapId) => {
+    logger.info(`Fetching baskets by AMAP (AMAP: ${amapId})`);
+
+    try {
+        // Query data
+        const basketList = await Basket.findAll({
+            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight'],
+            include: [
+                {
+                    model: Producer,
+                    attributes: [],
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: [],
+                            where: {
+                                AMAPId: amapId,
+                            },
+                        },
+                    ],
+                },
+            ],
+        });
+
+        // Logger
+        logger.info(`Retrieved baskets data: ${JSON.stringify(basketList)}`);
+
+        return basketList;
+    } catch (error) {
+        logger.error('Error fetching baskets data:', error.message);
+        return [];
+    }
+};
+
+/**
+ * Basket Details
+ * @param basketId
+ * @returns {Promise<*|*[]>}
+ */
+const requestBasketDetails = async (basketId) => {
+
+    logger.info(`Fetching basket details (Basket: ${basketId})`);
+
+    try {
+        // Query data
+        const basketDetails = await Basket.findAll({
+            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight'],
+            where: {
+                id: basketId,
+            },
+            include: [
+                {
+                    model: Producer,
+                    attributes: ['id', 'businessName'],
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'email', 'nif'],
+                        },
+                    ],
+                },
+                {
+                    model: Product,
+                    attributes: ['id', 'name', 'description', 'price'],
+                    through: {
+                        attributes: [],
+                    },
+                },
+            ],
+        });
+
+        // Logger
+        logger.info(`Retrieved basket details: ${JSON.stringify(basketDetails)}`);
+
+        return basketDetails;
+    } catch (error) {
+        logger.error('Error fetching basket details:', error.message);
+        return [];
+    }
+};
+
+/**
+ * Create new Basket
+ * @param basketData
+ * @returns {Promise<*>}
+ */
+const insertNewBasket = async (basketData) => {
+    logger.info('Insert new basket');
+
+    try {
+        // Create a new basket
+        const newBasket = await Basket.create({
+            name: basketData.name,
+            description: basketData.description,
+            price: basketData.price,
+            weight: basketData.weight,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            ProducerId: basketData.producerId,
+        });
+
+        logger.info('Basket created:', newBasket);
+
+        // Prepare BasketProduct data
+        const basketProducts = [];
+        if (basketData.products && basketData.products.length > 0) {
+            basketData.products.forEach(productId => {
+                basketProducts.push({
+                    BasketId: newBasket.id,
+                    ProductId: productId,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                });
+            });
+
+            // Bulk insert BasketProducts
+            await BasketProduct.bulkCreate(basketProducts);
+            logger.info('Products added to the basket');
+        }
+
+        logger.info('Basket created successfully:', newBasket);
+        return newBasket;
+    } catch (error) {
+        logger.error('Error creating new basket:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,
-    insertNewProduct
+    insertNewProduct,
+    requestBasketsByAmap,
+    requestBasketDetails,
+    insertNewBasket
 };
