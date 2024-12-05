@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
-const AMAPs = require('../domain/classes/AMAP');
-const User = require('../domain/classes/User');
+const AMAPs = require('../domain/models/AMAP');
+const User = require('../domain/models/User');
 
 /**
  * Get AMAPs List

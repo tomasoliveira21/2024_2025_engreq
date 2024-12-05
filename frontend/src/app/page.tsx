@@ -57,7 +57,7 @@ export default function Home() {
         <div className="col-span-3">
           <Sidebar />
         </div>
-        <div className="col-span-9 grid grid-cols-3 gap-8 mt-8">
+        <div className="col-span-8 grid grid-cols-3 gap-8 mt-8">
           {amaps.length > 0 ? (
             amaps.map((amap) => (
               <Card

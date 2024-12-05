@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
-const User = require('../domain/classes/User');
-const Producer = require("../domain/classes/Producer");
+const User = require('../domain/models/User');
+const Producer = require("../domain/models/Producer");
 
 /**
  * Get user data

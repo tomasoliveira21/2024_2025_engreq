@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres.nehhxxvmxmxohsqdbcxv",
+    "password": "Engreq20242025",
+    "database": "postgres",
+    "port": 6543,
+    "host": "aws-0-eu-west-3.pooler.supabase.com",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres.nehhxxvmxmxohsqdbcxv",
+    "password": "Engreq20242025",
+    "database": "postgres",
+    "port": 6543,
+    "host": "aws-0-eu-west-3.pooler.supabase.com",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres.nehhxxvmxmxohsqdbcxv",
+    "password": "Engreq20242025",
+    "database": "postgres",
+    "port": 6543,
+    "host": "aws-0-eu-west-3.pooler.supabase.com",
+    "dialect": "postgres"
+  }
+}

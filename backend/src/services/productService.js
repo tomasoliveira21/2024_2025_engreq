@@ -1,9 +1,9 @@
 const logger = require('../utils/logger');
-const Product = require('../domain/classes/Product');
-const Basket = require('../domain/classes/Basket');
-const BasketProduct = require('../domain/classes/BasketProducts');
-const Producer = require('../domain/classes/Producer');
-const User = require('../domain/classes/User');
+const Basket = require('../domain/models/Basket');
+const BasketProduct = require('../domain/models/BasketProducts');
+const Product = require('../domain/models/Product');
+const Producer = require('../domain/models/Producer');
+const User = require('../domain/models/User');
 
 
 /**

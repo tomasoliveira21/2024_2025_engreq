@@ -1,9 +1,7 @@
-import { Product } from "@/types/product";
-
-export const fetchProducts = async (sessionToken: string, amapId: string): Promise<Product[]> => {
+export const fetchProduct = async (sessionToken: string, productId: string): Promise<[]> => {
     const apiUrl = 'http://127.0.0.1:3001/';
     try {
-      const response = await fetch(`${apiUrl}products/amap/${amapId}`, {
+      const response = await fetch(`${apiUrl}products/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -16,7 +14,7 @@ export const fetchProducts = async (sessionToken: string, amapId: string): Promi
       }
   
       const data = await response.json();
-      return data.products;
+      return data.productDetails;
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
       return [];
