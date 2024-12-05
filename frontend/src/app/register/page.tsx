@@ -91,6 +91,7 @@ export default function Register() {
           },
         },
       });
+      console.log("User: ", user);
 
       if (user) {
         router.push("/");
