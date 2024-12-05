@@ -16,7 +16,6 @@ const swaggerUi = require('swagger-ui-express');
 const path = require('path');
 
 // Routes
-const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const amapRoutes = require('./routes/amapRoutes');
 
@@ -68,9 +67,6 @@ app.use('/products', productRoutes);
 
 // AMAP
 app.use('/amap', amapRoutes);
-
-// Users TODO
-app.use('/users', userRoutes);
 
 // Not found routes
 app.use((req, res, next) => {

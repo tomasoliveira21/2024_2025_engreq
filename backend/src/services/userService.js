@@ -1,22 +1,6 @@
 const logger = require('../utils/logger');
-const supabase = require('../utils/supabase');
 const User = require('../domain/classes/User');
-
-/**
- * Get all Users
- * @returns {Promise<*>}
- */
-// TODO TO REMOVE
-const getAllUsers = async () => {
-    logger.info(`Request database getAllUsers`);
-    const { data, error } = await supabase.from('user').select('*');
-    if (error) {
-        logger.error(`Error executing query:', error`);
-        throw new Error(error.message);
-    }
-    return data;
-};
-
+const Producer = require("../domain/classes/Producer");
 
 /**
  * Get user data
@@ -45,7 +29,40 @@ const getUserData = async (userEmail) => {
     }
 };
 
+/**
+ * Get producer details
+ * @param userEmail
+ * @returns {Promise<*|*[]>}
+ */
+const getProducerData = async (userEmail) => {
+    logger.info(`Fetching producer data: `, userEmail);
+
+    try {
+        // Query data
+        const producerData = await Producer.findAll({
+            attributes: ['id', 'businessName', 'description', 'photoUrl'],
+            include: [
+                {
+                    model: User,
+                    attributes: [],
+                    where: {
+                        email: userEmail,
+                    },
+                },
+            ],
+        });
+
+        // Logger
+        logger.info(`Retrieved producer data: ${JSON.stringify(producerData)}`);
+
+        return producerData;
+    } catch (error) {
+        logger.error('Error fetching producer data:', error.message);
+        return [];
+    }
+};
+
 module.exports = {
-    getAllUsers,
     getUserData,
+    getProducerData
 };

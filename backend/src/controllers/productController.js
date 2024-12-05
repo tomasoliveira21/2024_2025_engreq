@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
-const {requestProductsByAmap, requestProductDetails, insertNewProduct, requestBasketsByAmap, requestBasketDetails} = require("../services/productService");
+const {requestProductsByAmap, requestProductDetails, insertNewProduct,
+    requestBasketsByAmap, requestBasketDetails, insertNewBasket} = require("../services/productService");
 
 /**
  * Get Products by AMAP
@@ -62,7 +63,8 @@ const createProduct = async (req, res, next) => {
 
     try {
         // Arguments
-        const { name, description, type, price, quantity, producerId } = req.body;
+        const { name, description, type, price, quantity } = req.body;
+        const producerId = req.user.producer[0].id;
 
         // Validate data
         if (!name || !description || !type || !price || !quantity || !producerId) {
@@ -105,7 +107,7 @@ const createProduct = async (req, res, next) => {
  */
 
 /**
- *
+ * Get basket by AMAP
  * @param req
  * @param res
  * @param next
@@ -128,7 +130,7 @@ const getBasketsByAmap = async (req, res, next) => {
 };
 
 /**
- *
+ * Get basket details
  * @param req
  * @param res
  * @param next
@@ -145,9 +147,56 @@ const getBasketDetails = async (req, res, next) => {
     // Request access products
     try {
         const productDetails = await requestBasketDetails(id);
-        res.status(200).json({ productDetails: productDetails });
+        res.status(200).json({ basketDetails: productDetails });
     } catch (error) {
         next(error);
+    }
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const createBasket = async (req, res, next) => {
+
+    // Logger
+    logger.info(`Create new Basket`);
+
+    try {
+        // Arguments
+        const { name, description, price, weight, products } = req.body;
+        const producerId = req.user.producer[0].id;
+
+        // Validate data
+        if (!name || !description || !price || !weight || !products || !producerId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name, description, price, weight, products and producerId are required.'
+            });
+        }
+
+        // Data
+        const basketData = { name, description, price, weight, producerId, products };
+
+        // Insert Basket
+        const newBasket = await insertNewBasket(basketData);
+
+        // Return response
+        return res.status(201).json({
+            success: true,
+            message: 'Product created successfully',
+            basket: newBasket
+        });
+    } catch (err) {
+        // Error
+        logger.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
     }
 };
 
@@ -156,5 +205,6 @@ module.exports = {
     getProductDetails,
     createProduct,
     getBasketsByAmap,
-    getBasketDetails
+    getBasketDetails,
+    createBasket
 };

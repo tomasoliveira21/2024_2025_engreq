@@ -1,4 +1,5 @@
 const logger = require('../utils/logger');
+const { getProducerData, getUserData} = require("../services/userService");
 
 // Middleware Permissions
 
@@ -30,15 +31,25 @@ const checkAMAPAccess = (req, res, next) => {
  * @param next
  * @returns {*}
  */
-const checkProducerRole = (req, res, next) => {
+const checkProducerRole = async (req, res, next) => {
     // Variables
-    const userRole = req.user.role;
+    const userRole = req.user?.role ?? 'errorRole';
+    const userEmail = req.user?.email ?? 'errorMail';
 
     // Validate Producer Role
-    if (typeof userRole == "undefined" || userRole !== "Producer") {
+    if (userRole === "errorRole" || userRole !== "Producer") {
         logger.error(`Forbidden: User do not have access to Producer Endpoints (${userRole})`);
         return res.status(403).json({ message: 'Forbidden: User do not have access to Producer Endpoints.' });
     }
+
+    // Request Producer Information
+    const producerData = await getProducerData(userEmail);
+
+    // Set producer session data
+    req.user.producer = producerData.map((producer) => {
+        const {id, businessName, description} = producer.dataValues;
+        return {id, businessName, description};
+    });
 
     next();
 };

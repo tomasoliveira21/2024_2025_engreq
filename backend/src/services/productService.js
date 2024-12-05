@@ -208,10 +208,55 @@ const requestBasketDetails = async (basketId) => {
     }
 };
 
+/**
+ * Create new Basket
+ * @param basketData
+ * @returns {Promise<*>}
+ */
+const insertNewBasket = async (basketData) => {
+    logger.info(`Insert new basket`);
+
+    try {
+        // Create a new basket
+        const newBasket = await Basket.create({
+            name: basketData.name,
+            description: basketData.description,
+            price: basketData.price,
+            weight: basketData.weight,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            ProducerId: basketData.producerId,
+        });
+
+        logger.info('Basket created:', newBasket);
+
+        /* TODO FINISH Add products
+        // Add Products
+        if (basketData.products && basketData.products.length > 0) {
+            const productIds = Array.isArray(basketData.products) ? basketData.products : Object.values(basketData.products);
+
+            await newBasket.addProducts(productIds, {
+                through: {
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            });
+            logger.info(`Products added successfully to the basket.`);
+        }*/
+
+        logger.info('Basket created successfully:', newBasket);
+        return newBasket;
+    } catch (error) {
+        logger.error('Error creating new basket:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,
     insertNewProduct,
     requestBasketsByAmap,
-    requestBasketDetails
+    requestBasketDetails,
+    insertNewBasket
 };
