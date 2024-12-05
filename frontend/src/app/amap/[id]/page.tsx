@@ -63,22 +63,34 @@ export default function Amap({ params }: { params: { id: string } }) {
         <div className="col-span-3">
           <Sidebar />
         </div>
-        <div className="col-span-9 grid grid-cols-3 gap-8 mt-8">
-          <h1>Amap Products:</h1>
-          <table className="table-auto border-collapse border border-gray-300 w-full mt-4">
+        <div className="col-span-8 grid gap-8 mt-8">
+          <h1 className="text-lg font-bold mb-2">Amap Products:</h1>
+          <table className="table-auto border-collapse border border-gray-300 w-full">
             <thead>
               <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">Product Name</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Product Type</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Product Price</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Product Name
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Product Type
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Product Price
+                </th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
                 <tr key={product.id}>
-                  <td className="border border-gray-300 px-4 py-2">{product.name}</td>
-                  <td className="border border-gray-300 px-4 py-2">{product.type}</td>
-                  <td className="border border-gray-300 px-4 py-2">{product.price}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.type}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.price}
+                  </td>
                 </tr>
               ))}
             </tbody>
