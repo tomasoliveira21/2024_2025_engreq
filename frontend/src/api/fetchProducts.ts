@@ -1,6 +1,6 @@
-import { Amap } from "@/types/amap";
+import { Product } from "@/types/product";
 
-export const fetchProducts = async (sessionToken: string, amapId: string): Promise<Amap[]> => {
+export const fetchProducts = async (sessionToken: string, amapId: string): Promise<Product[]> => {
     const apiUrl = 'http://127.0.0.1:3001/';
     try {
       const response = await fetch(`${apiUrl}products/amap/${amapId}`, {
@@ -16,7 +16,7 @@ export const fetchProducts = async (sessionToken: string, amapId: string): Promi
       }
   
       const data = await response.json();
-      return data;
+      return data.products;
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
       return [];
