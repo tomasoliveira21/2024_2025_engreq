@@ -2,18 +2,18 @@
 const { Sequelize } = require('sequelize');
 
 const sequelize = require('../utils/db-connect');
-const AMAP = require('./classes/AMAP');
-const Certificate = require('./classes/Certificate');
-const Consumer = require('./classes/Consumer');
-const Delivery = require('./classes/Delivery');
-const Location = require('./classes/Location');
-const Order = require('./classes/Order');
-const Payment = require('./classes/Payment');
-const Producer = require('./classes/Producer');
-const Product = require('./classes/Product');
-const Stock = require('./classes/Stock');
-const User = require('./classes/User');
-const Basket = require("./classes/Basket");
+const AMAP = require('./models/AMAP');
+const Certificate = require('./models/Certificate');
+const Consumer = require('./models/Consumer');
+const Delivery = require('./models/Delivery');
+const Location = require('./models/Location');
+const Order = require('./models/Order');
+const Payment = require('./models/Payment');
+const Producer = require('./models/Producer');
+const Product = require('./models/Product');
+const Stock = require('./models/Stock');
+const User = require('./models/User');
+const Basket = require("./models/Basket");
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
