@@ -1,22 +1,5 @@
 const logger = require('../utils/logger');
-const { requestAllAmaps, requestUserAmaps } = require('../services/amapService');
-
-/**
- * Get list Amps list
- * @param req
- * @param res
- * @param next
- * @returns {Promise<void>}
- */
-const getAllAmaps = async (req, res, next) => {
-    logger.info(`Request getAllAmaps`);
-    try {
-        const amap = await requestAllAmaps();
-        res.status(200).json({ amaps: amap });
-    } catch (error) {
-        next(error);
-    }
-};
+const { requestAmapsList } = require('../services/amapService');
 
 /**
  *
@@ -25,10 +8,10 @@ const getAllAmaps = async (req, res, next) => {
  * @param next
  * @returns {Promise<void>}
  */
-const getUserAmaps = async (req, res, next) => {
-    logger.info(`Request getUserAmaps`);
+const getAmapsList = async (req, res, next) => {
+    logger.info(`Request getAmapsList`);
     try {
-        const amap = await requestUserAmaps();
+        const amap = await requestAmapsList();
         res.status(200).json({ amaps: amap });
     } catch (error) {
         next(error);
@@ -36,6 +19,5 @@ const getUserAmaps = async (req, res, next) => {
 };
 
 module.exports = {
-    getAllAmaps,
-    getUserAmaps
+    getAmapsList
 };

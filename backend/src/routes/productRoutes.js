@@ -1,31 +1,11 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
-const checkAMAPAccess = require('../middlewares/permissions');
-const { getProductsByProducer, getProductsByAmap, getProductDetails, createProduct} = require('../controllers/productController');
+const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
+const { getProductsByAmap, getProductDetails, createProduct} = require('../controllers/productController');
 
 const router = express.Router();
 
 // Product Routes
-
-/**
- * @swagger
- * tags:
- *   - name: "Products"
- *     description: "Endpoints related to product management"
- *
- * /products/producer/{producerId}:
- *   get:
- *     summary: "Get a list of producer products"
- *     description: "This endpoint retrieves a list of products by producer."
- *     tags:
- *       - "Products"
- *     responses:
- *       200:
- *         description: "A list of products"
- *       404:
- *         description: "No products found"
- */
-router.get('/producer/:producerId', authentication, getProductsByProducer);
 
 /**
  * @swagger
@@ -51,6 +31,7 @@ router.get('/amap/:amapId', authentication, checkAMAPAccess, getProductsByAmap);
  * @swagger
  * /products/{id}:
  *   get:
+ *     summary: "Get product details"
  *     description: Get a product details by ID
  *     responses:
  *       200:
@@ -116,6 +97,6 @@ router.get('/:id', authentication, getProductDetails);
  *       500:
  *         description: "Internal server error"
  */
-router.post('/', authentication, createProduct);
+router.post('/', authentication, checkProducerRole, createProduct);
 
 module.exports = router;

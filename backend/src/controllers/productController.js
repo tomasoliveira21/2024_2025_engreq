@@ -1,28 +1,5 @@
 const logger = require('../utils/logger');
-const {requestProductsByProducer, requestProductsByAmap, requestProductDetails, insertNewProduct} = require("../services/productService");
-
-/**
- * Get user products
- * @param req
- * @param res
- * @param next
- * @returns {Promise<void>}
- */
-const getProductsByProducer = async (req, res, next) => {
-    // Arguments
-    const { producerId } = req.params;
-
-    // Logger
-    logger.info(`Get getProductsByProducer (Producer: ${producerId})`);
-
-    // Request access products
-    try {
-        const products = await requestProductsByProducer(producerId);
-        res.status(200).json({ products: products });
-    } catch (error) {
-        next(error);
-    }
-};
+const {requestProductsByAmap, requestProductDetails, insertNewProduct} = require("../services/productService");
 
 /**
  * Get Products by AMAP
@@ -126,7 +103,6 @@ const createProduct = async (req, res, next) => {
 };
 
 module.exports = {
-    getProductsByProducer,
     getProductsByAmap,
     getProductDetails,
     createProduct

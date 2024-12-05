@@ -3,45 +3,6 @@ const Product = require('../domain/classes/Product');
 const Producer = require('../domain/classes/Producer');
 const User = require('../domain/classes/User');
 
-/**
- * Get producer products
- * All the products by producer
- * @param userId
- * @returns {Promise<*|*[]>}
- */
-const requestProductsByProducer = async (producerId) => {
-    logger.info(`Fetching producer products (User: ${producerId})`);
-
-    try {
-        // Query data
-        const productList = await Product.findAll({
-            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
-            include: [
-                {
-                    model: Producer,
-                    required: true,
-                    include: [
-                        {
-                            model: User,
-                            attributes: ['id', 'email', 'nif', 'AMAPId'],
-                            where: {
-                                id: producerId,
-                            },
-                        },
-                    ],
-                },
-            ],
-        });
-
-        // Logger
-        logger.info(`Retrieved products data: ${JSON.stringify(productList)}`);
-
-        return productList;
-    } catch (error) {
-        logger.error('Error fetching products data:', error.message);
-        return [];
-    }
-};
 
 /**
  * Products by AMAP
@@ -58,11 +19,12 @@ const requestProductsByAmap = async (amapId) => {
             include: [
                 {
                     model: Producer,
+                    attributes: [],
                     required: true,
                     include: [
                         {
                             model: User,
-                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                            attributes: [],
                             where: {
                                 AMAPId: amapId,
                             },
@@ -101,11 +63,12 @@ const requestProductDetails = async (productID) => {
             include: [
                 {
                     model: Producer,
+                    attributes: ['id', 'businessName'],
                     required: true,
                     include: [
                         {
                             model: User,
-                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                            attributes: ['id', 'email', 'nif'],
                         },
                     ],
                 },
@@ -153,7 +116,6 @@ const insertNewProduct = async (productData) => {
 };
 
 module.exports = {
-    requestProductsByProducer,
     requestProductsByAmap,
     requestProductDetails,
     insertNewProduct
