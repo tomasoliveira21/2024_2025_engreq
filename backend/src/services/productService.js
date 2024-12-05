@@ -1,45 +1,8 @@
 const logger = require('../utils/logger');
-const supabase = require('../utils/supabase');
 const Product = require('../domain/classes/Product');
 const Producer = require('../domain/classes/Producer');
 const User = require('../domain/classes/User');
 
-/**
- * Get user products
- * All the products related with AMAP's that user have access
- * @param userId
- * @returns {Promise<[{price: number, name: string, description: string, id: number},{price: number, name: string, description: string, id: number},{price: number, name: string, description: string, id: number}]|*|null>}
- */
-const requestProductsByUser = async (userId) => {
-    logger.info(`Fetching user products (User: ${userId})`);
-
-    try {
-        // TODO MOCK DATA
-        return [
-            { id: 1, name: "Batatas", description: "Batatas is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 },
-            { id: 2, name: "Cenouras", description: "Cenouras is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 3 },
-            { id: 3, name: "Carrot", description: "Carrot is a root vegetable", type: "Vegetable", price: 1.09, quantity: 20, producerId: 2 }
-        ];
-
-        // TODO FINISH QUERY
-        // QUERY GET ALL APPROVE PRODUCTS AND RELATED WITH AMAP's THAT USER HAVE ACCESS
-        const { data: userProducts, error } = await supabase
-            .from('product')
-            .select('product.*,  product_request(approve)')
-            .eq('user_id', userId);
-
-        if (error) {
-            logger.error(`Error fetching user from Supabase: ${error.message}`);
-            return null;
-        }
-
-        return userProducts;
-
-    } catch (err) {
-        logger.error(`Unexpected error fetching user info: ${err.message}`);
-        return null;
-    }
-};
 
 /**
  * Products by AMAP
@@ -56,11 +19,12 @@ const requestProductsByAmap = async (amapId) => {
             include: [
                 {
                     model: Producer,
+                    attributes: [],
                     required: true,
                     include: [
                         {
                             model: User,
-                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                            attributes: [],
                             where: {
                                 AMAPId: amapId,
                             },
@@ -99,11 +63,12 @@ const requestProductDetails = async (productID) => {
             include: [
                 {
                     model: Producer,
+                    attributes: ['id', 'businessName'],
                     required: true,
                     include: [
                         {
                             model: User,
-                            attributes: ['id', 'email', 'nif', 'AMAPId'],
+                            attributes: ['id', 'email', 'nif'],
                         },
                     ],
                 },
@@ -120,8 +85,38 @@ const requestProductDetails = async (productID) => {
     }
 };
 
+/**
+ * Create new product
+ * @param productData
+ * @returns {Promise<*>}
+ */
+const insertNewProduct = async (productData) => {
+    // Logger
+    logger.info(`Insert new product`);
+
+    try {
+        // Create a new product
+        const newProduct = await Product.create({
+            name: productData.name,
+            description: productData.description,
+            type: productData.type,
+            price: productData.price,
+            quantity: productData.quantity,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            producerId: productData.producerId
+        });
+
+        logger.log('Product created successfully:', newProduct);
+        return newProduct;
+    } catch (error) {
+        logger.error('Error creating new product:', error);
+        throw error;
+    }
+};
+
 module.exports = {
-    requestProductsByUser,
     requestProductsByAmap,
-    requestProductDetails
+    requestProductDetails,
+    insertNewProduct
 };

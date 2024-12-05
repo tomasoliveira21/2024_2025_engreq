@@ -1,7 +1,7 @@
 const logger = require('../utils/logger');
 const express = require('express');
-const authentication = require('../middlewares/authentication');  // Import the authentication middleware
-const { getAllAmaps, getUserAmaps } = require('../controllers/amapController');
+const authentication = require('../middlewares/authentication');
+const { getAmapsList } = require('../controllers/amapController');
 
 const router = express.Router();
 
@@ -25,6 +25,6 @@ const router = express.Router();
  *       404:
  *         description: "No products found"
  */
-router.get('/', authentication, getUserAmaps);
+router.get('/', authentication, getAmapsList);
 
 module.exports = router;
