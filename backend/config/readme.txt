@@ -1,0 +1,1 @@
+config.json is used for sequelize-cli to connect into the database for migrations and other things.

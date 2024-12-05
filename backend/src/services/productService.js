@@ -1,7 +1,7 @@
 const logger = require('../utils/logger');
-const Product = require('../domain/classes/Product');
-const Producer = require('../domain/classes/Producer');
-const User = require('../domain/classes/User');
+const Product = require('../domain/models/Product');
+const Producer = require('../domain/models/Producer');
+const User = require('../domain/models/User');
 
 
 /**

@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 const supabase = require('../utils/supabase');
-const User = require('../domain/classes/User');
+const User = require('../domain/models/User');
 
 /**
  * Get all Users
