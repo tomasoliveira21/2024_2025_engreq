@@ -35,8 +35,8 @@ const authentication = async (req, res, next) => {
 
         // Validate email
         if (userEmail === 'errorMail') {
-            logger.error('Invalid authentication email!');
-            return res.status(401).json({ message: 'Invalid authentication email!!'});
+            logger.error('Invalid authentication email or user!');
+            return res.status(401).json({ message: 'Invalid authentication email or user !!'});
         }
 
         // Request extra data Session
