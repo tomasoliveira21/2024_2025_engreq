@@ -1,41 +1,39 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../utils/db-connect'); // Adjust the path as necessary
+const sequelize = require('../../utils/db-connect');
 
 class BasketProduct extends Model {}
 
-BasketProduct.init(
-    {
-        BasketId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'Baskets',
-                key: 'id',
-            },
+BasketProduct.init({
+    BasketId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'Baskets',
+            key: 'id',
         },
-        ProductId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'Products',
-                key: 'id',
-            },
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
+        primaryKey: true,
     },
-    {
-        sequelize,
-        modelName: 'BasketProduct',
-        tableName: 'BasketProducts',
-        timestamps: true,
+    ProductId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'Products',
+            key: 'id',
+        },
+        primaryKey: true,
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
     }
-);
+}, {
+    sequelize,
+    modelName: 'BasketProduct',
+    tableName: 'BasketProducts',
+    timestamps: true,
+    freezeTableName: true,
+});
 
 module.exports = BasketProduct;

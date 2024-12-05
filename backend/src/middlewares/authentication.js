@@ -25,7 +25,7 @@ const authentication = async (req, res, next) => {
     try {
         // Validate token with Supabase
         const { data: user, error } = await supabase.auth.getUser(token);
-        const userEmail = req.user?.email ?? 'errorMail';
+        const userEmail = user.user?.email ?? 'errorMail';
 
         // Validate auth
         if (error) {
@@ -44,11 +44,11 @@ const authentication = async (req, res, next) => {
 
         // Set Session
         req.user = {
-            id: user.user.id,
-            email: user.user.email,
-            phone: user.user.phone,
-            role: sessionExtraData.role,
-            amapId: sessionExtraData.AMAPId,
+            id      : user.user.id,
+            email   : user.user.email,
+            phone   : user.user.phone,
+            role    : sessionExtraData.role,
+            amapId  : sessionExtraData.AMAPId,
         }
 
         next();

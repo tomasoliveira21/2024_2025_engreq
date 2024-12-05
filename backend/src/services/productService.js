@@ -1,6 +1,7 @@
 const logger = require('../utils/logger');
 const Product = require('../domain/classes/Product');
 const Basket = require('../domain/classes/Basket');
+const BasketProduct = require('../domain/classes/BasketProducts');
 const Producer = require('../domain/classes/Producer');
 const User = require('../domain/classes/User');
 
@@ -214,7 +215,7 @@ const requestBasketDetails = async (basketId) => {
  * @returns {Promise<*>}
  */
 const insertNewBasket = async (basketData) => {
-    logger.info(`Insert new basket`);
+    logger.info('Insert new basket');
 
     try {
         // Create a new basket
@@ -230,19 +231,22 @@ const insertNewBasket = async (basketData) => {
 
         logger.info('Basket created:', newBasket);
 
-        /* TODO FINISH Add products
-        // Add Products
+        // Prepare BasketProduct data
+        const basketProducts = [];
         if (basketData.products && basketData.products.length > 0) {
-            const productIds = Array.isArray(basketData.products) ? basketData.products : Object.values(basketData.products);
-
-            await newBasket.addProducts(productIds, {
-                through: {
+            basketData.products.forEach(productId => {
+                basketProducts.push({
+                    BasketId: newBasket.id,
+                    ProductId: productId,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                },
+                });
             });
-            logger.info(`Products added successfully to the basket.`);
-        }*/
+
+            // Bulk insert BasketProducts
+            await BasketProduct.bulkCreate(basketProducts);
+            logger.info('Products added to the basket');
+        }
 
         logger.info('Basket created successfully:', newBasket);
         return newBasket;
