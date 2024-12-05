@@ -7,11 +7,13 @@ import Sidebar from "../../components/Sidebar";
 import Card from "../../components/Cart";
 import { fetchAmaps } from "@/api/fetchAmaps";
 import { Amap } from "@/types/amap";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [amaps, setAmaps] = useState<Amap[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function getSession() {
@@ -63,6 +65,7 @@ export default function Home() {
                 header={amap.name}
                 description={amap.description}
                 footer=""
+                onClick={() => router.push(`/amap/${amap.id}`)}
               />
             ))
           ) : (
