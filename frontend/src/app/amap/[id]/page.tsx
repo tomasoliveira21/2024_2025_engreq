@@ -73,7 +73,10 @@ export default function Amap({ params }: { params: { id: string } }) {
               data={products}
               renderRow={(product) => (
                 <tr key={product.id}>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td
+                    className="border border-gray-300 px-4 py-2 text-blue-600 cursor-pointer hover:underline"
+                    onClick={() => router.push(`/product/${product.id}`)}
+                  >
                     {product.name}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
