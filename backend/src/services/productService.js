@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
 const Product = require('../domain/classes/Product');
+const Basket = require('../domain/classes/Basket');
 const Producer = require('../domain/classes/Producer');
 const User = require('../domain/classes/User');
 
@@ -115,8 +116,53 @@ const insertNewProduct = async (productData) => {
     }
 };
 
+/**
+ * BASKETS
+ */
+
+/**
+ *
+ * @param amapId
+ * @returns {Promise<*|*[]>}
+ */
+const requestBasketsByAmap = async (amapId) => {
+    logger.info(`Fetching baskets by AMAP (AMAP: ${amapId})`);
+
+    try {
+        // Query data
+        const basketList = await Basket.findAll({
+            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight'],
+            include: [
+                {
+                    model: Producer,
+                    attributes: [],
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: [],
+                            where: {
+                                AMAPId: amapId,
+                            },
+                        },
+                    ],
+                },
+            ],
+        });
+
+        // Logger
+        logger.info(`Retrieved baskets data: ${JSON.stringify(basketList)}`);
+
+        return basketList;
+    } catch (error) {
+        logger.error('Error fetching baskets data:', error.message);
+        return [];
+    }
+};
+
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,
-    insertNewProduct
+    insertNewProduct,
+    requestBasketsByAmap
 };

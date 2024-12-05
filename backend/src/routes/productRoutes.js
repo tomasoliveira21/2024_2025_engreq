@@ -1,7 +1,7 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
-const { getProductsByAmap, getProductDetails, createProduct} = require('../controllers/productController');
+const { getProductsByAmap, getProductDetails, createProduct, getBasketsByAmap} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -98,5 +98,31 @@ router.get('/:id', authentication, getProductDetails);
  *         description: "Internal server error"
  */
 router.post('/', authentication, checkProducerRole, createProduct);
+
+/**
+ * BASKETS
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "Products"
+ *     description: "Endpoints related to products"
+ *   - name: "Baskets"
+ *     description: "Endpoints related to baskets, a subsection of products"
+ *
+ * /products/basket/amap/{amapId}:
+ *   get:
+ *     summary: "Get a list of AMAP baskets"
+ *     description: "This endpoint retrieves a list of baskets available in selected AMAP."
+ *     tags:
+ *       - "Baskets"
+ *     responses:
+ *       200:
+ *         description: "A list of baskets"
+ *       404:
+ *         description: "No products found"
+ */
+router.get('/basket/amap/:amapId', authentication, checkAMAPAccess, getBasketsByAmap);
 
 module.exports = router;
