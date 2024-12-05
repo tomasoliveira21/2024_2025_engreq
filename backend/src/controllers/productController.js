@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const {requestProductsByAmap, requestProductDetails, insertNewProduct, requestBasketsByAmap} = require("../services/productService");
+const {requestProductsByAmap, requestProductDetails, insertNewProduct, requestBasketsByAmap, requestBasketDetails} = require("../services/productService");
 
 /**
  * Get Products by AMAP
@@ -127,9 +127,34 @@ const getBasketsByAmap = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getBasketDetails = async (req, res, next) => {
+
+    // Arguments
+    const { id } = req.params;
+
+    // Logger
+    logger.info(`Get getBasketDetails (ID: ${id})`);
+
+    // Request access products
+    try {
+        const productDetails = await requestBasketDetails(id);
+        res.status(200).json({ productDetails: productDetails });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getProductsByAmap,
     getProductDetails,
     createProduct,
-    getBasketsByAmap
+    getBasketsByAmap,
+    getBasketDetails
 };

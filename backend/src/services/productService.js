@@ -121,7 +121,7 @@ const insertNewProduct = async (productData) => {
  */
 
 /**
- *
+ * Basket list by AMAP
  * @param amapId
  * @returns {Promise<*|*[]>}
  */
@@ -160,9 +160,58 @@ const requestBasketsByAmap = async (amapId) => {
     }
 };
 
+/**
+ * Basket Details
+ * @param basketId
+ * @returns {Promise<*|*[]>}
+ */
+const requestBasketDetails = async (basketId) => {
+
+    logger.info(`Fetching basket details (Basket: ${basketId})`);
+
+    try {
+        // Query data
+        const basketDetails = await Basket.findAll({
+            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight'],
+            where: {
+                id: basketId,
+            },
+            include: [
+                {
+                    model: Producer,
+                    attributes: ['id', 'businessName'],
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'email', 'nif'],
+                        },
+                    ],
+                },
+                {
+                    model: Product,
+                    attributes: ['id', 'name', 'description', 'price'],
+                    through: {
+                        attributes: [],
+                    },
+                },
+            ],
+        });
+
+        // Logger
+        logger.info(`Retrieved basket details: ${JSON.stringify(basketDetails)}`);
+
+        return basketDetails;
+    } catch (error) {
+        logger.error('Error fetching basket details:', error.message);
+        return [];
+    }
+};
+
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,
     insertNewProduct,
-    requestBasketsByAmap
+    requestBasketsByAmap,
+    requestBasketDetails
 };

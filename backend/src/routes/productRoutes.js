@@ -1,7 +1,7 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
-const { getProductsByAmap, getProductDetails, createProduct, getBasketsByAmap} = require('../controllers/productController');
+const { getProductsByAmap, getProductDetails, createProduct, getBasketsByAmap, getBasketDetails} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -100,7 +100,7 @@ router.get('/:id', authentication, getProductDetails);
 router.post('/', authentication, checkProducerRole, createProduct);
 
 /**
- * BASKETS
+ * BASKET
  */
 
 /**
@@ -108,21 +108,37 @@ router.post('/', authentication, checkProducerRole, createProduct);
  * tags:
  *   - name: "Products"
  *     description: "Endpoints related to products"
- *   - name: "Baskets"
- *     description: "Endpoints related to baskets, a subsection of products"
+ *   - name: "Basket"
+ *     description: "Endpoints related to Basket, a subsection of products"
  *
  * /products/basket/amap/{amapId}:
  *   get:
- *     summary: "Get a list of AMAP baskets"
- *     description: "This endpoint retrieves a list of baskets available in selected AMAP."
+ *     summary: "Get a list of AMAP Basket"
+ *     description: "This endpoint retrieves a list of Basket available in selected AMAP."
  *     tags:
- *       - "Baskets"
+ *       - "Basket"
  *     responses:
  *       200:
- *         description: "A list of baskets"
+ *         description: "A list of Basket"
  *       404:
  *         description: "No products found"
  */
 router.get('/basket/amap/:amapId', authentication, checkAMAPAccess, getBasketsByAmap);
+
+/**
+ * @swagger
+ * /products/basket/{id}:
+ *   get:
+ *     summary: "Get basket details"
+ *     description: Get a Basket details by ID
+ *     responses:
+ *       200:
+ *         description: A Basket object
+ *       404:
+ *         description: Basket not found
+ *     tags:
+ *      - "Basket"
+ */
+router.get('/basket/:id', authentication, getBasketDetails);
 
 module.exports = router;
