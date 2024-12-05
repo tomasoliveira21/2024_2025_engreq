@@ -67,23 +67,27 @@ export default function Amap({ params }: { params: { id: string } }) {
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
           <h1 className="text-lg font-bold mb-2">Amap Products:</h1>
-          <Table
-            headers={["Product Name", "Product Type", "Product Price"]}
-            data={products}
-            renderRow={(product) => (
-              <tr key={product.id}>
-                <td className="border border-gray-300 px-4 py-2">
-                  {product.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {product.type}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {product.price}
-                </td>
-              </tr>
-            )}
-          />
+          {products.length > 0 ? (
+            <Table
+              headers={["Product Name", "Product Type", "Product Price"]}
+              data={products}
+              renderRow={(product) => (
+                <tr key={product.id}>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.type}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.price}
+                  </td>
+                </tr>
+              )}
+            />
+          ) : (
+            <div>No products available.</div>
+          )}
         </div>
       </main>
     </div>
