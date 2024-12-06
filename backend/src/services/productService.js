@@ -3,6 +3,7 @@ const Basket = require('../domain/models/Basket');
 const BasketProduct = require('../domain/models/BasketProducts');
 const Product = require('../domain/models/Product');
 const Producer = require('../domain/models/Producer');
+const Certificate = require('../domain/models/Certificate');
 const User = require('../domain/models/User');
 
 
@@ -71,6 +72,10 @@ const requestProductDetails = async (productID) => {
                         {
                             model: User,
                             attributes: ['id', 'email', 'nif'],
+                        },
+                        {
+                            model: Certificate,
+                            attributes: ['id', 'name', 'issuingAuthority', 'issueDate', 'expirationDate'],
                         },
                     ],
                 },
