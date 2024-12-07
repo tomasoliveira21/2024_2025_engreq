@@ -53,7 +53,7 @@ export default function Home() {
   if (isLoading) {
     return <div>Loading data...</div>;
   }
-  
+
   const handleRefresh = async () => {
     const refreshToast = toast.loading("Refreshing...");
 
@@ -73,11 +73,6 @@ export default function Home() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid grid-cols-3 gap-8 mt-8">
-          <RefreshIcon
-            onClick={handleRefresh}
-            className="h-8 w-8 cursor-pointer text-socialNet mr-5 mt-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
-          />
-
           {amaps.length > 0 ? (
             amaps.map((amap) => (
               <Card
@@ -91,6 +86,12 @@ export default function Home() {
           ) : (
             <div>No AMAPs found</div>
           )}
+        </div>
+        <div className="col-span-1 ml-10">
+          <RefreshIcon
+            onClick={handleRefresh}
+            className="h-8 w-8 cursor-pointer text-socialNet mr-5 mt-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
+          />
         </div>
       </main>
     </div>
