@@ -18,6 +18,8 @@ const path = require('path');
 // Routes
 const productRoutes = require('./routes/productRoutes');
 const amapRoutes = require('./routes/amapRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // APP
 const app = express();
@@ -67,6 +69,12 @@ app.use('/products', productRoutes);
 
 // AMAP
 app.use('/amap', amapRoutes);
+
+// Order
+app.use('/order', orderRoutes);
+
+// Payment
+app.use('/payment', paymentRoutes);
 
 // Not found routes
 app.use((req, res, next) => {
