@@ -66,31 +66,31 @@ module.exports = {
             }
         );
 
-        // Map orders to subscriptions
-        const subscriptions = nonSinglePurchaseOrders.map((order) => {
-            const startDate = new Date();
-            let endDate;
-
-            // Calculate endDate based on periodType
-            if (order.periodType === periodType.weekly) {
-                endDate = new Date(startDate);
-                endDate.setDate(startDate.getDate() + 7); // Add 7 days
-            } else if (order.periodType === periodType.monthly) {
-                endDate = new Date(startDate);
-                endDate.setDate(startDate.getDate() + 30); // Add 30 days
-            }
-
-            return {
-                orderId: order.id,
-                createdAt: currentDate,
-                updatedAt: currentDate,
-                startDate: startDate,
-                endDate: endDate,
-            };
-        });
-
-        // Bulk insert subscriptions into the Subscriptions table
-        await queryInterface.bulkInsert(tables.Subscriptions, subscriptions);
+        // // Map orders to subscriptions
+        // const subscriptions = nonSinglePurchaseOrders.map((order) => {
+        //     const startDate = new Date();
+        //     let endDate;
+        //
+        //     // Calculate endDate based on periodType
+        //     if (order.periodType === periodType.weekly) {
+        //         endDate = new Date(startDate);
+        //         endDate.setDate(startDate.getDate() + 7); // Add 7 days
+        //     } else if (order.periodType === periodType.monthly) {
+        //         endDate = new Date(startDate);
+        //         endDate.setDate(startDate.getDate() + 30); // Add 30 days
+        //     }
+        //
+        //     return {
+        //         orderId: order.id,
+        //         createdAt: currentDate,
+        //         updatedAt: currentDate,
+        //         startDate: startDate,
+        //         endDate: endDate,
+        //     };
+        // });
+        //
+        // // Bulk insert subscriptions into the Subscriptions table
+        // await queryInterface.bulkInsert(tables.Subscriptions, subscriptions);
     },
 
     async down(queryInterface, Sequelize) {
