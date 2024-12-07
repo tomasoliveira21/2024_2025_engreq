@@ -84,9 +84,9 @@ export default function Product({ params }: { params: { id: string } }) {
               </p>
             </div>
 
-            <div className="mt-10 mb-10 w-1/2">
+            <div className="mt-10 mb-10 w-1/3">
               <img
-                src="https://cdn.apexminecrafthosting.com/img/uploads/2021/09/20185354/c503d10178dc6c224b8223417619dfae-1.png"
+                src="https://www.giftbasketsbydesign.ca/cdn/shop/files/FeastiveFeast-Unwrapped_380x@2x.png?v=1730838593"
                 alt="Random"
                 className="rounded-lg shadow-md max-w-full"
               />
