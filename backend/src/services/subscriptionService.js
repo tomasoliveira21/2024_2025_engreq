@@ -6,7 +6,6 @@ const Consumer = require('../domain/models/Consumer');
 const Producer = require('../domain/models/Producer');
 const Subscription = require('../domain/models/Subscription');
 const { Op } = require('sequelize');
-const Product = require("../domain/models/Product");
 
 /**
  * Get Producer order List
@@ -243,28 +242,43 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
 };
 
 /**
- * Create new subscription
- * @param startDate
- * @param endDate
+ * Insert new order subscription
+ * @param orderData
  * @returns {Promise<*>}
  */
-const insertNewSubscription = async (startDate, endDate) => {
+const insertNewOrderSubscription = async (orderData) => {
     // Logger
-    logger.info(`Insert new Subscription`);
+    logger.info(`Insert new order subscription`);
 
     try {
-        // Create a new product
-        const newSubscription = await Subscription.create({
-            startDate: startDate,
-            endDate: endDate,
+        // Create subscription
+        const newSubscription = await Order.create({
+            periodType: orderData.periodType,
+            totalCost: orderData.totalCost,
+            paidCost: 0,
+            status: 'pending',
+            orderDate: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            consumerId: orderData.coproducerId,
+        });
+
+        // Create order details
+        const newOrderDetails = await OrderDetails.create({
+            orderId: newSubscription.id,
+            itemId: orderData.itemId,
+            itemType: orderData.itemType,
+            quantity: orderData.quantity,
+            price: orderData.quantity,
+            producerId: orderData.producerId,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
 
-        logger.log('Subscription created successfully:', newSubscription);
+        logger.log('Order subscription created successfully:', newSubscription);
         return newSubscription;
     } catch (error) {
-        logger.error('Error creating new Subscription:', error);
+        logger.error('Error creating new order subscription:', error);
         throw error;
     }
 };
@@ -276,5 +290,5 @@ module.exports = {
     requestProducerSubscriptionHistory,
     requestCoproducerSubscriptionHistory,
     requestCoproducerSubscriptionAtive,
-    insertNewSubscription
+    insertNewOrderSubscription
 };

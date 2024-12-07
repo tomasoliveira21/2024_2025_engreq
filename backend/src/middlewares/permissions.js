@@ -64,6 +64,7 @@ const checkProducerRole = async (req, res, next) => {
 const checkCoproducerRole = async (req, res, next) => {
     // Variables
     const userRole = req.user?.role ?? 'errorRole';
+    const userEmail = req.user?.email ?? 'errorMail';
 
     // Validate Producer Role
     if (userRole === "errorRole" || userRole !== "Co-Producer") {

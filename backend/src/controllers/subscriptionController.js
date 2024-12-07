@@ -1,7 +1,7 @@
 const logger = require('../utils/logger');
 const { requestProducerOrderHistory, requestCoproducerOrderHistory,
     requestProducerSubscriptionHistory, requestCoproducerSubscriptionHistory,
-    requestCoproducerSubscriptionAtive, insertNewSubscription} = require('../services/subscriptionService');
+    requestCoproducerSubscriptionAtive, insertNewOrderSubscription} = require('../services/subscriptionService');
 const { requestProductDetails, requestBasketDetails } = require('../services/productService');
 
 /**
@@ -175,7 +175,7 @@ const getSubscriptionList = async (req, res, next) => {
  * @param next
  * @returns {Promise<*>}
  */
-const createOrder = async (req, res, next) => {
+const createOrderSubscription = async (req, res, next) => {
 
     // Logger
     logger.info(`Create new Order`);
@@ -183,9 +183,12 @@ const createOrder = async (req, res, next) => {
     try {
         // Arguments
         const validPeriods = ['weekly', 'monthly', 'single purchase'];
-        const { periodType, itemType, itemId, quantity, startDate, endDate} = req.body;
+        const validType = ['product', 'basket'];
+        const { periodType, itemType, itemId, quantity} = req.body;
         const coproducerId = req.user.coproducer[0].id;
-        let newSubscription;
+        let producerId;
+        let price;
+        let totalCost;
 
         // Validate data
         if (!periodType || !itemType || !itemId || !quantity) {
@@ -195,33 +198,56 @@ const createOrder = async (req, res, next) => {
 
         // Validate periodType
         if (!validPeriods.includes(periodType)) {
+            logger.error('Invalid periodType');
             return res.status(400).json({error: `Invalid periodType: '${periodType}'!!}.`});
         }
 
-        // Subscription
-        if (periodType !== 'single purchase')
-        {
-            // Validate startDate and endDate
-            if (!startDate || !endDate || !isValidDate(startDate) || !isValidDate(endDate)) {
-                logger.error('startDate and endDate are invalid! check value!');
-                return res.status(400).json({error: 'startDate and endDate are invalid! check value!'});
-            }
-
-            // Insert new subscription
-            const newSubscription = await insertNewSubscription(startDate, endDate);
+        // Validate periodType
+        if (!validType.includes(itemType)) {
+            logger.error('Invalid itemType');
+            return res.status(400).json({error: `Invalid itemType: '${itemType}'!!}.`});
         }
 
-        // Data
-        const orderData = { periodType, coproducerId };
+        // Get product or basket details
+        if (itemType === 'product') {
+            const productData = await requestProductDetails(itemId);
+            if (productData && productData.length > 0) {
+                const productDetails = productData[0].get({ plain: true });
+                price = productDetails.price;
+                producerId = productDetails.Producer.id;
+            }
+            // Basket details
+        } else if (itemType === 'basket') {
+            const basketData = await requestBasketDetails(itemId);
+            if (basketData && basketData.length > 0) {
+                const basketDetails = basketData[0].get({ plain: true });
+                price = basketDetails.price;
+                producerId = basketDetails.Producer.id;
+            }
+        }
 
-        // Insert Order
-        const newOrder = await insertNewOrder(orderData);
+        if (!price || isNaN(price) || price <= 0) {
+            logger.error('Invalid item price');
+            return res.status(400).json({ error: "Invalid item price" });
+        }
+
+        if (!producerId || isNaN(producerId) || !Number.isInteger(Number(producerId))) {
+            logger.error('Invalid item price');
+            return res.status(400).json({ error: "Producer ID invalid, check the data!" });
+        }
+
+        // Calculate cost
+        totalCost = quantity * price;
+
+        // Insert order
+        const orderData = { periodType, coproducerId, totalCost, itemId, itemType, quantity, price, producerId};
+        const newSubscription = await insertNewOrderSubscription(orderData);
 
         // Return response
         return res.status(201).json({
             success: true,
-            message: 'Order created successfully',
-            product: newOrder
+            message: 'Subscription order created successfully',
+            subscription: newSubscription
         });
     } catch (err) {
         // Error
@@ -237,5 +263,5 @@ module.exports = {
     getOrderHistory,
     getSubscriptionList,
     getSubscriptionHistory,
-    createOrder
+    createOrderSubscription
 };
