@@ -15,15 +15,15 @@ module.exports = {
 
     // Define the list of products to be added
     const products = [
-      { name: 'Banana', description: 'Description for Banana', type: 'type1', price: 10.0, quantity: 50 },
-      { name: 'Apple', description: 'Description for Apple', type: 'type1', price: 15.0, quantity: 30 },
-      { name: 'Tomato', description: 'Description for Tomato', type: 'type2', price: 20.0, quantity: 40 },
-      { name: 'Chicken Breast', description: 'Description for Chicken Breast', type: 'type2', price: 25.0, quantity: 60 },
-      { name: 'Eggs', description: 'Description for Eggs', type: 'type1', price: 12.5, quantity: 70 },
-      { name: 'Milk', description: 'Description for Milk', type: 'type1', price: 12.5, quantity: 70 },
-      { name: 'Butter', description: 'Description for Butter', type: 'type1', price: 12.5, quantity: 70 },
-      { name: 'Cereal', description: 'Description for Cereal', type: 'type1', price: 12.5, quantity: 70 },
-      { name: 'Mushrooms', description: 'Description for Mushrooms', type: 'type1', price: 12.5, quantity: 70 },
+      { name: 'Banana', description: 'Description for Banana', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 10.0, quantity: 50 },
+      { name: 'Apple', description: 'Description for Apple', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 15.0, quantity: 30 },
+      { name: 'Tomato', description: 'Description for Tomato', type: 'type2', photoUrl: 'http://example.com/Fruits.jpg', price: 20.0, quantity: 40 },
+      { name: 'Chicken Breast', description: 'Description for Chicken Breast', type: 'type2', photoUrl: 'http://example.com/Fruits.jpg', price: 25.0, quantity: 60 },
+      { name: 'Eggs', description: 'Description for Eggs', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 12.5, quantity: 70 },
+      { name: 'Milk', description: 'Description for Milk', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 12.5, quantity: 70 },
+      { name: 'Butter', description: 'Description for Butter', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 12.5, quantity: 70 },
+      { name: 'Cereal', description: 'Description for Cereal', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 12.5, quantity: 70 },
+      { name: 'Mushrooms', description: 'Description for Mushrooms', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 12.5, quantity: 70 },
     ];
 
     // Calculate how to distribute the products evenly across producers
@@ -39,6 +39,7 @@ module.exports = {
         name: product.name,
         description: product.description,
         type: product.type,
+        photoUrl: product.photoUrl,
         price: product.price,
         quantity: product.quantity,
         producerId: producer.id, // Foreign key to producer

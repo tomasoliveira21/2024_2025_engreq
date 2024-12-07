@@ -14,10 +14,10 @@ module.exports = {
     );
     // Define the list of baskets to be added
     const baskets = [
-      { name: 'Fruits', description: 'Description for Fruits', photoUrl: 'http://example.com/Fruits.jpg', price: 20.0, weight: 5.0 },
-      { name: 'Meats', description: 'Description for Meats', photoUrl: 'http://example.com/Meats.jpg', price: 25.0, weight: 6.0 },
-      { name: 'Vegetables', description: 'Description for Vegetables', photoUrl: 'http://example.com/Vegetables.jpg', price: 15.0, weight: 4.0 },
-      { name: 'Dairy', description: 'Description for Dairy', photoUrl: 'http://example.com/Dairy.jpg', price: 30.0, weight: 7.0 },
+      { name: 'Fruits', description: 'Description for Fruits', type: 'type1', photoUrl: 'http://example.com/Fruits.jpg', price: 20.0, weight: 5.0 },
+      { name: 'Meats', description: 'Description for Meats', type: 'type1', photoUrl: 'http://example.com/Meats.jpg', price: 25.0, weight: 6.0 },
+      { name: 'Vegetables', description: 'Description for Vegetables', type: 'type1', photoUrl: 'http://example.com/Vegetables.jpg', price: 15.0, weight: 4.0 },
+      { name: 'Dairy', description: 'Description for Dairy', type: 'type1', photoUrl: 'http://example.com/Dairy.jpg', price: 30.0, weight: 7.0 },
       // Add more baskets as necessary
     ];
 
@@ -33,6 +33,7 @@ module.exports = {
       return {
         name: basket.name,
         description: basket.description,
+        type: basket.type,
         photoUrl: basket.photoUrl,
         price: basket.price,
         weight: basket.weight,

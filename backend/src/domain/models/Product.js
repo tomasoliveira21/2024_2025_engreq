@@ -6,6 +6,7 @@ Product.init({
     name: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.STRING },
     type: { type: DataTypes.ENUM('type1', 'type2') },
+    photoUrl: { type: DataTypes.STRING, allowNull: true },
     price: { type: DataTypes.FLOAT, allowNull: false },
     quantity: { type: DataTypes.INTEGER },
 }, { sequelize, modelName: 'Product' });

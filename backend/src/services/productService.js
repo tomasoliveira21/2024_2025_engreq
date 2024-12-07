@@ -132,7 +132,7 @@ const requestBasketsByAmap = async (amapId) => {
     try {
         // Query data
         const basketList = await Basket.findAll({
-            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight'],
+            attributes: ['id', 'name', 'description', 'type', 'photoUrl', 'price', 'weight'],
             include: [
                 {
                     model: Producer,
