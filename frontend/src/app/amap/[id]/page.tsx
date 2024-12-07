@@ -87,7 +87,7 @@ export default function Amap({ params }: { params: { id: string } }) {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-          <h1 className="text-lg font-bold mb-2">Amap Products:</h1>
+          <h1 className="text-lg font-bold">Amap Products:</h1>
           {products.length > 0 ? (
             <Table
               headers={["Product Name", "Product Type", "Product Price per kg"]}
@@ -113,7 +113,7 @@ export default function Amap({ params }: { params: { id: string } }) {
             <div>No products available.</div>
           )}
 
-          <h1 className="text-lg font-bold mb-2">Amap Baskets:</h1>
+          <h1 className="text-lg font-bold">Amap Baskets:</h1>
           {baskets.length > 0 ? (
             <Table
               headers={["Basket Name", "Basket Type", "Basket Price"]}
