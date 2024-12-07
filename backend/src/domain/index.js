@@ -15,6 +15,7 @@ const Stock = require('./models/Stock');
 const User = require('./models/User');
 const Basket = require("./models/Basket");
 const OrderDetails = require('./models/OrderDetails');
+const Subscriptions = require('./models/Subscription');
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
@@ -34,6 +35,15 @@ Payment.belongsTo(User, { foreignKey: 'userId' });
 
 Order.belongsTo(Consumer, { foreignKey: 'consumerId' });
 Order.hasMany(Delivery, { foreignKey: 'orderId' });
+
+Order.hasMany(Payment,{foreignKey:'orderId'});
+Payment.belongsTo(Order, { foreignKey: 'orderId' });
+
+Producer.belongsTo(Location, { foreignKey: 'locationId' }); // Producer has a foreign key referencing Location
+Location.hasOne(Producer, { foreignKey: 'locationId' });    // Location is referenced by one Producer
+
+Order.hasOne(Subscriptions, { foreignKey: 'orderId' });
+Subscriptions.belongsTo(Order, { foreignKey: 'orderId' });
 
 Location.hasOne(Delivery, { foreignKey: 'locationId' });
 
@@ -64,7 +74,6 @@ OrderDetails.belongsTo(Basket, { foreignKey: 'itemId', constraints: false, scope
 
 Producer.hasMany(OrderDetails, { foreignKey: 'producerId' });
 OrderDetails.belongsTo(Producer, { foreignKey: 'producerId' });
-
 
 
 

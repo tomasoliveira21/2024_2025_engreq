@@ -2,6 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 const { Sequelize } = require('sequelize');
+const {tables} = require("../src/utils/Constants");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -22,11 +23,11 @@ module.exports = {
     }));
 
     // Bulk insert into Producers table
-    await queryInterface.bulkInsert('Producers', producers);
+    await queryInterface.bulkInsert(tables.Producers, producers);
   },
 
   down: async (queryInterface, Sequelize) => {
     // Delete all records from the Producers table
-    await queryInterface.bulkDelete('Producers', null, {});
+    await queryInterface.bulkDelete(tables.Producers, null, {});
   },
 };

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Order.init({
-    periodType: { type: DataTypes.ENUM('weekly', 'monthly'), allowNull: false },
+    periodType: { type: DataTypes.ENUM('weekly', 'monthly', 'single purchase'), allowNull: false },
     totalCost: { type: DataTypes.FLOAT, allowNull: false },
     paidCost: { type: DataTypes.FLOAT, allowNull: false },
     orderDate: { type: DataTypes.DATE, allowNull: false },

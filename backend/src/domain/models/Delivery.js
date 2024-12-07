@@ -5,6 +5,7 @@ class Delivery extends Model {}
 Delivery.init({
     deliveryDate: { type: DataTypes.DATE, allowNull: false },
     cost: { type: DataTypes.FLOAT, allowNull: false },
+    orderId: { type: DataTypes.INTEGER, allowNull: false },
 }, { sequelize, modelName: 'Delivery' });
 
 module.exports = Delivery;

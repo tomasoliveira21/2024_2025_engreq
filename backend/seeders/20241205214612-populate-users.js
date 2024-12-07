@@ -1,5 +1,6 @@
 'use strict';
 
+const {tables} = require("../src/utils/Constants");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -9,7 +10,23 @@ module.exports = {
         { type: Sequelize.QueryTypes.SELECT }
     );
 
-    await queryInterface.bulkInsert('Users', [
+    await queryInterface.bulkInsert(tables.Users, [
+      {
+        name: 'Tomas Oliveira',
+        email: 'tomasoliveira1018@gmail.com',
+        nif: 123467789,
+        role: 'Admin',
+        authuserid: 'a1111111-1111-1111-1111-111543111111',
+        AMAPId: amaps[0]?.id || null
+      },
+      {
+        name: 'Bruno Santos',
+        email: '1090470@isep.ipp.pt',
+        nif: 859467789,
+        role: 'Admin',
+        authuserid: 'a1163711-1111-1111-1111-111543111111',
+        AMAPId: amaps[0]?.id || null
+      },
       {
         name: 'John Doe',
         email: 'john.doe@example.com',

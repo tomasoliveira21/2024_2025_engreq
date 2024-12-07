@@ -1,7 +1,8 @@
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
-const {QueryTypes} = require("sequelize"); // Assuming models are in the models folder
+const {QueryTypes} = require("sequelize");
+const {tables} = require("../src/utils/Constants"); // Assuming models are in the models folder
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -44,11 +45,11 @@ module.exports = {
     });
 
     // Bulk insert the baskets into the Baskets table
-    await queryInterface.bulkInsert('Baskets', basketEntries);
+    await queryInterface.bulkInsert(tables.Baskets, basketEntries);
   },
 
   down: async (queryInterface, Sequelize) => {
     // Delete all records from the Baskets table
-    await queryInterface.bulkDelete('Baskets', null, {});
+    await queryInterface.bulkDelete(tables.Baskets, null, {});
   },
 };
