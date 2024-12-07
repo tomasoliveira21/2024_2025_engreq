@@ -1,9 +1,10 @@
 'use strict';
 
+const {tables} = require("../src/utils/Constants");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('AMAPs', [
+    await queryInterface.bulkInsert(tables.AMAPs, [
       {
         name: 'Porto AMAP',
         description: 'A community-focused AMAP offering organic produce.',
@@ -29,7 +30,7 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('AMAPs', null, {});
+    await queryInterface.bulkDelete(tables.AMAPs, null, {});
   },
 };
 

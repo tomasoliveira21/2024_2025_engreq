@@ -15,6 +15,7 @@ const Stock = require('./models/Stock');
 const User = require('./models/User');
 const Basket = require("./models/Basket");
 const OrderDetails = require('./models/OrderDetails');
+const Subscriptions = require('./models/Subscription');
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });

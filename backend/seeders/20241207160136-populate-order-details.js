@@ -1,6 +1,7 @@
 'use strict';
 
 const {QueryTypes} = require("sequelize");
+const {tables} = require("../src/utils/Constants");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
@@ -80,7 +81,7 @@ module.exports = {
 
 // Bulk insert OrderDetails into the OrderDetails table
     if (orderDetails.length > 0) {
-      await queryInterface.bulkInsert('OrderDetails', orderDetails);
+      await queryInterface.bulkInsert(tables.OrderDetails, orderDetails);
     } else {
       console.log('No orders found for creating order details.');
     }

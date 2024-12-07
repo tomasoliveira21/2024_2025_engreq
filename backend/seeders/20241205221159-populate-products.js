@@ -3,6 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 
 const {QueryTypes} = require("sequelize");
+const {tables} = require("../src/utils/Constants");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Fetch all Producers from the Producers table
@@ -49,11 +50,11 @@ module.exports = {
     });
 
     // Bulk insert the products into the Products table
-    await queryInterface.bulkInsert('Products', productEntries);
+    await queryInterface.bulkInsert(tables.Products, productEntries);
   },
 
   down: async (queryInterface, Sequelize) => {
     // Delete all records from the Products table
-    await queryInterface.bulkDelete('Products', null, {});
+    await queryInterface.bulkDelete(tables.Products, null, {});
   },
 };

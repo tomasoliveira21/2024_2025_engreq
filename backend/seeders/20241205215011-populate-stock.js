@@ -1,9 +1,10 @@
 'use strict';
 
+const {tables} = require("../src/utils/Constants");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('Stocks', [
+    await queryInterface.bulkInsert(tables.Stocks, [
       {
         id: 1, // Optional: Only if your Stock table uses an `id` primary key
         createdAt: new Date(),

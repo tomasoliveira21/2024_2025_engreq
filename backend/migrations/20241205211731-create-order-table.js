@@ -11,7 +11,7 @@ module.exports = {
         allowNull: false,
       },
       periodType: {
-        type: Sequelize.ENUM('weekly', 'monthly'),
+        type: Sequelize.ENUM('weekly', 'monthly', 'single purchase'),
         allowNull: false,
       },
       totalCost: {

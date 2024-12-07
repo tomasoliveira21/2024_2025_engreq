@@ -1,5 +1,6 @@
 'use strict';
 
+const {tables} = require("../src/utils/Constants");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -17,11 +18,11 @@ module.exports = {
     }));
 
     // Bulk insert into the Consumers table
-    await queryInterface.bulkInsert('Consumers', consumers);
+    await queryInterface.bulkInsert(tables.Consumers, consumers);
   },
 
   down: async (queryInterface, Sequelize) => {
     // Delete all records from the Consumers table
-    await queryInterface.bulkDelete('Consumers', null, {});
+    await queryInterface.bulkDelete(tables.Consumers, null, {});
   },
 };
