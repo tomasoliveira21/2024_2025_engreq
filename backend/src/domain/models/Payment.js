@@ -9,6 +9,7 @@ Payment.init({
     status: { type: DataTypes.ENUM('pending', 'completed', 'failed') },
     timestamp: { type: DataTypes.DATE, allowNull: false },
     paymentProvider: { type: DataTypes.STRING },
+    orderId: { type: DataTypes.INTEGER, allowNull: false },
 }, { sequelize, modelName: 'Payment' });
 
 module.exports = Payment;
