@@ -90,7 +90,7 @@ export default function Home() {
         <div className="col-span-1 ml-10">
           <RefreshIcon
             onClick={handleRefresh}
-            className="h-8 w-8 cursor-pointer text-socialNet mr-5 mt-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
+            className="h-8 w-8 cursor-pointer mr-5 mt-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
           />
         </div>
       </main>
