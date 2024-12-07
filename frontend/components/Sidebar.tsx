@@ -73,7 +73,7 @@ function Sidebar() {
       <SidebarRow Icon={HomeIcon} title="AMAP's" onClick={goToHome} />
       <SidebarRow Icon={ShoppingCartIcon} title="Cart" onClick={goToCart} />
       <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
-      <SidebarRow Icon={CreditCardIcon} title="Subsciptions" onClick={goToSubscriptions}/>
+      <SidebarRow Icon={CreditCardIcon} title="Subscriptions" onClick={goToSubscriptions}/>
       {/* SidebarRow only visible to Producers and Admins */}
       {
         (userRole === "Producer" || userRole === "Admin") && (

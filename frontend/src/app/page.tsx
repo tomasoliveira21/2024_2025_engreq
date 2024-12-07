@@ -8,6 +8,9 @@ import Card from "../../components/Cart";
 import { fetchAmaps } from "@/api/fetchAmaps";
 import { Amap } from "@/types/amap";
 import { useRouter } from "next/navigation";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import RefreshIcon from "@heroicons/react/outline/RefreshIcon";
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
@@ -50,14 +53,31 @@ export default function Home() {
   if (isLoading) {
     return <div>Loading data...</div>;
   }
+  
+  const handleRefresh = async () => {
+    const refreshToast = toast.loading("Refreshing...");
+
+    const fetchedAmaps = await fetchAmaps(session.access_token);
+    setAmaps(fetchedAmaps || []);
+
+    toast.success("Feed updated!", {
+      id: refreshToast,
+    });
+  };
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
+      <Toaster />
       <main className="grid grid-cols-12 gap-8">
         <div className="col-span-3">
           <Sidebar />
         </div>
         <div className="col-span-8 grid grid-cols-3 gap-8 mt-8">
+          <RefreshIcon
+            onClick={handleRefresh}
+            className="h-8 w-8 cursor-pointer text-socialNet mr-5 mt-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
+          />
+
           {amaps.length > 0 ? (
             amaps.map((amap) => (
               <Card
