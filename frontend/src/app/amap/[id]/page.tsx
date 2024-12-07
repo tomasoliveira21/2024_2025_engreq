@@ -91,7 +91,7 @@ export default function Amap({ params }: { params: { id: string } }) {
             <h1 className="text-lg font-bold">Amap Products:</h1>
             <button
               className="px-4 py-2 text-white bg-blue-900 rounded"
-              onClick={() => router.push(``)}
+              onClick={() => router.push('/createProduct')}
             >
               Create Product
             </button>
@@ -125,7 +125,7 @@ export default function Amap({ params }: { params: { id: string } }) {
             <h1 className="text-lg font-bold">Amap Baskets:</h1>
             <button
               className="px-4 py-2 text-white bg-blue-900 rounded"
-              onClick={() => router.push(``)}
+              onClick={() => router.push('/createBasket')}
             >
               Create Basket
             </button>
