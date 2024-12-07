@@ -1,4 +1,6 @@
-export const fetchProduct = async (sessionToken: string, productId: string): Promise<[]> => {
+import { ProductDetails } from "@/types/productDetails";
+
+export const fetchProduct = async (sessionToken: string, productId: string): Promise<ProductDetails[]> => {
     const apiUrl = 'http://127.0.0.1:3001/';
     try {
       const response = await fetch(`${apiUrl}products/${productId}`, {

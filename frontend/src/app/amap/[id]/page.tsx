@@ -69,7 +69,7 @@ export default function Amap({ params }: { params: { id: string } }) {
           <h1 className="text-lg font-bold mb-2">Amap Products:</h1>
           {products.length > 0 ? (
             <Table
-              headers={["Product Name", "Product Type", "Product Price"]}
+              headers={["Product Name", "Product Type", "Product Price per kg"]}
               data={products}
               renderRow={(product) => (
                 <tr key={product.id}>
@@ -83,7 +83,7 @@ export default function Amap({ params }: { params: { id: string } }) {
                     {product.type}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {product.price}
+                    {product.price} €
                   </td>
                 </tr>
               )}
