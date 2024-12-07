@@ -14,6 +14,7 @@ const Product = require('./models/Product');
 const Stock = require('./models/Stock');
 const User = require('./models/User');
 const Basket = require("./models/Basket");
+const OrderDetails = require('./models/OrderDetails');
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
@@ -50,3 +51,20 @@ Basket.belongsTo(Producer, {foreignKey: 'ProducerId' });
 Producer.hasMany(Basket, { as: 'baskets' });
 Basket.belongsToMany(Product, { through: 'BasketProducts' });
 Product.belongsToMany(Basket, { through: 'BasketProducts' });
+
+// Order - Producer - Product associations
+Order.hasMany(OrderDetails, { foreignKey: 'orderId' });
+OrderDetails.belongsTo(Order, { foreignKey: 'orderId' });
+
+Product.hasMany(OrderDetails, { foreignKey: 'itemId', constraints:false });
+OrderDetails.belongsTo(Product, { foreignKey: 'itemId', constraints:false, scope: {itemType:'product' }});
+
+Basket.hasMany(OrderDetails, { foreignKey: 'itemId', constraints: false });
+OrderDetails.belongsTo(Basket, { foreignKey: 'itemId', constraints: false, scope: { itemType: 'basket' } });
+
+Producer.hasMany(OrderDetails, { foreignKey: 'producerId' });
+OrderDetails.belongsTo(Producer, { foreignKey: 'producerId' });
+
+
+
+
