@@ -71,7 +71,6 @@ export default function Login() {
             name: name,
             role: role,
             nif: nif,
-            createdAt: user?.created_at,
           },
         ],
         { onConflict: 'email' }
