@@ -69,34 +69,37 @@ export default function Product({ params }: { params: { id: string } }) {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-          <h1 className="text-lg font-bold mb-2">Product Details:</h1>
-          <div className="bg-blue-900 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold">{product.name}</h2>
-            <p>{product.description}</p>
-            <p>
-              <strong>Price:</strong> {product.price} €
-            </p>
-            <p>
-              <strong>Quantity Available to Produce:</strong> {product.quantity}
-            </p>
-          </div>
+          <div className="flex flex-col w-full">
+            <h1 className="text-lg font-bold mb-2">Product Details:</h1>
+            <div className="bg-blue-900 p-6 rounded-lg shadow-md w-1/2 mb-4">
+              <h2 className="text-xl font-semibold">{product.name}</h2>
+              <p>{product.description}</p>
+              <p>
+                <strong>Price:</strong> {product.price} €
+              </p>
+              <p>
+                <strong>Quantity Available to Produce:</strong>{" "}
+                {product.quantity}
+              </p>
+            </div>
 
-          <div className="flex justify-center mt-4">
-            <img
-              src="https://cdn.apexminecrafthosting.com/img/uploads/2021/09/20185354/c503d10178dc6c224b8223417619dfae-1.png"
-              alt="Random"
-              className="rounded-lg shadow-md max-w-full max-h-[350px]"
+            <div className="mt-10 mb-10 w-1/2">
+              <img
+                src="https://cdn.apexminecrafthosting.com/img/uploads/2021/09/20185354/c503d10178dc6c224b8223417619dfae-1.png"
+                alt="Random"
+                className="rounded-lg shadow-md max-w-full"
               />
-          </div>
+            </div>
 
-          <h1 className="text-lg font-bold mb-2">Producer Details:</h1>
-          <div className="bg-blue-900 p-6 rounded-lg shadow-md">
-            <p>
-              <strong>Business Name:</strong> {product.Producer.businessName}
-            </p>
-            <p>
-              <strong>Contact Email:</strong> {product.Producer.User.email}
-            </p>
+            <h1 className="text-lg font-bold mb-2 mt-4">Producer Details:</h1>
+            <div className="bg-blue-900 p-6 rounded-lg shadow-md w-1/2">
+              <p>
+                <strong>Business Name:</strong> {product.Producer.businessName}
+              </p>
+              <p>
+                <strong>Contact Email:</strong> {product.Producer.User.email}
+              </p>
+            </div>
           </div>
         </div>
       </main>
