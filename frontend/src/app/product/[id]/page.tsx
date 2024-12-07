@@ -74,10 +74,10 @@ export default function Product({ params }: { params: { id: string } }) {
             <h2 className="text-xl font-semibold">{product.name}</h2>
             <p>{product.description}</p>
             <p>
-              <strong>Price:</strong> ${product.price}
+              <strong>Price:</strong> {product.price} €
             </p>
             <p>
-              <strong>Quantity Available:</strong> {product.quantity}
+              <strong>Quantity Available to Produce:</strong> {product.quantity}
             </p>
           </div>
 
