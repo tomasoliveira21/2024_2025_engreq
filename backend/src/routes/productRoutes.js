@@ -89,6 +89,10 @@ router.get('/:id', authentication, getProductDetails);
  *                 type: integer
  *                 example: 1
  *                 description: "The ID of the producer (linked to a producer)"
+ *               photoUrl:
+ *                 type: string
+ *                 example: "/images/products/apple.jpg"
+ *                 description: "The URL of the product's photo"
  *     responses:
  *       201:
  *         description: "Product created successfully"
@@ -97,6 +101,7 @@ router.get('/:id', authentication, getProductDetails);
  *       500:
  *         description: "Internal server error"
  */
+
 router.post('/', authentication, checkProducerRole, createProduct);
 
 /**
@@ -175,6 +180,10 @@ router.get('/basket/:id', authentication, getBasketDetails);
  *                   format: float
  *                   description: The weight of the basket
  *                   example: 123
+ *                 photoUrl:
+ *                   type: string
+ *                   description: The path or URL of the basket's photo
+ *                   example: "/images/baskets/fruit-basket.jpg"
  *                 products:
  *                   type: array
  *                   items:
@@ -211,6 +220,10 @@ router.get('/basket/:id', authentication, getBasketDetails);
  *                     format: float
  *                     description: The weight of the basket
  *                     example: 123
+ *                   photoUrl:
+ *                     type: string
+ *                     description: The path or URL of the basket's photo
+ *                     example: "/images/baskets/fruit-basket.jpg"
  *                   products:
  *                     type: array
  *                     items:
@@ -221,7 +234,8 @@ router.get('/basket/:id', authentication, getBasketDetails);
  *           description: Invalid input data
  *         '500':
  *           description: Internal server error
-*/
+ */
+
 router.post('/basket', authentication, checkProducerRole, createBasket);
 
 module.exports = router;

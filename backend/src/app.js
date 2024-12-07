@@ -18,7 +18,7 @@ const path = require('path');
 // Routes
 const productRoutes = require('./routes/productRoutes');
 const amapRoutes = require('./routes/amapRoutes');
-const orderRoutes = require('./routes/orderRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
 // APP
@@ -70,8 +70,8 @@ app.use('/products', productRoutes);
 // AMAP
 app.use('/amap', amapRoutes);
 
-// Order
-app.use('/order', orderRoutes);
+// Subscription
+app.use('/subscription', subscriptionRoutes);
 
 // Payment
 app.use('/payment', paymentRoutes);

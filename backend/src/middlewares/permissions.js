@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { getProducerData, getUserData} = require("../services/userService");
+const { getProducerData, getCoproducerData} = require("../services/userService");
 
 // Middleware Permissions
 
@@ -54,7 +54,37 @@ const checkProducerRole = async (req, res, next) => {
     next();
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const checkCoproducerRole = async (req, res, next) => {
+    // Variables
+    const userRole = req.user?.role ?? 'errorRole';
+
+    // Validate Producer Role
+    if (userRole === "errorRole" || userRole !== "Co-Producer") {
+        logger.error(`Forbidden: User do not have access to Co-producer Endpoints (${userRole})`);
+        return res.status(403).json({ message: 'Forbidden: User do not have access to Co-producer Endpoints.' });
+    }
+
+    // Request Producer Information
+    const coproducerData = await getCoproducerData(userEmail);
+
+    // Set producer session data
+    req.user.coproducer = coproducerData.map((coproducer) => {
+        const {id, businessName, description} = coproducer.dataValues;
+        return {id, businessName, description};
+    });
+
+    next();
+};
+
 module.exports = {
     checkAMAPAccess,
-    checkProducerRole
+    checkProducerRole,
+    checkCoproducerRole
 };

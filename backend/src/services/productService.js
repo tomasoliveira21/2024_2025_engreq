@@ -111,7 +111,8 @@ const insertNewProduct = async (productData) => {
             quantity: productData.quantity,
             createdAt: new Date(),
             updatedAt: new Date(),
-            producerId: productData.producerId
+            producerId: productData.producerId,
+            photoUrl: productData.photoUrl || 'default-photo-url.jpg'
         });
 
         logger.log('Product created successfully:', newProduct);
@@ -232,6 +233,7 @@ const insertNewBasket = async (basketData) => {
             createdAt: new Date(),
             updatedAt: new Date(),
             ProducerId: basketData.producerId,
+            photoUrl: basketData.photoUrl || 'default-photo-url.jpg'
         });
 
         logger.info('Basket created:', newBasket);
