@@ -87,7 +87,15 @@ export default function Amap({ params }: { params: { id: string } }) {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-          <h1 className="text-lg font-bold">Amap Products:</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-lg font-bold">Amap Products:</h1>
+            <button
+              className="px-4 py-2 text-white bg-blue-900 rounded"
+              onClick={() => router.push(``)}
+            >
+              Create Product
+            </button>
+          </div>
           {products.length > 0 ? (
             <Table
               headers={["Product Name", "Product Type", "Product Price per kg"]}
@@ -113,7 +121,15 @@ export default function Amap({ params }: { params: { id: string } }) {
             <div>No products available.</div>
           )}
 
-          <h1 className="text-lg font-bold">Amap Baskets:</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-lg font-bold">Amap Baskets:</h1>
+            <button
+              className="px-4 py-2 text-white bg-blue-900 rounded"
+              onClick={() => router.push(``)}
+            >
+              Create Basket
+            </button>
+          </div>
           {baskets.length > 0 ? (
             <Table
               headers={["Basket Name", "Basket Type", "Basket Price"]}
