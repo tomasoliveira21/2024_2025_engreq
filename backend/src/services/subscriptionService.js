@@ -6,6 +6,7 @@ const Consumer = require('../domain/models/Consumer');
 const Producer = require('../domain/models/Producer');
 const Subscription = require('../domain/models/Subscription');
 const { Op } = require('sequelize');
+const Product = require("../domain/models/Product");
 
 /**
  * Get Producer order List
@@ -207,10 +208,10 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
                 status: "pending"
             },
             include: [
-                /*{
+                {
                     model: Subscription,
                     required: false,
-                },*/
+                },
                 {
                     model: Consumer,
                     required: true,
@@ -241,10 +242,39 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
     }
 };
 
+/**
+ * Create new subscription
+ * @param startDate
+ * @param endDate
+ * @returns {Promise<*>}
+ */
+const insertNewSubscription = async (startDate, endDate) => {
+    // Logger
+    logger.info(`Insert new Subscription`);
+
+    try {
+        // Create a new product
+        const newSubscription = await Subscription.create({
+            startDate: startDate,
+            endDate: endDate,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        logger.log('Subscription created successfully:', newSubscription);
+        return newSubscription;
+    } catch (error) {
+        logger.error('Error creating new Subscription:', error);
+        throw error;
+    }
+};
+
+
 module.exports = {
     requestProducerOrderHistory,
     requestCoproducerOrderHistory,
     requestProducerSubscriptionHistory,
     requestCoproducerSubscriptionHistory,
-    requestCoproducerSubscriptionAtive
+    requestCoproducerSubscriptionAtive,
+    insertNewSubscription
 };

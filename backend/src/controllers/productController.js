@@ -63,7 +63,7 @@ const createProduct = async (req, res, next) => {
 
     try {
         // Arguments
-        const { name, description, type, price, quantity } = req.body;
+        const { name, description, type, price, quantity, photoUrl } = req.body;
         const producerId = req.user.producer[0].id;
 
         // Validate data
@@ -75,7 +75,7 @@ const createProduct = async (req, res, next) => {
         }
 
         // Data
-        const productData = { name, description, type, price, quantity, producerId };
+        const productData = { name, description, type, price, quantity, producerId, photoUrl };
 
         // Insert product
         const newProduct = await insertNewProduct(productData);
@@ -167,7 +167,7 @@ const createBasket = async (req, res, next) => {
 
     try {
         // Arguments
-        const { name, description, price, weight, products } = req.body;
+        const { name, description, price, weight, products, photoUrl } = req.body;
         const producerId = req.user.producer[0].id;
 
         // Validate data
@@ -179,7 +179,7 @@ const createBasket = async (req, res, next) => {
         }
 
         // Data
-        const basketData = { name, description, price, weight, producerId, products };
+        const basketData = { name, description, price, weight, producerId, products, photoUrl };
 
         // Insert Basket
         const newBasket = await insertNewBasket(basketData);

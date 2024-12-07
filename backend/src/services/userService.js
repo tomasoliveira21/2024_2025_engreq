@@ -1,6 +1,7 @@
 const logger = require('../utils/logger');
 const User = require('../domain/models/User');
 const Producer = require("../domain/models/Producer");
+const Consumer = require("../domain/models/Consumer");
 
 /**
  * Get user data
@@ -62,7 +63,41 @@ const getProducerData = async (userEmail) => {
     }
 };
 
+/**
+ *
+ * @param userEmail
+ * @returns {Promise<*|*[]>}
+ */
+const getCoproducerData = async (userEmail) => {
+    logger.info(`Fetching coproducer data: `, userEmail);
+
+    try {
+        // Query data
+        const coproducerData = await Consumer.findAll({
+            attributes: ['id'],
+            include: [
+                {
+                    model: User,
+                    attributes: [],
+                    where: {
+                        email: userEmail,
+                    },
+                },
+            ],
+        });
+
+        // Logger
+        logger.info(`Retrieved coproducer data: ${JSON.stringify(coproducerData)}`);
+
+        return coproducerData;
+    } catch (error) {
+        logger.error('Error fetching coproducer data:', error.message);
+        return [];
+    }
+};
+
 module.exports = {
     getUserData,
-    getProducerData
+    getProducerData,
+    getCoproducerData
 };
