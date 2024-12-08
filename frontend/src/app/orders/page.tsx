@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../components/Sidebar";
 import { fetchOrders } from "@/api/fetchOrders";
 import { Order } from "@/types/orders";
+import { fetchKPIs } from "@/api/fetchKPIs";
 
 export default function Subscription() {
   const [session, setSession] = useState<Session | null>(null);
@@ -38,6 +39,24 @@ export default function Subscription() {
     };
 
     getProducts();
+  }, [session]);
+
+  useEffect(() => {
+    const getKPIs = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedKPIs = await fetchKPIs(session.access_token);
+          console.log('fetchedKPIs: ', fetchedKPIs);
+        } catch (error) {
+          console.error("Error fetching KPIs:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    getKPIs();
   }, [session]);
 
   if (!session) {
