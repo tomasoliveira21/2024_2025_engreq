@@ -241,10 +241,10 @@ const insertNewBasket = async (basketData) => {
         // Prepare BasketProduct data
         const basketProducts = [];
         if (basketData.products && basketData.products.length > 0) {
-            basketData.products.forEach(productId => {
+            basketData.products.forEach(product => {
                 basketProducts.push({
                     BasketId: newBasket.id,
-                    ProductId: productId,
+                    ProductId: product.id,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 });

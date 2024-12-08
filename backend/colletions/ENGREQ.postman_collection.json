@@ -104,7 +104,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyZDY2ZjBlOC02NTllLTRiY2EtOGQwZi1lZDViMDJjOTJmNDkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzMzNjA5MDE1LCJpYXQiOjE3MzM2MDU0MTUsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiIxMDkwNDcwQGlzZXAuaXBwLnB0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiQnJ1bm8gU2FudG9zIiwibmlmIjo1MDE1MDE1MDEsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicm9sZSI6IkNvLVByb2R1Y2VyIiwic3ViIjoiMmQ2NmYwZTgtNjU5ZS00YmNhLThkMGYtZWQ1YjAyYzkyZjQ5In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzM1ODg0OTZ9XSwic2Vzc2lvbl9pZCI6IjRiMzI5ODlkLWQwNDAtNGQ1MC04Y2FmLTJmNjNmNmRhNWFmYiIsImlzX2Fub255bW91cyI6ZmFsc2V9.gaKkiQkppA6gb02X6qX8IokSkaNZ66I0-quWIySDEgQ",
+							"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyZDY2ZjBlOC02NTllLTRiY2EtOGQwZi1lZDViMDJjOTJmNDkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzMzNjIwNjUxLCJpYXQiOjE3MzM2MTcwNTEsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiIxMDkwNDcwQGlzZXAuaXBwLnB0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiQnJ1bm8gU2FudG9zIiwibmlmIjo1MDE1MDE1MDEsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicm9sZSI6IkNvLVByb2R1Y2VyIiwic3ViIjoiMmQ2NmYwZTgtNjU5ZS00YmNhLThkMGYtZWQ1YjAyYzkyZjQ5In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzM1ODg0OTZ9XSwic2Vzc2lvbl9pZCI6IjRiMzI5ODlkLWQwNDAtNGQ1MC04Y2FmLTJmNjNmNmRhNWFmYiIsImlzX2Fub255bW91cyI6ZmFsc2V9.Edh46JFfhSDOIXNSH9th8Cfod_FaqbeWKTwUeMFRyrI",
 							"type": "string"
 						}
 					]
@@ -113,7 +113,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Fruit basket\",\r\n    \"description\": \"Fresh basket fruit\",\r\n    \"price\": 15,\r\n    \"weight\": 123,\r\n    \"products\": [8,9],\r\n    \"photoUrl\": \"test.jpg\"\r\n}",
+					"raw": "{\r\n    \"name\": \"Fruit basket\",\r\n    \"description\": \"Fresh basket fruit\",\r\n    \"price\": 15,\r\n    \"weight\": 123,\r\n    \"products\": [\r\n        { \"id\": 10 },\r\n        { \"id\": 11 }\r\n    ],\r\n    \"photoUrl\": \"test.jpg\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
