@@ -8,7 +8,6 @@ import { supabase } from "@/lib/supabase";
 import { fetchProduct } from "@/api/fetchProduct";
 import { fetchBasket } from "@/api/fetchBasket";
 import { BasketDetails } from "@/types/basketDetails";
-import { createSubscription } from "@/api/createSubscription";
 
 export default function Product({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -17,7 +16,6 @@ export default function Product({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [basket, setBaskets] = useState<BasketDetails | null>(null);
   const [isSubscribing, setIsSubscribing] = useState(false); // State for tracking subscription status
-  const [subscriptionSuccess, setSubscriptionSuccess] = useState<boolean | null>(null);
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
@@ -73,22 +71,7 @@ export default function Product({ params }: { params: { id: string } }) {
 
   const handleSubscription = async () => {
     setIsSubscribing(true);
-    // Hardcoded subscription data for now
-    const subscriptionData = {
-      periodType: "monthly",
-      itemType: "basket",
-      itemId: basket.id,
-      quantity: 1,
-    };
-
-    try {
-      const success = await createSubscription(session.access_token, subscriptionData);
-      setSubscriptionSuccess(success);
-    } catch (error) {
-      setSubscriptionSuccess(false);
-    } finally {
-      setIsSubscribing(false);
-    }
+    router.push(`/cart/${basket.id}?itemType=basket`);
   };
 
 
@@ -126,7 +109,6 @@ export default function Product({ params }: { params: { id: string } }) {
                   <p>No image available for this basket.</p>
                 )}
               </div>
-              {/* Review isSubscribing logic (if the co-producer can have only one active subscription for the basket) */}
               <div className="ml-24">
                 {userRole === "Co-Producer" && (
                   <button
@@ -136,11 +118,6 @@ export default function Product({ params }: { params: { id: string } }) {
                   >
                     {isSubscribing ? "Subscribing..." : "Subscribe to Basket"}
                   </button>
-                )}
-                {subscriptionSuccess !== null && (
-                <div className={`mt-2 ${subscriptionSuccess ? "text-green-500" : "text-red-500"}`}>
-                  {subscriptionSuccess ? "Subscription created successfully!" : "Failed to create subscription."}
-                </div>
                 )}
               </div>
             </div>
