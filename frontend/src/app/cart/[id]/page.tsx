@@ -71,22 +71,22 @@ export default function Cart({ params }: { params: { id: number } }) {
   }, [session, id, itemType]);
 
   return (
-    <div className="lg:max-w-4xl mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">Cart</h1>
+    <div className="lg:max-w-4xl mx-auto mt-10 px-4 sm:px-6">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4">Cart</h1>
       {id ? (
         <form onSubmit={handleSubmit} className="bg-blue-900 p-6 rounded-lg shadow-md text-white">
           <p>
             <strong>{itemType === "product" ? "Product Name:" : "Basket Name:"}</strong> {itemName}
           </p>
           <div className="mt-4">
-            <label htmlFor="subscriptionType" className="block mb-2">
+            <label htmlFor="subscriptionType" className="block mb-2 text-sm sm:text-base">
               Subscription Type:
             </label>
             <select
               id="subscriptionType"
               value={periodType}
               onChange={(e) => setPeriodType(e.target.value)}
-              className="text-black p-2 rounded-lg w-full"
+              className="text-black p-2 rounded-lg w-full text-sm sm:text-base"
             >
               <option value="monthly">Monthly</option>
               <option value="weekly">Weekly</option>
@@ -94,7 +94,7 @@ export default function Cart({ params }: { params: { id: number } }) {
             </select>
           </div>
           <div className="mt-4">
-            <label htmlFor="quantity" className="block mb-2">
+            <label htmlFor="quantity" className="block mb-2 text-sm sm:text-base">
               Quantity:
             </label>
             <input
@@ -103,13 +103,13 @@ export default function Cart({ params }: { params: { id: number } }) {
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value))}
               min="1"
-              className="text-black p-2 rounded-lg w-full"
+              className="text-black p-2 rounded-lg w-full text-sm sm:text-base"
               aria-invalid={quantity < 1 ? "true" : "false"}
             />
           </div>
           <button
             type="submit"
-            className="mt-6 bg-green-500 text-white py-2 px-4 rounded-lg w-full"
+            className="mt-6 bg-green-500 text-white py-2 px-4 rounded-lg w-full text-sm sm:text-base"
           >
             Add Subscription
           </button>
