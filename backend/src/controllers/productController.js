@@ -80,12 +80,6 @@ const createProduct = async (req, res, next) => {
         // Insert product
         const newProduct = await insertNewProduct(productData);
 
-        // Insert new approval request
-        // TODO
-
-        // New notifications
-        // TODO
-
         // Return response
         return res.status(201).json({
             success: true,
@@ -187,7 +181,7 @@ const createBasket = async (req, res, next) => {
         // Return response
         return res.status(201).json({
             success: true,
-            message: 'Product created successfully',
+            message: 'Basket created successfully',
             basket: newBasket
         });
     } catch (err) {
