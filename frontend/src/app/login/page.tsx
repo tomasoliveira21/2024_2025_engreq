@@ -123,6 +123,7 @@ export default function Login() {
             value={data?.email}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Email address"
           />
         </div>
         {!resetPassword && (
@@ -134,6 +135,7 @@ export default function Login() {
               value={data?.password}
               onChange={handleChange}
               className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+              aria-label="Password"
             />
           </div>
         )}
@@ -143,6 +145,7 @@ export default function Login() {
             <button
               onClick={sendResetPassword}
               className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+              aria-label="Reset your password"
             >
               Reset Password
             </button>
@@ -151,6 +154,7 @@ export default function Login() {
               onClick={login}
               disabled={isLoginDisabled}
               className={`w-full ${isLoginDisabled ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'} text-white py-2 rounded hover:bg-blue-600 transition duration-200`}
+              aria-label="Login to your account"
             >
               Login
             </button>
@@ -160,6 +164,7 @@ export default function Login() {
           <button
             onClick={() => setResetPassword(!resetPassword)}
             className="text-blue-400 hover:underline"
+            aria-label={resetPassword ? "Back to login form" : "Forgot your password? Click to reset"}
           >
             {resetPassword ? "Back to Login" : "Forgot Password?"}
           </button>

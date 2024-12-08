@@ -120,7 +120,9 @@ export default function Product({ params }: { params: { id: string } }) {
                     disabled={isSubscribing}
                     className="bg-blue-500 text-white py-2 px-4 rounded-lg"
                   >
-                    {isSubscribing ? "Subscribing..." : "Subscribe to Product"}
+                    <div aria-live="assertive">
+                      {isSubscribing ? "Subscribing..." : "Subscribe to Product"}
+                    </div>
                   </button>
                 )}
               </div>
@@ -155,6 +157,7 @@ export default function Product({ params }: { params: { id: string } }) {
                             src="https://cdn3.iconfinder.com/data/icons/approve-3/100/check_mark_approve_ok-10-512.png"
                             alt="Certificate Icon"
                             className="w-12 h-12 mr-4"
+                            aria-hidden="true"
                           />
                           <div>
                             <p>

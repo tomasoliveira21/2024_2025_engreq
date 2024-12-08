@@ -167,7 +167,7 @@ export default function Amap({ params }: { params: { id: string } }) {
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
       <Toaster />
-      <main className="grid grid-cols-12 gap-8">
+      <main className="grid grid-cols-12 gap-8" aria-label="Amap's Products and Baskets">
         <div className="col-span-3">
           <Sidebar />
         </div>
@@ -189,6 +189,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               <button
                 className="px-4 py-2 text-white bg-blue-900 rounded"
                 onClick={() => router.push("/createProduct")}
+                aria-label="Create a new product"
               >
                 Create Product
               </button>
@@ -251,6 +252,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               <button
                 className="px-4 py-2 text-white bg-blue-900 rounded"
                 onClick={() => router.push(`/createBasket/${id}`)}
+                aria-label="Create a new basket"
               >
                 Create Basket
               </button>

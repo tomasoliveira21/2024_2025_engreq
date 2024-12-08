@@ -116,7 +116,9 @@ export default function Product({ params }: { params: { id: string } }) {
                     disabled={isSubscribing}
                     className="bg-blue-500 text-white py-2 px-4 rounded-lg"
                   >
-                    {isSubscribing ? "Subscribing..." : "Subscribe to Basket"}
+                    <div aria-live="assertive">
+                      {isSubscribing ? "Subscribing..." : "Subscribe to Product"}
+                    </div>
                   </button>
                 )}
               </div>

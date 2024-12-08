@@ -134,6 +134,7 @@ export default function Register() {
             value={data?.name}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Enter your Name"
           />
         </div>
 
@@ -147,6 +148,7 @@ export default function Register() {
             maxLength={9}
             pattern="[0-9]{9}"
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Tax Identification Number (NIF)"
           />
         </div>
 
@@ -158,6 +160,7 @@ export default function Register() {
             value={data?.email}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Email address"
           />
         </div>
         <div className="grid mb-6">
@@ -168,6 +171,7 @@ export default function Register() {
             value={data?.password}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Password"
           />
         </div>
 
@@ -179,6 +183,7 @@ export default function Register() {
             value={data?.confirmPassword}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Confirm Password"
           />
         </div>
 
@@ -189,6 +194,7 @@ export default function Register() {
             value={data?.role}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Select your user role"
           >
             <option value="Producer">Producer</option>
             <option value="Co-Producer">Co-Producer</option>
@@ -200,6 +206,7 @@ export default function Register() {
           <button
             onClick={register}
             className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+            aria-label="Submit registration form"
           >
             Register
           </button>
@@ -208,6 +215,7 @@ export default function Register() {
           <button
             onClick={() => router.push("/")}
             className="text-blue-400 hover:underline"
+            aria-label="Return to login page"
           >
             Back to Login
           </button>

@@ -207,6 +207,7 @@ export default function CreateProduct() {
                 type="button"
                 onClick={handleOpenModal}
                 className="px-4 py-2 bg-blue-500 text-white rounded"
+                aria-label="Select a photo for the product"
               >
                 Select Photo
               </button>
@@ -230,10 +231,12 @@ export default function CreateProduct() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                    aria-label="Type to search images"
                   />
                   <button
                     onClick={handleSearchImages}
                     className="px-4 py-2 mt-2 bg-blue-500 text-white rounded"
+                    aria-label="Search images"
                   >
                     Search
                   </button>
