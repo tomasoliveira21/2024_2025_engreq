@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import Sidebar from "../../../../components/Sidebar";
 import { supabase } from "@/lib/supabase";
-import Table from "../../../../components/Table";
 import { fetchProduct } from "@/api/fetchProduct";
 import { ProductDetails } from "@/types/productDetails";
 
@@ -15,7 +14,7 @@ export default function Product({ params }: { params: { id: string } }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [product, setProduct] = useState<ProductDetails | null>(null);
-  const [isSubscribing, setIsSubscribing] = useState(false); // State for tracking subscription status
+  const [isSubscribing, setIsSubscribing] = useState(false);
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
@@ -91,7 +90,8 @@ export default function Product({ params }: { params: { id: string } }) {
                 <strong>Price:</strong> {product.price} €
               </p>
               <p>
-                <strong>Quantity Available to Produce:</strong> {product.quantity}
+                <strong>Quantity Available to Produce:</strong>{" "}
+                {product.quantity}
               </p>
             </div>
 
@@ -102,7 +102,12 @@ export default function Product({ params }: { params: { id: string } }) {
                     src={product.photoUrl}
                     alt={product.name || "Product Image"}
                     className="rounded-lg shadow-md max-w-full"
-                    onError={() => console.error("Error displaying the image:", product.photoUrl)}
+                    onError={() =>
+                      console.error(
+                        "Error displaying the image:",
+                        product.photoUrl
+                      )
+                    }
                   />
                 ) : (
                   <p>No image available for this product.</p>
@@ -121,14 +126,60 @@ export default function Product({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            <h1 className="text-lg font-bold mb-2 mt-4">Producer Details:</h1>
-            <div className="bg-blue-900 p-6 rounded-lg shadow-md w-1/2">
-              <p>
-                <strong>Business Name:</strong> {product.Producer.businessName}
-              </p>
-              <p>
-                <strong>Contact Email:</strong> {product.Producer.User.email}
-              </p>
+            <div className="flex">
+              {/* Producer Details */}
+              <div className="bg-blue-900 p-6 rounded-lg shadow-md w-1/2">
+                <h1 className="text-lg font-bold mb-2 mt-4">
+                  Producer Details:
+                </h1>
+                <p>
+                  <strong>Business Name:</strong>{" "}
+                  {product.Producer.businessName}
+                </p>
+                <p>
+                  <strong>Contact Email:</strong> {product.Producer.User.email}
+                </p>
+              </div>
+
+              {product.Producer.Certificates &&
+                product.Producer.Certificates.length > 0 && (
+                  <div className=" p-6 rounded-lg shadow-md w-1/2 ml-8">
+                    <h1 className="text-lg font-bold mb-2 mt-4 text-white"></h1>
+                    <div className="grid grid-cols-1 gap-4">
+                      {product.Producer.Certificates.map((cert) => (
+                        <div
+                          key={cert.id}
+                          className="  p-4 rounded-lg  flex items-center text-white"
+                        >
+                          <img
+                            src="https://cdn3.iconfinder.com/data/icons/approve-3/100/check_mark_approve_ok-10-512.png"
+                            alt="Certificate Icon"
+                            className="w-12 h-12 mr-4"
+                          />
+                          <div>
+                            <p>
+                              <strong>Certificate:</strong> {cert.name}
+                            </p>
+                            <p>
+                              <strong>Issuing Authority:</strong>{" "}
+                              {cert.issuingAuthority}
+                            </p>
+                            <p>
+                              <strong>Issue Date:</strong>{" "}
+                              {new Date(cert.issueDate).toLocaleDateString()}
+                            </p>
+                            <p>
+                              <strong>Expiration Date:</strong>{" "}
+                              {new Date(
+                                cert.expirationDate
+                              ).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </div>

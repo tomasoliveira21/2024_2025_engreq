@@ -1,18 +1,25 @@
 export interface ProductDetails {
+  id: number;
+  name: string;
+  description: string;
+  photoUrl: string;
+  type: string;
+  price: number;
+  quantity: number;
+  Producer: {
     id: number;
-    name: string;
-    description: string;
-    photoUrl: string;
-    type: string;
-    price: number;
-    quantity: number;
-    Producer: {
+    businessName: string | null;
+    User: {
       id: number;
-      businessName: string;
-      User: {
-        id: number;
-        email: string;
-        nif: number;
-      };
+      email: string;
+      nif: number;
     };
-  }
+    Certificates: {
+      id: number;
+      name: string;
+      issuingAuthority: string;
+      issueDate: string;
+      expirationDate: string;
+    }[];
+  };
+}
