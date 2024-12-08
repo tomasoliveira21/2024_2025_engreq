@@ -3,13 +3,13 @@ export const createSubscription = async (
     subscriptionData: {
       periodType: string;
       itemType: string;
-      itemId: number; // Product ID
+      itemId: number;
       quantity: number;
       createdAt?: Date;
       updatedAt?: Date;
     }
   ): Promise<boolean> => {
-    const apiUrl = "http://127.0.0.1:3001/"; // Update to your actual API URL
+    const apiUrl = "http://127.0.0.1:3001/";
     try {
       const response = await fetch(`${apiUrl}subscription`, {
         method: "POST",

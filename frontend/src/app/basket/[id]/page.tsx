@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { fetchProduct } from "@/api/fetchProduct";
 import { fetchBasket } from "@/api/fetchBasket";
 import { BasketDetails } from "@/types/basketDetails";
+import { createSubscription } from "@/api/createSubscription";
 
 export default function Product({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -15,6 +16,9 @@ export default function Product({ params }: { params: { id: string } }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [basket, setBaskets] = useState<BasketDetails | null>(null);
+  const [isSubscribing, setIsSubscribing] = useState(false); // State for tracking subscription status
+  const [subscriptionSuccess, setSubscriptionSuccess] = useState<boolean | null>(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     async function getSession() {
@@ -22,6 +26,11 @@ export default function Product({ params }: { params: { id: string } }) {
         data: { session },
       } = await supabase.auth.getSession();
       setSession(session);
+      
+      if (session) {
+        const role = session.user.user_metadata.role;
+        setUserRole(role);
+      }
     }
     getSession();
   }, []);
@@ -62,6 +71,26 @@ export default function Product({ params }: { params: { id: string } }) {
     return <div>Basket not found</div>;
   }
 
+  const handleSubscription = async () => {
+    setIsSubscribing(true);
+    // Hardcoded subscription data for now
+    const subscriptionData = {
+      periodType: "monthly",
+      itemType: "basket",
+      itemId: basket.id,
+      quantity: 1,
+    };
+
+    try {
+      const success = await createSubscription(session.access_token, subscriptionData);
+      setSubscriptionSuccess(success);
+    } catch (error) {
+      setSubscriptionSuccess(false);
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -84,17 +113,36 @@ export default function Product({ params }: { params: { id: string } }) {
               </p>
             </div>
 
-            <div className="mt-10 mb-10 w-1/3">
-            {basket.photoUrl ? (
-            <img
-              src={basket.photoUrl}
-              alt={basket.name || "Basket Image"}
-              className="rounded-lg shadow-md max-w-full"
-              onError={() => console.error("Error displaying the image:", basket.photoUrl)}
-            />
-            ) : (
-              <p>No image available for this basket.</p>
-            )}
+            <div className="flex items-center mt-10 mb-10 w-full">
+              <div className="w-1/2">
+                {basket.photoUrl ? (
+                  <img
+                    src={basket.photoUrl}
+                    alt={basket.name || "Basket Image"}
+                    className="rounded-lg shadow-md max-w-full"
+                    onError={() => console.error("Error displaying the image:", basket.photoUrl)}
+                  />
+                ) : (
+                  <p>No image available for this basket.</p>
+                )}
+              </div>
+              {/* Review isSubscribing logic (if the co-producer can have only one active subscription for the basket) */}
+              <div className="ml-24">
+                {userRole === "Co-Producer" && (
+                  <button
+                    onClick={handleSubscription}
+                    disabled={isSubscribing}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                  >
+                    {isSubscribing ? "Subscribing..." : "Subscribe to Basket"}
+                  </button>
+                )}
+                {subscriptionSuccess !== null && (
+                <div className={`mt-2 ${subscriptionSuccess ? "text-green-500" : "text-red-500"}`}>
+                  {subscriptionSuccess ? "Subscription created successfully!" : "Failed to create subscription."}
+                </div>
+                )}
+              </div>
             </div>
 
             <h1 className="text-lg font-bold mb-2 mt-4">Producer Details:</h1>
