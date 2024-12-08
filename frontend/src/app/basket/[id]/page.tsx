@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { fetchProduct } from "@/api/fetchProduct";
 import { fetchBasket } from "@/api/fetchBasket";
 import { BasketDetails } from "@/types/basketDetails";
+import { fetchPhoto } from "@/api/fetchImages";
 
 export default function Product({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -27,22 +28,42 @@ export default function Product({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    const getProducts = async () => {
-      if (session) {
-        try {
-          setIsLoading(true);
-          const fetchedBasket = await fetchBasket(session.access_token, id);
-          setBaskets(fetchedBasket[0]);
-        } catch (error) {
-          console.error("Error fetching baskets:", error);
-        } finally {
-          setIsLoading(false);
+    const fetchBasketData = async () => {
+      if (!session) return;
+  
+      try {
+        setIsLoading(true);
+  
+        // Fetch the basket
+        const fetchedBasket = await fetchBasket(session.access_token, id);
+        const basketDetails = fetchedBasket[0];
+  
+        // Fetch the basket photo if `photoUrl` exists
+        if (basketDetails?.photoUrl) {
+          const photoId = basketDetails.photoUrl.split("/").pop(); // Extract photo ID from URL
+          if (photoId) {
+            try {
+              const token = "XJNrKpIxQT5zzanoRN7Ur9N0IQHXKmKr1VAxPrT76LUkzFwacrCGM8pi"; // Replace with your Pexels API key
+              const photoUrl = await fetchPhoto(photoId, token);
+              basketDetails.photoUrl = photoUrl;
+            } catch (error) {
+              console.error("Error fetching basket photo:", error);
+            }
+          }
         }
+  
+        // Update the basket state
+        setBaskets(basketDetails);
+      } catch (error) {
+        console.error("Error fetching basket data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
-    getProducts();
+  
+    fetchBasketData();
   }, [session, id]);
+  
 
   useEffect(() => {
     if (!id) {
@@ -85,11 +106,16 @@ export default function Product({ params }: { params: { id: string } }) {
             </div>
 
             <div className="mt-10 mb-10 w-1/3">
-              <img
-                src="https://www.giftbasketsbydesign.ca/cdn/shop/files/FeastiveFeast-Unwrapped_380x@2x.png?v=1730838593"
-                alt="Random"
-                className="rounded-lg shadow-md max-w-full"
-              />
+            {basket.photoUrl ? (
+            <img
+              src={basket.photoUrl}
+              alt={basket.name || "Basket Image"}
+              className="rounded-lg shadow-md max-w-full"
+              onError={() => console.error("Error displaying the image:", basket.photoUrl)}
+            />
+            ) : (
+              <p>No image available for this basket.</p>
+            )}
             </div>
 
             <h1 className="text-lg font-bold mb-2 mt-4">Producer Details:</h1>
