@@ -59,7 +59,7 @@ const requestProductDetails = async (productID) => {
     try {
         // Query data
         const productDetails = await Product.findAll({
-            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity', 'photoUrl'],
             where: {
                 id: productID,
             },
