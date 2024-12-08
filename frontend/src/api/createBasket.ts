@@ -7,7 +7,6 @@ export const createBasket = async (
       weight: number;
       type: string;
       photoUrl: string;
-      producerId: number;
       products: { id: number; quantity: number }[];
       createdAt?: Date;
       updatedAt?: Date;
@@ -24,7 +23,6 @@ export const createBasket = async (
         body: JSON.stringify(basketData),
       });
       console.log("response", response);
-      console.log(sessionToken);
       console.log(basketData);
   
       if (!response.ok) {

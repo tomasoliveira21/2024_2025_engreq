@@ -250,7 +250,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               />
               <button
                 className="px-4 py-2 text-white bg-blue-900 rounded"
-                onClick={() => router.push("/createBasket")}
+                onClick={() => router.push(`/createBasket/${id}`)}
               >
                 Create Basket
               </button>
