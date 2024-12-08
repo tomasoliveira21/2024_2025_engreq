@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { requestAmapsList } = require('../services/amapService');
+const { requestAmapsList, requestAmapsKpis } = require('../services/amapService');
 
 /**
  *
@@ -18,6 +18,25 @@ const getAmapsList = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getAmapsKpis = async (req, res, next) => {
+    logger.info(`Request getAmapsKpis`);
+    try {
+        const userAmpId = req.user.amapId;
+        const amapKpis = await requestAmapsKpis(userAmpId);
+        res.status(200).json({ kpis: amapKpis });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
-    getAmapsList
+    getAmapsList,
+    getAmapsKpis
 };

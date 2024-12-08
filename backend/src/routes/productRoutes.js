@@ -189,7 +189,7 @@ router.get('/basket/:id', authentication, getBasketDetails);
  *                   items:
  *                     type: integer
  *                     description: The IDs of products to associate with the basket
- *                     example: [9, 10]
+ *                     example: [{ "id": 10 },{ "id": 11 }]
  *       responses:
  *         '201':
  *           description: Basket created successfully

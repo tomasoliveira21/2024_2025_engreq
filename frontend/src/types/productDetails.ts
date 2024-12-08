@@ -2,6 +2,7 @@ export interface ProductDetails {
     id: number;
     name: string;
     description: string;
+    photoUrl: string;
     type: string;
     price: number;
     quantity: number;
