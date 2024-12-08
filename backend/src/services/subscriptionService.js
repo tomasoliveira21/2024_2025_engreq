@@ -174,7 +174,7 @@ const requestCoproducerSubscriptionHistory = async (userEmail) => {
                 {
                     model: OrderDetails,
                     required: true,
-                    attributes: ['id', 'itemType', 'itemId'],
+                    attributes: ['id', 'itemType', 'itemId', 'quantity'],
                 }
             ]
         });
@@ -227,7 +227,7 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
                 {
                     model: OrderDetails,
                     required: true,
-                    attributes: ['id', 'itemType', 'itemId'],
+                    attributes: ['id', 'itemType', 'itemId', 'quantity'],
                 }
             ]
         });
