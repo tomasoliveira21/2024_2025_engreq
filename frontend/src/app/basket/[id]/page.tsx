@@ -8,7 +8,6 @@ import { supabase } from "@/lib/supabase";
 import { fetchProduct } from "@/api/fetchProduct";
 import { fetchBasket } from "@/api/fetchBasket";
 import { BasketDetails } from "@/types/basketDetails";
-import { fetchPhoto } from "@/api/fetchImages";
 
 export default function Product({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -28,42 +27,20 @@ export default function Product({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    const fetchBasketData = async () => {
-      if (!session) return;
-  
-      try {
-        setIsLoading(true);
-  
-        // Fetch the basket
-        const fetchedBasket = await fetchBasket(session.access_token, id);
-        console.log("Fetched basket:", fetchedBasket);
-        const basketDetails = fetchedBasket[0];
-        console.log("Basket details:", basketDetails);
-  
-        // Fetch the basket photo if `photoUrl` exists
-        if (basketDetails?.photoUrl) {
-          const photoId = basketDetails.photoUrl.split("/").pop(); // Extract photo ID from URL
-          if (photoId) {
-            try {
-              const token = "XJNrKpIxQT5zzanoRN7Ur9N0IQHXKmKr1VAxPrT76LUkzFwacrCGM8pi"; // Replace with your Pexels API key
-              const photoUrl = await fetchPhoto(photoId, token);
-              basketDetails.photoUrl = photoUrl;
-            } catch (error) {
-              console.error("Error fetching basket photo:", error);
-            }
-          }
+    const getProducts = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedBasket = await fetchBasket(session.access_token, id);
+          setBaskets(fetchedBasket[0]);
+        } catch (error) {
+          console.error("Error fetching baskets:", error);
+        } finally {
+          setIsLoading(false);
         }
-  
-        // Update the basket state
-        setBaskets(basketDetails);
-      } catch (error) {
-        console.error("Error fetching basket data:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
-  
-    fetchBasketData();
+    getProducts();
   }, [session, id]);
   
 

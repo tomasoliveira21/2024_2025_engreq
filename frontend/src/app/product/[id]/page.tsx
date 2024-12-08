@@ -8,7 +8,6 @@ import { supabase } from "@/lib/supabase";
 import Table from "../../../../components/Table";
 import { fetchProduct } from "@/api/fetchProduct";
 import { ProductDetails } from "@/types/productDetails";
-import { fetchPhoto } from "@/api/fetchImages";
 
 export default function Product({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -28,39 +27,32 @@ export default function Product({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    const fetchProductData = async () => {
-      if (!session) return;
-  
-      try {
-        setIsLoading(true);
+    async function getSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSession(session);
+    }
+    getSession();
+  }, []);
 
-        const fetchedProduct = await fetchProduct(session.access_token, id);
-        console.log("Fetched product:", fetchedProduct);
-        const productDetails = fetchedProduct[0];
-        console.log("Product details:", productDetails);
-  
-        if (productDetails?.photoUrl) {
-          const photoId = productDetails.photoUrl.split("/").pop();
-          if (photoId) {
-            try {
-              const token = "XJNrKpIxQT5zzanoRN7Ur9N0IQHXKmKr1VAxPrT76LUkzFwacrCGM8pi";
-              const photoUrl = await fetchPhoto(photoId, token);
-              productDetails.photoUrl = photoUrl;
-            } catch (error) {
-              console.error("Error fetching product photo:", error);
-            }
-          }
+  useEffect(() => {
+    const getProducts = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedProduct = await fetchProduct(session.access_token, id);
+          console.log('fetchedProduct: ', fetchedProduct);
+          setProduct(fetchedProduct[0]);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        } finally {
+          setIsLoading(false);
         }
-  
-        setProduct(productDetails);
-      } catch (error) {
-        console.error("Error fetching product data:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
-  
-    fetchProductData();
+
+    getProducts();
   }, [session, id]);
 
   useEffect(() => {

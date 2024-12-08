@@ -8,6 +8,8 @@ import Sidebar from "../../../components/Sidebar";
 import { createProduct } from "@/api/createProduct";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Modal from "../../../components/Modal";
+import { fetchImages } from "@/api/fetchImages";
 
 export default function CreateProduct() {
   const router = useRouter();
@@ -21,6 +23,9 @@ export default function CreateProduct() {
     photoUrl: "",
   });
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     async function getSession() {
@@ -39,6 +44,29 @@ export default function CreateProduct() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  // Modal handlers
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // Fetch images for modal
+  const handleSearchImages = async () => {
+    if (query.trim()) {
+      try {
+        const imageUrls = await fetchImages(query, 15);
+        console.log("Fetched images:", imageUrls);
+        setImages(imageUrls);
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
+    }
+  };
+
+  // Select photo from modal
+  const handleSelectPhoto = (url: string) => {
+    setFormData({ ...formData, photoUrl: url });
+    handleCloseModal();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -164,6 +192,25 @@ export default function CreateProduct() {
                 className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Photo</label>
+              {formData.photoUrl ? (
+                <img
+                  src={formData.photoUrl}
+                  alt="Selected"
+                  className="w-40 h-40 object-cover mb-2"
+                />
+              ) : (
+                <p>No photo selected</p>
+              )}
+              <button
+                type="button"
+                onClick={handleOpenModal}
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Select Photo
+              </button>
+            </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <button
               type="submit"
@@ -172,6 +219,39 @@ export default function CreateProduct() {
               Register Product
             </button>
           </form>
+          {isModalOpen && (
+            <Modal onClose={handleCloseModal}>
+              <div className="p-6">
+                <h2 className="text-lg font-bold mb-4">Search Photos</h2>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Search images..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                  />
+                  <button
+                    onClick={handleSearchImages}
+                    className="px-4 py-2 mt-2 bg-blue-500 text-white rounded"
+                  >
+                    Search
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {images.map((url) => (
+                    <img
+                      key={url}
+                      src={url}
+                      alt="Search result"
+                      className="w-full h-32 object-cover cursor-pointer"
+                      onClick={() => handleSelectPhoto(url)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </Modal>
+          )}
         </div>
       </main>
       <ToastContainer
