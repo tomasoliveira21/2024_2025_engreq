@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import Sidebar from "../../../components/Sidebar";
+import Sidebar from "../../../../components/Sidebar";
 import { createBasket } from "@/api/createBasket"; // Backend API for creating a basket
 import { Session } from "@supabase/auth-helpers-nextjs";
+import { fetchProducts } from "@/api/fetchProducts";
+import { Product } from "@/types/product";
+import Select from "react-select";
 
-export default function CreateBasket() {
+export default function CreateBasket({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [formData, setFormData] = useState({
@@ -17,12 +20,15 @@ export default function CreateBasket() {
     weight: "",
     photoUrl: "",
     products: [],
-    producerId: 1, 
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const { id } = params;
 
+  // Fetch session on component mount
   useEffect(() => {
     async function getSession() {
       const {
@@ -33,10 +39,29 @@ export default function CreateBasket() {
     getSession();
   }, []);
 
+  useEffect(() => {
+    const getProducts = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedProducts = await fetchProducts(session.access_token, id);
+          setProducts(fetchedProducts);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    getProducts();
+  }, [session]);
+
+  // Input change handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
@@ -52,7 +77,6 @@ export default function CreateBasket() {
         weight: parseFloat(formData.weight),
         type: "type1",
         photoUrl: formData.photoUrl,
-        producerId: formData.producerId,
         products: formData.products,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -72,6 +96,14 @@ export default function CreateBasket() {
   if (!session) {
     return <div>Loading session...</div>;
   }
+
+  const handleProductSelection = (selectedOptions: any) => {
+    const selectedProducts = selectedOptions.map((option: any) => ({
+      id: option.value, // This corresponds to the ProductId in the backend
+      quantity: 1, // Default quantity or allow users to specify it later
+    }));
+    setFormData({ ...formData, products: selectedProducts });
+  };  
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
@@ -122,7 +154,19 @@ export default function CreateBasket() {
                 className="w-full px-3 py-2 rounded bg-gray-800 text-white"
               />
             </div>
-
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Products</label>
+              <Select
+                isMulti
+                options={products.map((product) => ({
+                  value: product.id,
+                  label: product.name,
+                }))}
+                className="basic-multi-select text-black"
+                classNamePrefix="select"
+                onChange={handleProductSelection}
+              />
+            </div>
             <button
               type="submit"
               className="px-4 py-2 bg-green-500 text-white rounded"
