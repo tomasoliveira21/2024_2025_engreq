@@ -72,7 +72,7 @@ export default function Home() {
         <div className="col-span-3">
           <Sidebar />
         </div>
-        <div className="col-span-8 grid grid-cols-3 gap-8 mt-8">
+        <div className="col-span-8 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
           {amaps.length > 0 ? (
             amaps.map((amap) => (
               <Card
@@ -87,10 +87,10 @@ export default function Home() {
             <div>No AMAPs found</div>
           )}
         </div>
-        <div className="col-span-1 ml-10">
+        <div className="col-span-12 lg:col-span-1 flex justify-end lg:justify-start mt-5 lg:mt-0">
           <RefreshIcon
             onClick={handleRefresh}
-            className="h-8 w-8 cursor-pointer mr-5 mt-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
+            className="h-8 w-8 cursor-pointer transition-all duration-500 ease-out hover:rotate-180 active:scale-125"
           />
         </div>
       </main>
