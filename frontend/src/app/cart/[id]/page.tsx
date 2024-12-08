@@ -104,6 +104,7 @@ export default function Cart({ params }: { params: { id: number } }) {
               onChange={(e) => setQuantity(parseInt(e.target.value))}
               min="1"
               className="text-black p-2 rounded-lg w-full"
+              aria-invalid={quantity < 1 ? "true" : "false"}
             />
           </div>
           <button

@@ -19,6 +19,7 @@ const Table = <T,>({ headers, data, renderRow, onSort, sortOrder, sortKey }: Tab
               key={index}
               className="border border-gray-300 px-4 py-2 text-left"
               onClick={() => onSort && onSort(header.key)}
+              aria-sort={sortOrder === "asc" ? "ascending" : "descending"}
             >
               <div className="flex items-center">
                 <span>{header.label}</span>

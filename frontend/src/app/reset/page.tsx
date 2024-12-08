@@ -51,6 +51,7 @@ export default function Reset() {
             value={data?.password}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Password"
           />
         </div>
         <div className="grid mb-6">
@@ -61,6 +62,7 @@ export default function Reset() {
             value={data?.confirmPassword}
             onChange={handleChange}
             className="p-2 border border-gray-600 rounded bg-gray-700 text-white"
+            aria-label="Confirm Password"
           />
         </div>
         <div className="mb-4 cursor-pointer hover:underline text-sm text-blue-400" onClick={() => setShowPassword(!showPassword)}>
@@ -70,6 +72,7 @@ export default function Reset() {
           <button
             onClick={confirmPassword}
             className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+            aria-label="Reset password"
           >
             Confirm
           </button>
