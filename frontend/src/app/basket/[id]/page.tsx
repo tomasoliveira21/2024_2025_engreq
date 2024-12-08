@@ -36,7 +36,9 @@ export default function Product({ params }: { params: { id: string } }) {
   
         // Fetch the basket
         const fetchedBasket = await fetchBasket(session.access_token, id);
+        console.log("Fetched basket:", fetchedBasket);
         const basketDetails = fetchedBasket[0];
+        console.log("Basket details:", basketDetails);
   
         // Fetch the basket photo if `photoUrl` exists
         if (basketDetails?.photoUrl) {

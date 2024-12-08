@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import Sidebar from "../../../../components/Sidebar";
 import { supabase } from "@/lib/supabase";
+import Table from "../../../../components/Table";
 import { fetchProduct } from "@/api/fetchProduct";
-import { fetchBasket } from "@/api/fetchBasket";
-import { BasketDetails } from "@/types/basketDetails";
+import { ProductDetails } from "@/types/productDetails";
 import { fetchPhoto } from "@/api/fetchImages";
 
 export default function Product({ params }: { params: { id: string } }) {
@@ -15,7 +15,7 @@ export default function Product({ params }: { params: { id: string } }) {
   const { id } = params;
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [basket, setBaskets] = useState<BasketDetails | null>(null);
+  const [product, setProduct] = useState<ProductDetails | null>(null);
 
   useEffect(() => {
     async function getSession() {
@@ -28,42 +28,40 @@ export default function Product({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    const fetchBasketData = async () => {
+    const fetchProductData = async () => {
       if (!session) return;
   
       try {
         setIsLoading(true);
+
+        const fetchedProduct = await fetchProduct(session.access_token, id);
+        console.log("Fetched product:", fetchedProduct);
+        const productDetails = fetchedProduct[0];
+        console.log("Product details:", productDetails);
   
-        // Fetch the basket
-        const fetchedBasket = await fetchBasket(session.access_token, id);
-        const basketDetails = fetchedBasket[0];
-  
-        // Fetch the basket photo if `photoUrl` exists
-        if (basketDetails?.photoUrl) {
-          const photoId = basketDetails.photoUrl.split("/").pop(); // Extract photo ID from URL
+        if (productDetails?.photoUrl) {
+          const photoId = productDetails.photoUrl.split("/").pop();
           if (photoId) {
             try {
-              const token = "XJNrKpIxQT5zzanoRN7Ur9N0IQHXKmKr1VAxPrT76LUkzFwacrCGM8pi"; // Replace with your Pexels API key
+              const token = "XJNrKpIxQT5zzanoRN7Ur9N0IQHXKmKr1VAxPrT76LUkzFwacrCGM8pi";
               const photoUrl = await fetchPhoto(photoId, token);
-              basketDetails.photoUrl = photoUrl;
+              productDetails.photoUrl = photoUrl;
             } catch (error) {
-              console.error("Error fetching basket photo:", error);
+              console.error("Error fetching product photo:", error);
             }
           }
         }
   
-        // Update the basket state
-        setBaskets(basketDetails);
+        setProduct(productDetails);
       } catch (error) {
-        console.error("Error fetching basket data:", error);
+        console.error("Error fetching product data:", error);
       } finally {
         setIsLoading(false);
       }
     };
   
-    fetchBasketData();
+    fetchProductData();
   }, [session, id]);
-  
 
   useEffect(() => {
     if (!id) {
@@ -79,10 +77,9 @@ export default function Product({ params }: { params: { id: string } }) {
     return <div>Loading data...</div>;
   }
 
-  if (!basket) {
-    return <div>Basket not found</div>;
+  if (!product) {
+    return <div>Product not found</div>;
   }
-
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -92,39 +89,39 @@ export default function Product({ params }: { params: { id: string } }) {
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
           <div className="flex flex-col w-full">
-            <h1 className="text-lg font-bold mb-2">Basket Details:</h1>
+            <h1 className="text-lg font-bold mb-2">Product Details:</h1>
             <div className="bg-blue-900 p-6 rounded-lg shadow-md w-1/2 mb-4">
-              <h2 className="text-xl font-semibold">{basket.name}</h2>
-              <p>{basket.description}</p>
+              <h2 className="text-xl font-semibold">{product.name}</h2>
+              <p>{product.description}</p>
               <p>
-                <strong>Price:</strong> {basket.price} €
+                <strong>Price:</strong> {product.price} €
               </p>
               <p>
-                <strong>Basket Weight:</strong>{" "}
-                {basket.weight} kg
+                <strong>Quantity Available to Produce:</strong>{" "}
+                {product.quantity}
               </p>
             </div>
 
-            <div className="mt-10 mb-10 w-1/3">
-            {basket.photoUrl ? (
-            <img
-              src={basket.photoUrl}
-              alt={basket.name || "Basket Image"}
-              className="rounded-lg shadow-md max-w-full"
-              onError={() => console.error("Error displaying the image:", basket.photoUrl)}
-            />
-            ) : (
-              <p>No image available for this basket.</p>
-            )}
+            <div className="mt-10 mb-10 w-1/2">
+              {product.photoUrl ? (
+                <img
+                  src={product.photoUrl}
+                  alt={product.name || "Product Image"}
+                  className="rounded-lg shadow-md max-w-full"
+                  onError={() => console.error("Error displaying the image:", product.photoUrl)}
+                />
+              ) : (
+                <p>No image available for this product.</p>
+              )}
             </div>
 
             <h1 className="text-lg font-bold mb-2 mt-4">Producer Details:</h1>
             <div className="bg-blue-900 p-6 rounded-lg shadow-md w-1/2">
               <p>
-                <strong>Business Name:</strong> {basket.Producer.businessName}
+                <strong>Business Name:</strong> {product.Producer.businessName}
               </p>
               <p>
-                <strong>Contact Email:</strong> {basket.Producer.User.email}
+                <strong>Contact Email:</strong> {product.Producer.User.email}
               </p>
             </div>
           </div>
