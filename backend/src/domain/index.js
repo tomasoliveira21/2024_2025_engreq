@@ -16,6 +16,7 @@ const User = require('./models/User');
 const Basket = require("./models/Basket");
 const OrderDetails = require('./models/OrderDetails');
 const Subscriptions = require('./models/Subscription');
+const SalePeriod = require('./models/SalePeriod');
 
 User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
@@ -74,6 +75,13 @@ OrderDetails.belongsTo(Basket, { foreignKey: 'itemId', constraints: false, scope
 
 Producer.hasMany(OrderDetails, { foreignKey: 'producerId' });
 OrderDetails.belongsTo(Producer, { foreignKey: 'producerId' });
+
+Product.hasMany(SalePeriod, { foreignKey: 'productId' });
+SalePeriod.belongsTo(Product, { foreignKey: 'productId' });
+
+Basket.hasMany(SalePeriod, { foreignKey: 'basketId' });
+SalePeriod.belongsTo(Basket, { foreignKey: 'basketId' });
+
 
 
 

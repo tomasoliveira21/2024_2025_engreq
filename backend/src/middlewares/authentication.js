@@ -1,3 +1,4 @@
+
 const supabase = require('../utils/supabase');
 const logger = require("../utils/logger");
 const {getUserData} = require("../services/userService");
