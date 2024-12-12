@@ -18,7 +18,7 @@ const requestProductsByAmap = async (amapId) => {
     try {
         // Query data
         const productList = await Product.findAll({
-            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity', 'season'],
             include: [
                 {
                     model: Producer,
@@ -59,7 +59,7 @@ const requestProductDetails = async (productID) => {
     try {
         // Query data
         const productDetails = await Product.findAll({
-            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity', 'photoUrl'],
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity', 'photoUrl', 'season'],
             where: {
                 id: productID,
             },
@@ -138,7 +138,7 @@ const requestBasketsByAmap = async (amapId) => {
     try {
         // Query data
         const basketList = await Basket.findAll({
-            attributes: ['id', 'name', 'description', 'type', 'photoUrl', 'price', 'weight'],
+            attributes: ['id', 'name', 'description', 'type', 'photoUrl', 'price', 'weight', 'season'],
             include: [
                 {
                     model: Producer,
@@ -179,7 +179,7 @@ const requestBasketDetails = async (basketId) => {
     try {
         // Query data
         const basketDetails = await Basket.findAll({
-            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight'],
+            attributes: ['id', 'name', 'description', 'photoUrl', 'price', 'weight', 'season'],
             where: {
                 id: basketId,
             },
