@@ -2,7 +2,6 @@ const logger = require('../utils/logger');
 const Order = require('../domain/models/Order');
 const OrderDetails = require('../domain/models/OrderDetails');
 const User = require('../domain/models/User');
-const Consumer = require('../domain/models/Consumer');
 const Producer = require('../domain/models/Producer');
 const Subscription = require('../domain/models/Subscription');
 const { Op } = require('sequelize');

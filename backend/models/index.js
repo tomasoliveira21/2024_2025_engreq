@@ -10,7 +10,6 @@
 // const db = {};
 // const AMAP = require('./amap');
 // const Certificate = require('./certificate');
-// const Consumer = require('./consumer');
 // const Delivery = require('./delivery');
 // const Location = require('./location');
 // const Order = require('./order');

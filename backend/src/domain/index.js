@@ -4,7 +4,6 @@ const { Sequelize } = require('sequelize');
 const sequelize = require('../utils/db-connect');
 const AMAP = require('./models/AMAP');
 const Certificate = require('./models/Certificate');
-const Consumer = require('./models/Consumer');
 const Delivery = require('./models/Delivery');
 const Location = require('./models/Location');
 const Order = require('./models/Order');
@@ -18,7 +17,6 @@ const OrderDetails = require('./models/OrderDetails');
 const Subscriptions = require('./models/Subscription');
 const SalePeriod = require('./models/SalePeriod');
 
-User.hasOne(Consumer, { foreignKey: 'userId' });
 User.hasOne(Producer, { foreignKey: 'userId' });
 User.belongsTo(AMAP, { foreignKey: 'AMAPId' });
 User.hasMany(Payment, { foreignKey: 'userId' });
@@ -34,7 +32,7 @@ Producer.hasMany(Certificate, { foreignKey: 'producerId' });
 
 Payment.belongsTo(User, { foreignKey: 'userId' });
 
-Order.belongsTo(Consumer, { foreignKey: 'consumerId' });
+Order.belongsTo(User, { foreignKey: 'userId' });
 Order.hasMany(Delivery, { foreignKey: 'orderId' });
 
 Order.hasMany(Payment,{foreignKey:'orderId'});
@@ -51,8 +49,7 @@ Location.hasOne(Delivery, { foreignKey: 'locationId' });
 Delivery.belongsTo(Order, { foreignKey: 'orderId' });
 Delivery.belongsTo(Location, { foreignKey: 'locationId' });
 
-Consumer.belongsTo(User, { foreignKey: 'userId' });
-Consumer.hasMany(Order, { foreignKey: 'consumerId' });
+User.hasMany(Order, { foreignKey: 'userId' });
 
 Certificate.belongsTo(Producer, { foreignKey: 'producerId' });
 
@@ -76,11 +73,14 @@ OrderDetails.belongsTo(Basket, { foreignKey: 'itemId', constraints: false, scope
 Producer.hasMany(OrderDetails, { foreignKey: 'producerId' });
 OrderDetails.belongsTo(Producer, { foreignKey: 'producerId' });
 
-Product.hasMany(SalePeriod, { foreignKey: 'productId' });
-SalePeriod.belongsTo(Product, { foreignKey: 'productId' });
+// Many-to-Many: Product ↔ SalePeriod
+Product.belongsToMany(SalePeriod, { through: 'ProductSalePeriods' });
+SalePeriod.belongsToMany(Product, { through: 'ProductSalePeriods' });
 
-Basket.hasMany(SalePeriod, { foreignKey: 'basketId' });
-SalePeriod.belongsTo(Basket, { foreignKey: 'basketId' });
+// Many-to-Many: Basket ↔ SalePeriod
+Basket.belongsToMany(SalePeriod, { through: 'BasketSalePeriods' });
+SalePeriod.belongsToMany(Basket, { through: 'BasketSalePeriods' });
+
 
 
 

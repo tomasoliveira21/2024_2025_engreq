@@ -1,7 +1,6 @@
 const logger = require('../utils/logger');
 const AMAPs = require('../domain/models/AMAP');
 const User = require('../domain/models/User');
-const Consumer = require('../domain/models/Consumer');
 const Order = require('../domain/models/Order');
 const { Sequelize } = require('sequelize');
 
@@ -68,7 +67,7 @@ const requestAmapsKpis = async (amapId) => {
         const orderCount = await Order.count({
             include: [
                 {
-                    model: Consumer,
+                    model: User,
                     include: [
                         {
                             model: User,

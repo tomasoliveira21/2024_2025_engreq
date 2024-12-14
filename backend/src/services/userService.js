@@ -1,7 +1,6 @@
 const logger = require('../utils/logger');
 const User = require('../domain/models/User');
 const Producer = require("../domain/models/Producer");
-const Consumer = require("../domain/models/Consumer");
 
 /**
  * Get user data
@@ -72,6 +71,7 @@ const getCoproducerData = async (userEmail) => {
     logger.info(`Fetching coproducer data: `, userEmail);
 
     try {
+        //todo
         // Query data
         const coproducerData = await Consumer.findAll({
             attributes: ['id'],
