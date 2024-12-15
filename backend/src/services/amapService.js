@@ -68,13 +68,8 @@ const requestAmapsKpis = async (amapId) => {
             include: [
                 {
                     model: User,
-                    include: [
-                        {
-                            model: User,
-                            where: { AMAPId: amapId },
-                            required: true,
-                        },
-                    ],
+                    where: { AMAPId: amapId },
+                    required: true,
                 },
             ]
         });
@@ -88,23 +83,15 @@ const requestAmapsKpis = async (amapId) => {
             ],
             include: [
                 {
-                    model: Consumer,
+                    model: User,
                     attributes: [],
-                    include: [
-                        {
-                            model: User,
-                            attributes: [],
-                            where: { AMAPId: amapId },
-                            required: true,
-                        }
-                    ]
+                    where: { AMAPId: amapId },
+                    required: true,
                 }
             ],
             group: [],
             raw: true,
         });
-
-        console.log("XXX orderCosts.>",orderCosts)
 
         // Extract sums from the orderCosts result
         if (orderCosts.length > 0) {

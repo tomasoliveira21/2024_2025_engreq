@@ -61,22 +61,15 @@ const requestCoproducerOrderHistory = async (userEmail) => {
             where: { periodType: "single purchase", status :"completed" },
             include: [
                 {
-                    model: Consumer,
+                    model: User,
                     required: true,
-                    attributes: [],
-                    include: [
-                        {
-                            model: User,
-                            required: true,
-                            attributes: ['id', 'email', 'name', 'nif', 'role'],
-                            where: { email: userEmail }
-                        }
-                    ]
+                    attributes: ['id', 'email', 'name', 'nif', 'role'],
+                    where: { email: userEmail }
                 },
                 {
                     model: OrderDetails,
                     required: true,
-                    attributes: ['id', 'itemType', 'itemId'],
+                    attributes: ['id', 'itemType', 'itemId', 'price'],
                 }
             ]
         });
@@ -158,22 +151,15 @@ const requestCoproducerSubscriptionHistory = async (userEmail) => {
             },
             include: [
                 {
-                    model: Consumer,
+                    model: User,
                     required: true,
-                    attributes: [],
-                    include: [
-                        {
-                            model: User,
-                            required: true,
-                            attributes: ['id', 'email', 'name', 'nif', 'role'],
-                            where: { email: userEmail }
-                        }
-                    ]
+                    attributes: ['id', 'email', 'name', 'nif', 'role'],
+                    where: { email: userEmail }
                 },
                 {
                     model: OrderDetails,
                     required: true,
-                    attributes: ['id', 'itemType', 'itemId', 'quantity'],
+                    attributes: ['id', 'itemType', 'itemId', 'quantity', 'price'],
                 }
             ]
         });
@@ -211,22 +197,15 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
                     required: false,
                 },
                 {
-                    model: Consumer,
+                    model: User,
                     required: true,
-                    attributes: [],
-                    include: [
-                        {
-                            model: User,
-                            required: true,
-                            attributes: ['id', 'email', 'name', 'nif', 'role'],
-                            where: { email: userEmail }
-                        }
-                    ]
+                    attributes: ['id', 'email', 'name', 'nif', 'role'],
+                    where: { email: userEmail }
                 },
                 {
                     model: OrderDetails,
                     required: true,
-                    attributes: ['id', 'itemType', 'itemId', 'quantity'],
+                    attributes: ['id', 'itemType', 'itemId', 'quantity', 'price'],
                 }
             ]
         });

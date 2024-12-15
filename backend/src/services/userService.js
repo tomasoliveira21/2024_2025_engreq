@@ -73,17 +73,10 @@ const getCoproducerData = async (userEmail) => {
     try {
         //todo
         // Query data
-        const coproducerData = await Consumer.findAll({
-            attributes: ['id'],
-            include: [
-                {
-                    model: User,
-                    attributes: [],
-                    where: {
-                        email: userEmail,
-                    },
-                },
-            ],
+        const coproducerData = await User.findAll({
+            where: {
+                email: userEmail,
+            },
         });
 
         // Logger
