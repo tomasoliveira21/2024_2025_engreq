@@ -2,7 +2,12 @@ const logger = require('../utils/logger');
 const AMAPs = require('../domain/models/AMAP');
 const User = require('../domain/models/User');
 const Order = require('../domain/models/Order');
+const SalePeriod = require('../domain/models/SalePeriod');
 const { Sequelize } = require('sequelize');
+
+/**
+ * LIST
+ */
 
 /**
  * Get AMAPs List
@@ -52,6 +57,10 @@ const requestAmapsList = async () => {
         return [];
     }
 };
+
+/**
+ * KPIS
+ */
 
 /**
  * AMAP Kpis
@@ -115,8 +124,135 @@ const requestAmapsKpis = async (amapId) => {
     }
 };
 
+/**
+ * SEASONS
+ */
+
+/**
+ *
+ * @param amapId
+ * @returns {Promise<*|*[]>}
+ */
+const requestAmapSeason = async (amapId) => {
+
+    logger.info(`Fetching AMAP season (AMAP: ${amapId})`);
+
+    try {
+        // Query data
+        const amapSeason = await SalePeriod.findAll({
+            attributes: ['id', 'name', 'startDate', 'endDate', 'season'],
+            where: {
+                AMAPId: amapId,
+            }
+        });
+
+        // Logger
+        logger.info(`Retrieved AMAP season: ${JSON.stringify(amapSeason)}`);
+
+        return amapSeason;
+    } catch (error) {
+        logger.error('Error fetching AMAP season:', error.message);
+        return [];
+    }
+};
+
+/**
+ *
+ * @param seasonData
+ * @returns {Promise<*>}
+ */
+const insertNewSeason = async (seasonData) => {
+    logger.info('Insert new Season');
+
+    try {
+        // Create a new season
+        const newSeason = await SalePeriod.create({
+            name: seasonData.name,
+            season: seasonData.season,
+            startDate: seasonData.startDate,
+            endDate: seasonData.endDate,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            AMAPId: seasonData.amapId,
+        });
+
+        logger.info('Season created successfully:', newSeason);
+        return newSeason;
+    } catch (error) {
+        logger.error('Error creating new season:', error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param seasonId
+ * @returns {Promise<{message: string}>}
+ */
+const deleteSeason = async (seasonId) => {
+    logger.info(`Delete season (Season: ${seasonId})`);
+
+    try {
+        // Find the season by ID
+        const season = await SalePeriod.findByPk(seasonId);
+
+        if (!season) {
+            const errorMessage = `Season with ID ${seasonId} not found`;
+            logger.warn(errorMessage);
+            throw new Error(errorMessage);
+        }
+
+        // Delete the season
+        await season.destroy();
+
+        logger.info(`Season deleted successfully: ${seasonId} `);
+        return season;
+    } catch (error) {
+        logger.error('Error deleting season:', error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param seasonId
+ * @param seasonData
+ * @returns {Promise<*|null>}
+ */
+const updateSeason = async (seasonId, seasonData) => {
+    try {
+        // Find the season by ID
+        const season = await SalePeriod.findByPk(seasonId);
+
+        // Not found
+        if (!season) {
+            logger.warn(`Season with ID ${seasonId} not found`);
+            return null;
+        }
+
+        // Update data
+        const updatedSeason = await season.update({
+            name: seasonData.name,
+            startDate: seasonData.startDate,
+            endDate: seasonData.endDate,
+            season: seasonData.season,
+            updatedAt: new Date(),
+        });
+
+        logger.info(`Season updated successfully: ${seasonId}`);
+        return updatedSeason;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating season: `, error);
+        throw error;
+    }
+};
 
 module.exports = {
     requestAmapsList,
-    requestAmapsKpis
+    requestAmapsKpis,
+    requestAmapSeason,
+    insertNewSeason,
+    deleteSeason,
+    updateSeason
 };

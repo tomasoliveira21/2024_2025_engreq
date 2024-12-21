@@ -73,6 +73,8 @@ OrderDetails.belongsTo(Basket, { foreignKey: 'itemId', constraints: false, scope
 Producer.hasMany(OrderDetails, { foreignKey: 'producerId' });
 OrderDetails.belongsTo(Producer, { foreignKey: 'producerId' });
 
+SalePeriod.belongsTo(AMAP, { foreignKey: 'AMAPId' });
+
 // Many-to-Many: Product ↔ SalePeriod
 Product.belongsToMany(SalePeriod, { through: 'ProductSalePeriods' });
 SalePeriod.belongsToMany(Product, { through: 'ProductSalePeriods' });
