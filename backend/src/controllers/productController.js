@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 const {requestProductsByAmap, requestProductDetails, insertNewProduct, updateProduct, upsertProductSalesPeriod, deleteProductSalesPeriod,
-    requestBasketsByAmap, requestBasketDetails, insertNewBasket} = require("../services/productService");
+    requestBasketsByAmap, requestBasketDetails, insertNewBasket, updateBasket, upsertBasketSalesPeriod, deleteBasketSalesPeriod} = require("../services/productService");
 
 /**
  * PRODUCTS
@@ -54,7 +54,7 @@ const getProductDetails = async (req, res, next) => {
 };
 
 /**
- * Controller function to create a new product.
+ * Controller function to update product data.
  * @param req
  * @param res
  * @param next
@@ -231,7 +231,7 @@ const createBasket = async (req, res, next) => {
 
     try {
         // Arguments
-        const { name, description, price, weight, products, photoUrl } = req.body;
+        const { name, description, price, weight, products, photoUrl, salesPeriod } = req.body;
         const producerId = req.user.producer[0].id;
 
         // Validate data
@@ -249,11 +249,76 @@ const createBasket = async (req, res, next) => {
         // Insert Basket
         const newBasket = await insertNewBasket(basketData);
 
+        // Relate SalesPeriod
+        if (salesPeriod)
+        {
+            const basketId = newBasket.id;
+            await upsertBasketSalesPeriod(basketId, salesPeriod);
+        }
+
         // Return response
         return res.status(201).json({
             success: true,
             message: 'Basket created successfully',
             basket: newBasket
+        });
+    } catch (err) {
+        // Error
+        logger.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
+    }
+};
+
+/**
+ * Controller function to update basket data.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const updateBasketData = async (req, res, next) => {
+    logger.info(`Update basket data`);
+
+    try {
+        // Arguments
+        const { id } = req.params;
+        const { name, description, price, weight, products, photoUrl, salesPeriod } = req.body;
+        const producerId = req.user.producer[0].id;
+
+        // Validate data
+        if (!name || !description || !price || !weight || !products || !producerId) {
+            logger.warn(`Missing mandatory fields to update`);
+            return res.status(400).json({
+                success: false,
+                message: 'Name, description, price, weight, products and producerId are required.'
+            });
+        }
+
+        // Data
+        const basketData = { name, description, price, weight, producerId, products, photoUrl };
+
+        // Update Basket
+        const updatedBasket = await updateBasket(id, basketData);
+
+        // Update/Insert SalesPeriod
+        if (salesPeriod)
+        {
+            await upsertBasketSalesPeriod(id, salesPeriod);
+        }
+        // Delete SalesPeriod
+        else
+        {
+            await deleteBasketSalesPeriod(id);
+        }
+
+        // Return response
+        return res.status(201).json({
+            success: true,
+            message: 'Basket updated successfully',
+            basket: updatedBasket
         });
     } catch (err) {
         // Error
@@ -272,5 +337,6 @@ module.exports = {
     updateProductData,
     getBasketsByAmap,
     getBasketDetails,
-    createBasket
+    createBasket,
+    updateBasketData
 };

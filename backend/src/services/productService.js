@@ -7,7 +7,7 @@ const Certificate = require('../domain/models/Certificate');
 const User = require('../domain/models/User');
 const SalePeriod = require('../domain/models/SalePeriod');
 const ProductSalePeriod = require('../domain/models/ProductSalePeriod');
-
+const BasketSalePeriod = require('../domain/models/BasketSalePeriod');
 
 /**
  * Products by AMAP
@@ -410,6 +410,119 @@ const insertNewBasket = async (basketData) => {
     }
 };
 
+/**
+ *
+ * @param basketId
+ * @param basketData
+ * @returns {Promise<*|null>}
+ */
+const updateBasket = async (basketId, basketData) => {
+    try {
+        // Find the basket by ID
+        const basket = await Basket.findByPk(basketId);
+
+        // Not found
+        if (!basket) {
+            logger.warn(`Basket with ID ${basketId} not found`);
+            return null;
+        }
+
+        // Update data
+        const updatedBasket = await basket.update({
+            name: basketData.name,
+            description: basketData.description,
+            price: basketData.price,
+            weight: basketData.weight,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            ProducerId: basketData.producerId,
+            photoUrl: basketData.photoUrl || 'default-photo-url.jpg'
+        });
+
+        logger.info(`Basket updated successfully: ${basketId}`);
+        return updatedBasket;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating product: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param basketId
+ * @param salesPeriodId
+ * @returns {Promise<*>}
+ */
+const upsertBasketSalesPeriod = async (basketId, salesPeriodId) => {
+    logger.info(`Updating BasketSalesPeriod basketId ${basketId}`);
+
+    let newsRows = [];
+    try {
+
+        let basketSalePeriod = await BasketSalePeriod.findOne({
+            where: {
+                BasketId: basketId,
+            },
+        });
+
+        if (basketSalePeriod)
+        {
+            [newsRows] = await BasketSalePeriod.update(
+                {
+                    SalePeriodId: salesPeriodId,
+                    updatedAt: new Date(),
+                },
+                {
+                    where: {
+                        BasketId: basketId,
+                    },
+                }
+            );
+            logger.info(`BasketSalesPeriod updated successfully.`);
+        } else {
+            // Insert new line
+            newsRows = await BasketSalePeriod.create({
+                BasketId: basketId,
+                SalePeriodId: salesPeriodId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            logger.info(`BasketSalesPeriod inserted successfully.`);
+        }
+
+        logger.info(`BasketSalesPeriod updsert successfully.`);
+        return newsRows;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating BasketSalesPeriod for basketID ${basketId}: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param basketId
+ * @returns {Promise<*>}
+ */
+const deleteBasketSalesPeriod = async (basketId) => {
+    try {
+        // Find the basket by ID
+        const deletedBasketSalesPeriod = await BasketSalePeriod.destroy({
+            where: {
+                BasketId: basketId,
+            },
+        });
+
+        logger.info(`BasketSalesPeriod deleted successfully: ${basketId}`);
+        return deletedBasketSalesPeriod;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error deleting BasketSalesPeriod: `, error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,
@@ -419,5 +532,8 @@ module.exports = {
     deleteProductSalesPeriod,
     requestBasketsByAmap,
     requestBasketDetails,
-    insertNewBasket
+    insertNewBasket,
+    updateBasket,
+    upsertBasketSalesPeriod,
+    deleteBasketSalesPeriod
 };

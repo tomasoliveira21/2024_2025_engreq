@@ -1,7 +1,7 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
-const { getProductsByAmap, getProductDetails, createProduct, updateProductData, getBasketsByAmap, getBasketDetails, createBasket} = require('../controllers/productController');
+const { getProductsByAmap, getProductDetails, createProduct, updateProductData, getBasketsByAmap, getBasketDetails, createBasket, updateBasketData} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -117,7 +117,7 @@ router.post('/', authentication, checkProducerRole, createProduct);
  *   - name: "Products"
  *     description: "Endpoints related to product management"
  *
- * /products:
+ * /products/{id}:
  *   put:
  *     summary: "Update product information"
  *     description: "This endpoint update product data."
@@ -261,51 +261,75 @@ router.get('/basket/:id', authentication, getBasketDetails);
  *                     type: integer
  *                     description: The IDs of products to associate with the basket
  *                     example: [{ "id": 10 },{ "id": 11 }]
+ *                 salesPeriod:
+ *                   type: number
+ *                   example: "1"
+ *                   description: "The id of the salesPeriod, can be empty"
  *       responses:
  *         '201':
  *           description: Basket created successfully
- *           content:
- *             application/json:
- *               schema:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: The unique ID of the newly created basket
- *                     example: 16
- *                   name:
- *                     type: string
- *                     description: The name of the basket
- *                     example: "Fruit basket"
- *                   description:
- *                     type: string
- *                     description: The description of the basket
- *                     example: "Fresh basket fruit"
- *                   price:
- *                     type: number
- *                     format: float
- *                     description: The price of the basket
- *                     example: 15
- *                   weight:
- *                     type: number
- *                     format: float
- *                     description: The weight of the basket
- *                     example: 123
- *                   photoUrl:
- *                     type: string
- *                     description: The path or URL of the basket's photo
- *                     example: "/images/baskets/fruit-basket.jpg"
- *                   products:
- *                     type: array
- *                     items:
- *                       type: integer
- *                       description: The IDs of products associated with the basket
- *                       example: [9, 10]
  *         '400':
  *           description: Invalid input data
  *         '500':
  *           description: Internal server error
  */
 router.post('/basket', authentication, checkProducerRole, createBasket);
+
+/**
+ * @swagger
+ * /products/basket/{id}:
+ *     put:
+ *       summary: Update basket information
+ *       description: Update basket information.
+ *       tags:
+ *         - Basket
+ *       requestBody:
+ *         description: Basket information to be updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The name of the basket
+ *                   example: "Fruit basket"
+ *                 description:
+ *                   type: string
+ *                   description: A description of the basket
+ *                   example: "Fresh basket fruit"
+ *                 price:
+ *                   type: number
+ *                   format: float
+ *                   description: The price of the basket
+ *                   example: 15
+ *                 weight:
+ *                   type: number
+ *                   format: float
+ *                   description: The weight of the basket
+ *                   example: 123
+ *                 photoUrl:
+ *                   type: string
+ *                   description: The path or URL of the basket's photo
+ *                   example: "/images/baskets/fruit-basket.jpg"
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                     description: The IDs of products to associate with the basket
+ *                     example: [{ "id": 10 },{ "id": 11 }]
+ *                 salesPeriod:
+ *                   type: number
+ *                   example: "1"
+ *                   description: "The id of the salesPeriod, can be empty"
+ *       responses:
+ *         '201':
+ *           description: Basket updated successfully
+ *         '400':
+ *           description: Invalid input data
+ *         '500':
+ *           description: Internal server error
+ */
+router.put('/basket/:id', authentication, checkProducerRole, updateBasketData);
 
 module.exports = router;
