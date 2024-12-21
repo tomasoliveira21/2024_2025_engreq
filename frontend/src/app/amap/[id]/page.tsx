@@ -221,22 +221,22 @@ export default function Amap({ params }: { params: { id: string } }) {
               renderRow={(product) => (
                 <tr key={product.id}>
                   <td
-                    className="border border-gray-300 px-4 py-2 text-blue-600 cursor-pointer hover:underline"
+                    className="w-1/4 border border-gray-300 px-4 py-2 text-blue-600 cursor-pointer hover:underline"
                     onClick={() => router.push(`/product/${product.id}`)}
                   >
                     {product.name}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {product.type}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {product.SalePeriods && product.SalePeriods.length > 0
                       ? product.SalePeriods.map((period) => period.season).join(
                           ", "
                         )
                       : "N/A"}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {product.price} €
                   </td>
                 </tr>
@@ -292,22 +292,22 @@ export default function Amap({ params }: { params: { id: string } }) {
               renderRow={(basket) => (
                 <tr key={basket.id}>
                   <td
-                    className="border border-gray-300 px-4 py-2 text-blue-600 cursor-pointer hover:underline"
+                    className="w-1/4 border border-gray-300 px-4 py-2 text-blue-600 cursor-pointer hover:underline"
                     onClick={() => router.push(`/basket/${basket.id}`)}
                   >
                     {basket.name}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {basket.type}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {basket.SalePeriods && basket.SalePeriods.length > 0
                       ? basket.SalePeriods.map((basket) => basket.season).join(
                           ", "
                         )
                       : "N/A"}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {basket.price} €
                   </td>
                 </tr>
