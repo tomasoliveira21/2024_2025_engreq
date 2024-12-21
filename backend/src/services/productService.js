@@ -5,6 +5,7 @@ const Product = require('../domain/models/Product');
 const Producer = require('../domain/models/Producer');
 const Certificate = require('../domain/models/Certificate');
 const User = require('../domain/models/User');
+const SalePeriod = require('../domain/models/SalePeriod');
 
 
 /**
@@ -34,6 +35,14 @@ const requestProductsByAmap = async (amapId) => {
                         },
                     ],
                 },
+                {
+                    model: SalePeriod,
+                    attributes: ['id', 'name', 'season', 'startDate', 'endDate'],
+                    through: {
+                        attributes: []
+                    },
+                    required: false,
+                }
             ],
         });
 
@@ -42,7 +51,7 @@ const requestProductsByAmap = async (amapId) => {
 
         return productList;
     } catch (error) {
-        logger.error('Error fetching products data:', error.message);
+        logger.error('Error fetching products data:', error);
         return [];
     }
 };
@@ -79,6 +88,14 @@ const requestProductDetails = async (productID) => {
                         },
                     ],
                 },
+                {
+                    model: SalePeriod,
+                    attributes: ['id', 'name', 'season', 'startDate', 'endDate'],
+                    through: {
+                        attributes: []
+                    },
+                    required: false,
+                }
             ],
         });
 
@@ -154,6 +171,14 @@ const requestBasketsByAmap = async (amapId) => {
                         },
                     ],
                 },
+                {
+                    model: SalePeriod,
+                    attributes: ['id', 'name', 'season', 'startDate', 'endDate'],
+                    through: {
+                        attributes: []
+                    },
+                    required: false,
+                }
             ],
         });
 
@@ -202,6 +227,14 @@ const requestBasketDetails = async (basketId) => {
                         attributes: [],
                     },
                 },
+                {
+                    model: SalePeriod,
+                    attributes: ['id', 'name', 'season', 'startDate', 'endDate'],
+                    through: {
+                        attributes: []
+                    },
+                    required: false,
+                }
             ],
         });
 
