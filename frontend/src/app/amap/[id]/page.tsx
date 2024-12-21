@@ -167,7 +167,10 @@ export default function Amap({ params }: { params: { id: string } }) {
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
       <Toaster />
-      <main className="grid grid-cols-12 gap-8" aria-label="Amap's Products and Baskets">
+      <main
+        className="grid grid-cols-12 gap-8"
+        aria-label="Amap's Products and Baskets"
+      >
         <div className="col-span-3">
           <Sidebar />
         </div>
@@ -200,6 +203,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               headers={[
                 { label: "Product Name", key: "name" },
                 { label: "Product Type", key: "type" },
+                { label: "Season", key: "SalePeriods" },
                 { label: "Product Price per kg", key: "price" },
               ]}
               data={sortedProducts}
@@ -224,6 +228,13 @@ export default function Amap({ params }: { params: { id: string } }) {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {product.type}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.SalePeriods && product.SalePeriods.length > 0
+                      ? product.SalePeriods.map((period) => period.season).join(
+                          ", "
+                        )
+                      : "N/A"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {product.price} €
