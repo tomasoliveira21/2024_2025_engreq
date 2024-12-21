@@ -274,6 +274,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               headers={[
                 { label: "Basket Name", key: "name" },
                 { label: "Basket Type", key: "type" },
+                { label: "Season", key: "SalePeriods" },
                 { label: "Basket Price", key: "price" },
               ]}
               data={sortedBaskets}
@@ -298,6 +299,13 @@ export default function Amap({ params }: { params: { id: string } }) {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {basket.type}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {basket.SalePeriods && basket.SalePeriods.length > 0
+                      ? basket.SalePeriods.map((basket) => basket.season).join(
+                          ", "
+                        )
+                      : "N/A"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {basket.price} €
