@@ -1,11 +1,15 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
-const { getProductsByAmap, getProductDetails, createProduct, getBasketsByAmap, getBasketDetails, createBasket} = require('../controllers/productController');
+const { getProductsByAmap, getProductDetails, createProduct, updateProductData, getBasketsByAmap, getBasketDetails, createBasket} = require('../controllers/productController');
 
 const router = express.Router();
 
 // Product Routes
+
+/**
+ * PRODUCTS
+ */
 
 /**
  * @swagger
@@ -93,6 +97,10 @@ router.get('/:id', authentication, getProductDetails);
  *                 type: string
  *                 example: "/images/products/apple.jpg"
  *                 description: "The URL of the product's photo"
+ *               salesPeriod:
+ *                 type: number
+ *                 example: "1"
+ *                 description: "The id of the salesPeriod, can be empty"
  *     responses:
  *       201:
  *         description: "Product created successfully"
@@ -101,8 +109,71 @@ router.get('/:id', authentication, getProductDetails);
  *       500:
  *         description: "Internal server error"
  */
-
 router.post('/', authentication, checkProducerRole, createProduct);
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "Products"
+ *     description: "Endpoints related to product management"
+ *
+ * /products:
+ *   put:
+ *     summary: "Update product information"
+ *     description: "This endpoint update product data."
+ *     tags:
+ *       - "Products"
+ *     requestBody:
+ *       description: "Product object that needs to be updated"
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Apples"
+ *                 description: "The name of the product"
+ *               description:
+ *                 type: string
+ *                 example: "Fresh organic apples"
+ *                 description: "A short description of the product"
+ *               type:
+ *                 type: string
+ *                 example: "Fruit"
+ *                 description: "The type of the product (e.g., Fruit, Vegetable)"
+ *               price:
+ *                 type: number
+ *                 format: float
+ *                 example: 2.5
+ *                 description: "The price of the product in dollars"
+ *               quantity:
+ *                 type: number
+ *                 format: float
+ *                 example: 10
+ *                 description: "The quantity of the product"
+ *               producerId:
+ *                 type: integer
+ *                 example: 1
+ *                 description: "The ID of the producer (linked to a producer)"
+ *               photoUrl:
+ *                 type: string
+ *                 example: "/images/products/apple.jpg"
+ *                 description: "The URL of the product's photo"
+ *               salesPeriod:
+ *                 type: number
+ *                 example: "1"
+ *                 description: "The id of the salesPeriod, can be empty"
+ *     responses:
+ *       201:
+ *         description: "Product updated successfully"
+ *       400:
+ *         description: "Invalid input"
+ *       500:
+ *         description: "Internal server error"
+ */
+router.put('/:productId', authentication, checkProducerRole, updateProductData);
 
 /**
  * BASKET
@@ -235,7 +306,6 @@ router.get('/basket/:id', authentication, getBasketDetails);
  *         '500':
  *           description: Internal server error
  */
-
 router.post('/basket', authentication, checkProducerRole, createBasket);
 
 module.exports = router;

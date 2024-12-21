@@ -1,6 +1,10 @@
 const logger = require('../utils/logger');
-const {requestProductsByAmap, requestProductDetails, insertNewProduct,
+const {requestProductsByAmap, requestProductDetails, insertNewProduct, updateProduct, upsertProductSalesPeriod, deleteProductSalesPeriod,
     requestBasketsByAmap, requestBasketDetails, insertNewBasket} = require("../services/productService");
+
+/**
+ * PRODUCTS
+ */
 
 /**
  * Get Products by AMAP
@@ -56,6 +60,64 @@ const getProductDetails = async (req, res, next) => {
  * @param next
  * @returns {Promise<*>}
  */
+const updateProductData = async (req, res, next) => {
+    logger.info(`Update product data`);
+
+    try {
+        // Arguments
+        const { productId } = req.params;
+        const { name, description, type, price, quantity, photoUrl, salesPeriod } = req.body;
+        const producerId = req.user.producer[0].id;
+
+        // Validate data
+        if (!productId || !name || !description || !type || !price || !quantity || !producerId) {
+            logger.warn(`Missing mandatory fields to update`);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error: All fields (productId, name, description, type, price, quantity) are required',
+            });
+        }
+
+        // Data
+        const productData = { name, description, type, price, quantity, producerId, photoUrl };
+
+        // Insert product
+        const newProduct = await updateProduct(productId, productData);
+
+        // Update/Insert SalesPeriod
+        if (salesPeriod)
+        {
+            await upsertProductSalesPeriod(productId, salesPeriod);
+        }
+        // Delete SalesPeriod
+        else
+        {
+            await deleteProductSalesPeriod(productId);
+        }
+
+        // Return response
+        return res.status(201).json({
+            success: true,
+            message: 'Product updated successfully',
+            product: newProduct
+        });
+    } catch (err) {
+        // Error
+        logger.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
+    }
+};
+
+/**
+ * Controller function to create a new product.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
 const createProduct = async (req, res, next) => {
 
     // Logger
@@ -63,11 +125,12 @@ const createProduct = async (req, res, next) => {
 
     try {
         // Arguments
-        const { name, description, type, price, quantity, photoUrl } = req.body;
+        const { name, description, type, price, quantity, photoUrl, salesPeriod } = req.body;
         const producerId = req.user.producer[0].id;
 
         // Validate data
         if (!name || !description || !type || !price || !quantity || !producerId) {
+            logger.warn(`Missing mandatory fields to insert`);
             return res.status(400).json({
                 success: false,
                 message: 'Name, description, type, price, quantity, and producerId are required.'
@@ -79,6 +142,13 @@ const createProduct = async (req, res, next) => {
 
         // Insert product
         const newProduct = await insertNewProduct(productData);
+
+        // Relate SalesPeriod
+        if (salesPeriod)
+        {
+            const productId = newProduct.id;
+            await upsertProductSalesPeriod(productId, salesPeriod);
+        }
 
         // Return response
         return res.status(201).json({
@@ -166,6 +236,7 @@ const createBasket = async (req, res, next) => {
 
         // Validate data
         if (!name || !description || !price || !weight || !products || !producerId) {
+            logger.warn(`Missing mandatory fields to insert`);
             return res.status(400).json({
                 success: false,
                 message: 'Name, description, price, weight, products and producerId are required.'
@@ -198,6 +269,7 @@ module.exports = {
     getProductsByAmap,
     getProductDetails,
     createProduct,
+    updateProductData,
     getBasketsByAmap,
     getBasketDetails,
     createBasket

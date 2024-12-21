@@ -6,6 +6,7 @@ const Producer = require('../domain/models/Producer');
 const Certificate = require('../domain/models/Certificate');
 const User = require('../domain/models/User');
 const SalePeriod = require('../domain/models/SalePeriod');
+const ProductSalePeriod = require('../domain/models/ProductSalePeriod');
 
 
 /**
@@ -139,6 +140,119 @@ const insertNewProduct = async (productData) => {
         throw error;
     }
 };
+
+/**
+ *
+ * @param productId
+ * @param productData
+ * @returns {Promise<*|null>}
+ */
+const updateProduct = async (productId, productData) => {
+    try {
+        // Find the product by ID
+        const product = await Product.findByPk(productId);
+
+        // Not found
+        if (!product) {
+            logger.warn(`Product with ID ${productId} not found`);
+            return null;
+        }
+
+        // Update data
+        const updatedProduct = await product.update({
+            name: productData.name,
+            description: productData.description,
+            type: productData.type,
+            price: productData.price,
+            quantity: productData.quantity,
+            photoUrl: productData.photoUrl,
+            updatedAt: new Date(),
+        });
+
+        logger.info(`Product updated successfully: ${productId}`);
+        return updatedProduct;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating product: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param productId
+ * @param salesPeriodId
+ * @returns {Promise<*|null>}
+ */
+const upsertProductSalesPeriod = async (productId, salesPeriodId) => {
+    logger.info(`Updating ProductSalesPeriod productID ${productId}`);
+
+    let newsRows = [];
+    try {
+
+        let productSalePeriod = await ProductSalePeriod.findOne({
+            where: {
+                ProductId: productId,
+            },
+        });
+
+        if (productSalePeriod)
+        {
+            [newsRows] = await ProductSalePeriod.update(
+                {
+                    SalePeriodId: salesPeriodId,
+                    updatedAt: new Date(),
+                },
+                {
+                    where: {
+                        ProductId: productId,
+                    },
+                }
+            );
+            logger.info(`ProductSalesPeriod updated successfully.`);
+        } else {
+            // Insert new line
+            newsRows = await ProductSalePeriod.create({
+                ProductId: productId,
+                SalePeriodId: salesPeriodId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            logger.info(`ProductSalesPeriod inserted successfully.`);
+        }
+
+        logger.info(`ProductSalesPeriod updsert successfully.`);
+        return newsRows;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating ProductSalesPeriod for productID ${productId}: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param productId
+ * @returns {Promise<*>}
+ */
+const deleteProductSalesPeriod = async (productId) => {
+    try {
+        // Find the product by ID
+        const deletedProductSalesPeriod = await ProductSalePeriod.destroy({
+            where: {
+                ProductId: productId,
+            },
+        });
+
+        logger.info(`ProductSalesPeriod deleted successfully: ${productId}`);
+        return deletedProductSalesPeriod;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error deleting ProductSalesPeriod: `, error);
+        throw error;
+    }
+};
+
 
 /**
  * BASKETS
@@ -300,6 +414,9 @@ module.exports = {
     requestProductsByAmap,
     requestProductDetails,
     insertNewProduct,
+    updateProduct,
+    upsertProductSalesPeriod,
+    deleteProductSalesPeriod,
     requestBasketsByAmap,
     requestBasketDetails,
     insertNewBasket

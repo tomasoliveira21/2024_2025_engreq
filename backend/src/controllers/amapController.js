@@ -74,6 +74,7 @@ const createAmapSeason = async (req, res, next) => {
 
         // Validate data
         if (!name || !startDate || !endDate || !season || !amapId) {
+            logger.warn(`Missing mandatory fields to insert`);
             return res.status(400).json({
                 success: false,
                 message: 'name, startDate, endDate, season and amapId are required.'
@@ -81,6 +82,7 @@ const createAmapSeason = async (req, res, next) => {
         }
 
         if (!validSeasons.includes(season)) {
+            logger.warn(`Invalid seasons`);
             return res.status(400).json({
                 success: false,
                 message: 'Invalid season option! Valid options: summer, spring, winter, autumn'
@@ -155,11 +157,11 @@ const updateAmapSeason = async (req, res, next) => {
 
     try {
         // Arguments
-        const { seasonId } = req.params;
-        const { name, startDate, endDate, season } = req.body;
+        const { seasonId, name, startDate, endDate, season } = req.body;
 
         // Validations
         if (!name || !startDate || !endDate || !season) {
+            logger.warn(`Missing mandatory fields to update`);
             return res.status(400).json({
                 success: false,
                 message: 'Validation error: All fields (name, startDate, endDate, season) are required',
@@ -170,6 +172,7 @@ const updateAmapSeason = async (req, res, next) => {
         const start = new Date(startDate);
         const end = new Date(endDate);
         if (isNaN(start) || isNaN(end) || start >= end) {
+            logger.warn(`Invalid dates fields to update`);
             return res.status(400).json({
                 success: false,
                 message: 'Validation error: Invalid date range',
