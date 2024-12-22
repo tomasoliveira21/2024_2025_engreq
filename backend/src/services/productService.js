@@ -158,16 +158,19 @@ const updateProduct = async (productId, productData) => {
             return null;
         }
 
+        // Build the update object dynamically
+        const updateFields = {};
+        if (productData.name !== undefined) updateFields.name = productData.name;
+        if (productData.description !== undefined) updateFields.description = productData.description;
+        if (productData.type !== undefined) updateFields.type = productData.type;
+        if (productData.price !== undefined) updateFields.price = productData.price;
+        if (productData.quantity !== undefined) updateFields.quantity = productData.quantity;
+        if (productData.photoUrl !== undefined) updateFields.photoUrl = productData.photoUrl;
+        if (productData.producerId !== undefined) updateFields.ProducerId = productData.producerId;
+        updateFields.updatedAt = new Date(); // Always update `updatedAt`
+
         // Update data
-        const updatedProduct = await product.update({
-            name: productData.name,
-            description: productData.description,
-            type: productData.type,
-            price: productData.price,
-            quantity: productData.quantity,
-            photoUrl: productData.photoUrl,
-            updatedAt: new Date(),
-        });
+        const updatedProduct = await product.update(updateFields);
 
         logger.info(`Product updated successfully: ${productId}`);
         return updatedProduct;
@@ -177,6 +180,7 @@ const updateProduct = async (productId, productData) => {
         throw error;
     }
 };
+
 
 /**
  *
@@ -427,26 +431,28 @@ const updateBasket = async (basketId, basketData) => {
             return null;
         }
 
+        // Build the update object dynamically
+        const updateFields = {};
+        if (basketData.name !== undefined) updateFields.name = basketData.name;
+        if (basketData.description !== undefined) updateFields.description = basketData.description;
+        if (basketData.price !== undefined) updateFields.price = basketData.price;
+        if (basketData.weight !== undefined) updateFields.weight = basketData.weight;
+        if (basketData.producerId !== undefined) updateFields.ProducerId = basketData.producerId;
+        if (basketData.photoUrl !== undefined) updateFields.photoUrl = basketData.photoUrl;
+        updateFields.updatedAt = new Date(); // Always update the `updatedAt` field
+
         // Update data
-        const updatedBasket = await basket.update({
-            name: basketData.name,
-            description: basketData.description,
-            price: basketData.price,
-            weight: basketData.weight,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            ProducerId: basketData.producerId,
-            photoUrl: basketData.photoUrl || 'default-photo-url.jpg'
-        });
+        const updatedBasket = await basket.update(updateFields);
 
         logger.info(`Basket updated successfully: ${basketId}`);
         return updatedBasket;
     } catch (error) {
         // Log the error and rethrow it
-        logger.error(`Error updating product: `, error);
+        logger.error(`Error updating basket: `, error);
         throw error;
     }
 };
+
 
 /**
  *
@@ -523,6 +529,155 @@ const deleteBasketSalesPeriod = async (basketId) => {
     }
 };
 
+/**
+ * Producer Products
+ * @param producerId
+ * @returns {Promise<*|*[]>}
+ */
+const requestAllProducerProducts = async (producerId) => {
+
+    logger.info(`Fetching all the producer's products details (Producer: ${producerId})`);
+
+    try {
+        // Query data
+        const productDetails = await Product.findAll({
+            attributes: ['id', 'name', 'description', 'type', 'price', 'quantity'],
+            where: {
+                producerId: producerId,
+            },
+        });
+
+        // Logger
+        logger.info(`Retrieved all the producer products: ${JSON.stringify(productDetails)}`);
+
+        return productDetails;
+    } catch (error) {
+        logger.error('Error fetching producer products:', error.message);
+        return [];
+    }
+};
+
+/**
+ * BASKETS
+ */
+
+/**
+ * Basket list by Producer
+ * @param producerId
+ * @returns {Promise<*|*[]>}
+ */
+const requestProducerBaskets = async (producerId) => {
+    logger.info(`Fetching all Producer baskets (Producer: ${producerId})`);
+
+    try {
+        // Query data
+        const basketList = await Basket.findAll({
+            attributes: ['id', 'name', 'description', 'type', 'photoUrl', 'price', 'weight'],
+            where:{
+                ProducerId: producerId,
+            },
+        });
+
+        // Logger
+        logger.info(`Retrieved Producer baskets data: ${JSON.stringify(basketList)}`);
+
+        return basketList;
+    } catch (error) {
+        logger.error('Error fetching producer baskets data:', error.message);
+        return [];
+    }
+};
+
+/**
+ * Delete product by id
+ * @param productId
+ * @returns {Promise<*|*[]>}
+ */
+const requestDeleteProductData = async (productId) => {
+    logger.info(`Deleting product (Product ID: ${productId})`);
+
+    try {
+        // Fetch product details before deletion if needed
+        const product = await Product.findOne({
+            attributes: ['id', 'name', 'description', 'type', 'photoUrl', 'price', 'quantity'],
+            where: { id: productId },
+        });
+
+        if (!product) {
+            logger.warn(`Product with ID ${productId} not found`);
+            return null; // Or handle this scenario as needed
+        }
+
+        // Delete related BasketProducts rows where productId is involved
+        await BasketProduct.destroy({
+            where: { ProductId: productId }
+        });
+
+        // Delete the product itself
+        const deletedCount = await Product.destroy({
+            where: { id: productId },
+        });
+
+        if (deletedCount > 0) {
+            logger.info(`Deleted product data: ${JSON.stringify(product)}`);
+            return product; // Return the deleted product details
+        } else {
+            logger.warn(`No product was deleted for ID ${productId}`);
+            return null;
+        }
+    } catch (error) {
+        logger.error(`Error deleting product with ID ${productId}: ${error.message}`);
+        throw error; // Optionally rethrow the error for higher-level handling
+    }
+};
+
+
+/**
+ * Delete basket by id
+ * @param basketId
+ * @returns {Promise<*|*[]>}
+ */
+const requestDeleteBasketData = async (basketId) => {
+    logger.info(`Deleting basket (Basket ID: ${basketId})`);
+
+    try {
+        // Fetch basket details before deletion if needed
+        const basket = await Basket.findOne({
+            attributes: ['id', 'name', 'description', 'price', 'weight', 'type', 'photoUrl'],
+            where: { id: basketId },
+        });
+
+        if (!basket) {
+            logger.warn(`Basket with ID ${basketId} not found`);
+            return null; // Or handle this scenario as needed
+        }
+
+        // Delete related BasketProducts rows where basketId is involved
+        await BasketProduct.destroy({
+            where: { BasketId: basketId }
+        });
+
+        // Delete the basket itself
+        const deletedCount = await Basket.destroy({
+            where: { id: basketId },
+        });
+
+        if (deletedCount > 0) {
+            logger.info(`Deleted basket data: ${JSON.stringify(basket)}`);
+            return basket; // Return the deleted basket details
+        } else {
+            logger.warn(`No basket was deleted for ID ${basketId}`);
+            return null;
+        }
+    } catch (error) {
+        logger.error(`Error deleting basket with ID ${basketId}: ${error.message}`);
+        throw error; // Optionally rethrow the error for higher-level handling
+    }
+};
+
+
+
+
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,
@@ -535,5 +690,9 @@ module.exports = {
     insertNewBasket,
     updateBasket,
     upsertBasketSalesPeriod,
-    deleteBasketSalesPeriod
+    deleteBasketSalesPeriod,
+    requestAllProducerProducts,
+    requestProducerBaskets,
+    requestDeleteBasketData,
+    requestDeleteProductData
 };

@@ -1,7 +1,12 @@
 const express = require('express');
 const authentication = require('../middlewares/authentication');
 const { checkAMAPAccess, checkProducerRole } = require('../middlewares/permissions');
-const { getProductsByAmap, getProductDetails, createProduct, updateProductData, getBasketsByAmap, getBasketDetails, createBasket, updateBasketData} = require('../controllers/productController');
+const { getProductsByAmap, getProductDetails, createProduct, updateProductData, getBasketsByAmap, getBasketDetails, createBasket, updateBasketData,
+    getAllProducerProducts,
+    getAllProducerBaskets,
+    deleteBasketData,
+    deleteProductData
+} = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -331,5 +336,13 @@ router.post('/basket', authentication, checkProducerRole, createBasket);
  *           description: Internal server error
  */
 router.put('/basket/:id', authentication, checkProducerRole, updateBasketData);
+
+router.get('/producer/:producerId', authentication, checkProducerRole, getAllProducerProducts);
+
+router.get('/basket/producer/:producerId', authentication, checkProducerRole, getAllProducerBaskets);
+
+router.delete('/basket/:basketId', authentication, checkProducerRole, deleteBasketData);
+
+router.delete('/:productId', authentication, checkProducerRole, deleteProductData);
 
 module.exports = router;
