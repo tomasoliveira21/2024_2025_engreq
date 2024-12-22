@@ -2,12 +2,13 @@ const logger = require('../utils/logger');
 const {
     requestSubscriptionList,
     requestSubscriptionHistory,
-    insertNewOrderSubscription
+    insertNewOrderSubscription,
+    updateSubscription
 } = require('../services/subscriptionService');
 
 const {
     requestProductDetails,
-    requestBasketDetails
+    requestBasketDetails, updateBasket, upsertBasketSalesPeriod, deleteBasketSalesPeriod
 } = require('../services/productService');
 
 /**
@@ -199,8 +200,63 @@ const createOrderSubscription = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const updateOrderSubscription = async (req, res, next) => {
+    logger.info(`Update subscription data`);
+
+    try {
+        // Arguments
+        const { id } = req.params;
+        const { status } = req.body;
+        const validStatus = ['pending', 'completed', 'cancelled'];
+
+        if (!id) {
+            logger.warn(`Subscription ID is missing`);
+            return res.status(400).json({
+                success: false,
+                message: 'Subscription ID is required.'
+            });
+        }
+
+        if (!validStatus.includes(status)) {
+            logger.warn(`Invalid status`);
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid status option! Valid options: [pending, completed, cancelled]'
+            });
+        }
+
+        // Filter out undefined or null fields
+        const subscriptionData = {status};
+
+        // Update subscription
+        const updatedSubscription = await updateSubscription(id, subscriptionData);
+
+        // Return response
+        return res.status(201).json({
+            success: true,
+            message: 'Subscription updated successfully',
+            basket: updatedSubscription,
+        });
+    } catch (err) {
+        // Error handling
+        logger.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+        });
+    }
+};
+
 module.exports = {
     getSubscriptionList,
     getSubscriptionHistory,
-    createOrderSubscription
+    createOrderSubscription,
+    updateOrderSubscription
 };

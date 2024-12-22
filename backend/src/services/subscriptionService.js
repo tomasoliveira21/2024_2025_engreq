@@ -143,9 +143,43 @@ const insertNewOrderSubscription = async (orderData) => {
     }
 };
 
+/**
+ *
+ * @param subscriptionId
+ * @param subscriptionData
+ * @returns {Promise<*|null>}
+ */
+const updateSubscription = async (subscriptionId, subscriptionData) => {
+    try {
+        // Find the basket by ID
+        const subscription = await Order.findByPk(subscriptionId);
+
+        // Not found
+        if (!subscription) {
+            logger.warn(`Order (Subscription) with ID ${subscriptionId} not found`);
+            return null;
+        }
+
+        // Build the update object dynamically
+        const updateFields = {};
+        if (subscriptionData.status !== undefined) updateFields.status = subscriptionData.status;
+        updateFields.updatedAt = new Date();
+
+        // Update data
+        const updatedSubscription = await subscription.update(updateFields);
+
+        logger.info(`Order (Subscription) updated successfully: ${subscriptionId}`);
+        return updatedSubscription;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating subscription: `, error);
+        throw error;
+    }
+};
 
 module.exports = {
     requestSubscriptionList,
     requestSubscriptionHistory,
-    insertNewOrderSubscription
+    insertNewOrderSubscription,
+    updateSubscription
 };

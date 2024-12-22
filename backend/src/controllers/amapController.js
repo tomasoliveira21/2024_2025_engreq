@@ -1,5 +1,13 @@
 const logger = require('../utils/logger');
-const { requestAmapsList, requestAmapsKpis, requestAmapSeason, insertNewSeason, deleteSeason, updateSeason } = require('../services/amapService');
+const {
+    requestAmapsList,
+    requestAmapsKpis,
+    requestAmapSeason,
+    insertNewSeason,
+    deleteSeason,
+    updateSeason,
+    checkSeasonName
+} = require('../services/amapService');
 
 /**
  *
@@ -86,6 +94,15 @@ const createAmapSeason = async (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid season option! Valid options: summer, spring, winter, autumn'
+            });
+        }
+
+        // Check if don't exist another season with same name
+        if (await checkSeasonName(amapId, name)) {
+            logger.warn('The name has already been used..');
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid: The name has already been used..'
             });
         }
 
