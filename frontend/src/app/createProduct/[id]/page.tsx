@@ -4,16 +4,19 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
-import Sidebar from "../../../components/Sidebar";
+import Sidebar from "../../../../components/Sidebar";
 import { createProduct } from "@/api/createProduct";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Modal from "../../../components/Modal";
+import Modal from "../../../../components/Modal";
 import { fetchImages } from "@/api/fetchImages";
+import { fetchSeasons } from "@/api/fetchSeasons";
+import { SeasonResponse } from "@/types/seasons";
 
-export default function CreateProduct() {
+export default function CreateProduct({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -26,6 +29,8 @@ export default function CreateProduct() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [seasons, setSeasons] = useState<SeasonResponse[]>();
+  const { id } = params;
 
   useEffect(() => {
     async function getSession() {
@@ -37,6 +42,23 @@ export default function CreateProduct() {
     getSession();
   }, []);
 
+  useEffect(() => {
+    const getSeasons = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedSeasons = await fetchSeasons(session.access_token, id);
+          setSeasons(fetchedSeasons)
+        } catch (error) {
+          console.error("Error fetching Seasons:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    getSeasons();
+  }, [session]);
+
   if (!session) {
     return <div>Loading session...</div>;
   }
@@ -46,11 +68,9 @@ export default function CreateProduct() {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Modal handlers
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  // Fetch images for modal
   const handleSearchImages = async () => {
     if (query.trim()) {
       try {

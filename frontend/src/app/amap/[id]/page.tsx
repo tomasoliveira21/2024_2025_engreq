@@ -191,7 +191,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               />
               <button
                 className="px-4 py-2 text-white bg-blue-900 rounded"
-                onClick={() => router.push("/createProduct")}
+                onClick={() => router.push(`/createProduct/${id}`)}
                 aria-label="Create a new product"
               >
                 Create Product
