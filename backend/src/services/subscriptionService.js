@@ -2,142 +2,16 @@ const logger = require('../utils/logger');
 const Order = require('../domain/models/Order');
 const OrderDetails = require('../domain/models/OrderDetails');
 const User = require('../domain/models/User');
-const Producer = require('../domain/models/Producer');
 const Subscription = require('../domain/models/Subscription');
 const { Op } = require('sequelize');
 
 /**
- * Get Producer order List
- * @returns {Promise<*|*[]>}
- */
-const requestProducerOrderHistory = async (userEmail) => {
-    logger.info('Requesting Producer Order history');
-
-    try {
-        // Fetch orders
-        // Query data
-        const orderList = await Order.findAll({
-            attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
-            where: { periodType: "single purchase", status :"completed" },
-            include: [
-                {
-                    model: OrderDetails,
-                    include: [
-                        {
-                            model: Producer,
-                            include: [
-                                {
-                                    model: User,
-                                    where: { email: userEmail },
-                                    required: true,
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        });
-
-        logger.info('Retrieve Producer order history list');
-        return orderList;
-    } catch (error) {
-        // Detailed logging for better debugging
-        logger.error('Error fetching Producer order history list', {message: error.message, stack: error.stack});
-        return [];
-    }
-};
-
-/**
- * Get CoProducer order list
- * @returns {Promise<*|*[]>}
- */
-const requestCoproducerOrderHistory = async (userEmail) => {
-    logger.info('Requesting CoProducer Order history');
-
-    try {
-        // Fetch orders with order details, consumer, and user
-        const orderList = await Order.findAll({
-            attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
-            where: { periodType: "single purchase", status :"completed" },
-            include: [
-                {
-                    model: User,
-                    required: true,
-                    attributes: ['id', 'email', 'name', 'nif', 'role'],
-                    where: { email: userEmail }
-                },
-                {
-                    model: OrderDetails,
-                    required: true,
-                    attributes: ['id', 'itemType', 'itemId', 'price'],
-                }
-            ]
-        });
-
-        logger.info('Retrieve CoProducer order history list');
-        return orderList;
-    } catch (error) {
-        // Detailed logging for better debugging
-        logger.error('Error fetching CoProducer order history list', { message: error.message, stack: error.stack });
-        return [];
-    }
-};
-
-/**
  *
  * @param userEmail
  * @returns {Promise<*|*[]>}
  */
-const requestProducerSubscriptionHistory = async (userEmail) => {
-    logger.info('Requesting Producer subscription history');
-
-    try {
-        // Fetch orders
-        // Query data
-        const orderList = await Order.findAll({
-            attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
-            where: {
-                periodType: {
-                    [Op.ne]: 'single purchase'
-                },
-                status: "completed"
-            },
-            include: [
-                {
-                    model: OrderDetails,
-                    include: [
-                        {
-                            model: Producer,
-                            include: [
-                                {
-                                    model: User,
-                                    where: { email: userEmail },
-                                    required: true,
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
-        });
-
-        logger.info('Retrieve Producer subscription history list');
-        return orderList;
-    } catch (error) {
-        // Detailed logging for better debugging
-        logger.error('Error fetching Producer subscription history list', {message: error.message, stack: error.stack});
-        return [];
-    }
-};
-
-/**
- *
- * @param userEmail
- * @param status
- * @returns {Promise<*|*[]>}
- */
-const requestCoproducerSubscriptionHistory = async (userEmail) => {
-    logger.info('Requesting CoProducer subscription history');
+const requestSubscriptionHistory = async (userEmail) => {
+    logger.info('Requesting subscription history');
 
     try {
         // Fetch orders with order details, consumer, and user
@@ -147,13 +21,20 @@ const requestCoproducerSubscriptionHistory = async (userEmail) => {
                 periodType: {
                     [Op.ne]: 'single purchase'
                 },
-                status: "completed"
+                status: {
+                    [Op.or]: ['completed', 'cancelled']
+                }
             },
             include: [
                 {
+                    model: Subscription,
+                    attributes: ['startDate', 'endDate'],
+                    required: false,
+                },
+                {
                     model: User,
                     required: true,
-                    attributes: ['id', 'email', 'name', 'nif', 'role'],
+                    attributes: [],
                     where: { email: userEmail }
                 },
                 {
@@ -164,11 +45,11 @@ const requestCoproducerSubscriptionHistory = async (userEmail) => {
             ]
         });
 
-        logger.info('Retrieve CoProducer subscription history list');
+        logger.info('Retrieve subscription history list');
         return subscriptionList;
     } catch (error) {
         // Detailed logging for better debugging
-        logger.error('Error fetching CoProducer subscription history list', { message: error.message, stack: error.stack });
+        logger.error('Error fetching subscription history list', { message: error.message, stack: error.stack });
         return [];
     }
 };
@@ -178,11 +59,11 @@ const requestCoproducerSubscriptionHistory = async (userEmail) => {
  * @param userEmail
  * @returns {Promise<*|*[]>}
  */
-const requestCoproducerSubscriptionAtive = async (userEmail) => {
-    logger.info('Requesting CoProducer subscription');
+const requestSubscriptionList = async (userEmail) => {
+    logger.info('Requesting subscription list');
 
     try {
-        // Fetch orders with order details, consumer, and user
+        // Fetch subscription list
         const subscriptionList = await Order.findAll({
             attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
             where: {
@@ -194,12 +75,13 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
             include: [
                 {
                     model: Subscription,
+                    attributes: ['startDate', 'endDate'],
                     required: false,
                 },
                 {
                     model: User,
                     required: true,
-                    attributes: ['id', 'email', 'name', 'nif', 'role'],
+                    attributes: [],
                     where: { email: userEmail }
                 },
                 {
@@ -210,11 +92,11 @@ const requestCoproducerSubscriptionAtive = async (userEmail) => {
             ]
         });
 
-        logger.info('Retrieve CoProducer subscription list');
+        logger.info('Retrieve subscription list');
         return subscriptionList;
     } catch (error) {
         // Detailed logging for better debugging
-        logger.error('Error fetching CoProducer subscription list', { message: error.message, stack: error.stack });
+        logger.error('Error fetching subscription list', { message: error.message, stack: error.stack });
         return [];
     }
 };
@@ -263,10 +145,7 @@ const insertNewOrderSubscription = async (orderData) => {
 
 
 module.exports = {
-    requestProducerOrderHistory,
-    requestCoproducerOrderHistory,
-    requestProducerSubscriptionHistory,
-    requestCoproducerSubscriptionHistory,
-    requestCoproducerSubscriptionAtive,
+    requestSubscriptionList,
+    requestSubscriptionHistory,
     insertNewOrderSubscription
 };

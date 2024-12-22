@@ -1,8 +1,12 @@
 const logger = require('../utils/logger');
 const express = require('express');
 const authentication = require('../middlewares/authentication');
-const { getSubscriptionList, getSubscriptionHistory, createOrderSubscription } = require('../controllers/subscriptionController');
-const {checkCoproducerRole} = require("../middlewares/permissions");
+const {
+    getSubscriptionList,
+    getSubscriptionHistory,
+    createOrderSubscription
+} = require('../controllers/subscriptionController');
+const { checkCoproducerRole } = require("../middlewares/permissions");
 
 const router = express.Router();
 
@@ -16,8 +20,8 @@ const router = express.Router();
  *
  * /subscription:
  *   get:
- *     summary: "Get a list of subscription active"
- *     description: "This endpoint retrieves a list of all subscription available"
+ *     summary: "Get a list of subscription order (pending status)"
+ *     description: "This endpoint retrieves a list of all subscription (weekly or monthly) in status pending"
  *     tags:
  *       - "Subscription"
  *     responses:
@@ -37,7 +41,7 @@ router.get('/', authentication, getSubscriptionList);
  * /subscription/history:
  *   get:
  *     summary: "Get a list of subscription history"
- *     description: "This endpoint retrieves a list of all subscription available"
+ *     description: "This endpoint retrieves a list of all subscription (weekly or monthly) in status completed or cancelled"
  *     tags:
  *       - "Subscription"
  *     responses:
@@ -47,7 +51,6 @@ router.get('/', authentication, getSubscriptionList);
  *         description: "No subscription found"
  */
 router.get('/history', authentication, getSubscriptionHistory);
-
 
 /**
  * @swagger
