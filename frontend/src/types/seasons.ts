@@ -7,6 +7,8 @@ export type SalePeriod = {
   };
 
 export interface SeasonResponse {
+    name: any;
+    id: any;
     season: SalePeriod[];
   }
   

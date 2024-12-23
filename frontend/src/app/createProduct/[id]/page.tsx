@@ -11,10 +11,10 @@ import "react-toastify/dist/ReactToastify.css";
 import Modal from "../../../../components/Modal";
 import { fetchImages } from "@/api/fetchImages";
 import { fetchSeasons } from "@/api/fetchSeasons";
-import { SeasonResponse } from "@/types/seasons";
+import { SalePeriod, SeasonResponse } from "@/types/seasons";
+import Select from "react-select";
 
 export default function CreateProduct({ params }: { params: { id: string } }) {
-  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -24,6 +24,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
     price: "",
     quantity: "",
     photoUrl: "",
+    season: "" as string | number,
   });
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,7 +49,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
         try {
           setIsLoading(true);
           const fetchedSeasons = await fetchSeasons(session.access_token, id);
-          setSeasons(fetchedSeasons)
+          setSeasons(fetchedSeasons);
         } catch (error) {
           console.error("Error fetching Seasons:", error);
         } finally {
@@ -58,6 +59,8 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
     };
     getSeasons();
   }, [session]);
+
+  console.log("seasons: ", seasons);
 
   if (!session) {
     return <div>Loading session...</div>;
@@ -105,6 +108,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity, 10),
         photoUrl: formData.photoUrl,
+        //season: formData.season, TODO
       });
 
       setFormData({
@@ -114,6 +118,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
         price: "",
         quantity: "",
         photoUrl: "",
+        season: "",
       });
 
       setError("");
@@ -123,6 +128,14 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleSeasonSelection = (selectedOptions: any) => {
+    const selectedSeasons = selectedOptions.map((option: any) => ({
+      id: option.value,
+      name: option.label,
+    }));
+
+    setFormData({ ...formData, season: selectedSeasons });
+  };
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
       <main className="grid grid-cols-12 gap-8">
@@ -180,6 +193,38 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
                 className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+            <Select
+              isMulti
+              options={
+                seasons?.map((salePeriod) => ({
+                  value: salePeriod.id,
+                  label: salePeriod.name,
+                })) || []
+              }
+              onChange={handleSeasonSelection}
+              placeholder="Select seasons..."
+              className="basic-multi-select text-black"
+              classNamePrefix="select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  backgroundColor: "#4B5563",
+                  color: "white",
+                  borderRadius: "0.375rem",
+                  padding: "0.5rem",
+                }),
+                menu: (base) => ({
+                  ...base,
+                  backgroundColor: "#374151",
+                  color: "white",
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused ? "#1F2937" : "#374151",
+                  color: "white",
+                }),
+              }}
+            />
             <div>
               <label htmlFor="price" className="block text-sm font-medium mb-2">
                 Price
