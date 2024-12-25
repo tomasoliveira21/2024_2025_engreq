@@ -134,6 +134,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
 
     setFormData({ ...formData, season: selectedSeasons });
   };
+  
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
       <main className="grid grid-cols-12 gap-8">

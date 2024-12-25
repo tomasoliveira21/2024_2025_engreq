@@ -24,6 +24,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     weight: "",
     photoUrl: "",
     products: [],
+    season: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -137,7 +138,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     getSeasons();
   }, [session]);
 
-  console.log('seasons: ', seasons);
+  console.log("seasons: ", seasons);
 
   if (!session) {
     return <div>Loading session...</div>;
@@ -149,7 +150,16 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
       quantity: 1, // Default quantity or allow users to specify it later
     }));
     setFormData({ ...formData, products: selectedProducts });
-  };  
+  };
+
+  const handleSeasonSelection = (selectedOptions: any) => {
+    const selectedSeasons = selectedOptions.map((option: any) => ({
+      id: option.value,
+      name: option.label,
+    }));
+
+    setFormData({ ...formData, season: selectedSeasons });
+  };
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -194,6 +204,38 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
                 className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+            <Select
+              isMulti
+              options={
+                seasons?.map((salePeriod) => ({
+                  value: salePeriod.id,
+                  label: salePeriod.name,
+                })) || []
+              }
+              onChange={handleSeasonSelection}
+              placeholder="Select seasons..."
+              className="basic-multi-select text-black"
+              classNamePrefix="select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  backgroundColor: "#4B5563",
+                  color: "white",
+                  borderRadius: "0.375rem",
+                  padding: "0.5rem",
+                }),
+                menu: (base) => ({
+                  ...base,
+                  backgroundColor: "#374151",
+                  color: "white",
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused ? "#1F2937" : "#374151",
+                  color: "white",
+                }),
+              }}
+            />
             <div>
               <label htmlFor="price" className="block text-sm font-medium mb-2">
                 Price
