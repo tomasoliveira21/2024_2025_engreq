@@ -108,6 +108,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
         products: formData.products,
         createdAt: new Date(),
         updatedAt: new Date(),
+        salesPeriod: Number(formData.season),
       });
 
       if (isSuccess) {
@@ -205,16 +206,21 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
               />
             </div>
             <Select
-              isMulti
               options={
                 seasons?.map((salePeriod) => ({
                   value: salePeriod.id,
                   label: salePeriod.name,
                 })) || []
               }
-              onChange={handleSeasonSelection}
-              placeholder="Select seasons..."
-              className="basic-multi-select text-black"
+              onChange={(selectedOption) => {
+                setFormData({
+                  ...formData,
+                  season: selectedOption ? selectedOption.value : "",
+                });
+              }}
+              placeholder="Select a season..."
+              isClearable
+              className="basic-single-select text-black"
               classNamePrefix="select"
               styles={{
                 control: (base) => ({
