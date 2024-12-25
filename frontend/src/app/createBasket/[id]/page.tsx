@@ -11,6 +11,8 @@ import { Product } from "@/types/product";
 import Select from "react-select";
 import Modal from "../../../../components/Modal";
 import { fetchImages } from "@/api/fetchImages";
+import { fetchSeasons } from "@/api/fetchSeasons";
+import { SeasonResponse } from "@/types/seasons";
 
 export default function CreateBasket({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -28,6 +30,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
   const [images, setImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
+  const [seasons, setSeasons] = useState<SeasonResponse[]>();
   const { id } = params;
 
   // Fetch session on component mount
@@ -117,6 +120,25 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     }
   };
 
+  useEffect(() => {
+    const getSeasons = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedSeasons = await fetchSeasons(session.access_token, id);
+          setSeasons(fetchedSeasons);
+        } catch (error) {
+          console.error("Error fetching Seasons:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    getSeasons();
+  }, [session]);
+
+  console.log('seasons: ', seasons);
+
   if (!session) {
     return <div>Loading session...</div>;
   }
@@ -130,56 +152,88 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
   };  
 
   return (
-    <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden">
+    <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
       <main className="grid grid-cols-12 gap-8">
         <div className="col-span-3">
           <Sidebar />
         </div>
-        <div className="col-span-8 grid gap-8 mt-8">
-          <h1 className="text-2xl font-bold mb-4">Create Basket</h1>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Name</label>
+        <div className="col-span-8 mt-8">
+          <h2 className="text-2xl font-bold mb-6">Create Basket</h2>
+          <form
+            className="bg-gray-700 p-6 rounded-lg shadow-lg space-y-4"
+            onSubmit={handleSubmit}
+          >
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-2">
+                Name
+              </label>
               <input
                 type="text"
+                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                required
+                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Description</label>
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium mb-2"
+              >
+                Description
+              </label>
               <input
                 type="text"
+                id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                required
+                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Price</label>
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium mb-2">
+                Price
+              </label>
               <input
                 type="number"
+                step="0.01"
+                id="price"
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                required
+                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Weight</label>
+            <div>
+              <label
+                htmlFor="weight"
+                className="block text-sm font-medium mb-2"
+              >
+                Weight
+              </label>
               <input
                 type="number"
+                step="0.01"
+                id="weight"
                 name="weight"
                 value={formData.weight}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                required
+                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Products</label>
+            <div>
+              <label
+                htmlFor="products"
+                className="block text-sm font-medium mb-2"
+              >
+                Products
+              </label>
               <Select
                 isMulti
                 options={products.map((product) => ({
@@ -189,6 +243,25 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
                 className="basic-multi-select text-black"
                 classNamePrefix="select"
                 onChange={handleProductSelection}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor: "#4B5563",
+                    color: "white",
+                    borderRadius: "0.375rem",
+                    padding: "0.5rem",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor: "#374151",
+                    color: "white",
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isFocused ? "#1F2937" : "#374151",
+                    color: "white",
+                  }),
+                }}
               />
             </div>
             <div className="mb-4">
@@ -206,19 +279,18 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
                 type="button"
                 onClick={handleOpenModal}
                 className="px-4 py-2 bg-blue-500 text-white rounded"
-                aria-label="Select a photo for the product"
+                aria-label="Select a photo for the basket"
               >
                 Select Photo
               </button>
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-md transition"
             >
               Create Basket
             </button>
           </form>
-
           {isModalOpen && (
             <Modal onClose={handleCloseModal}>
               <div className="p-6">

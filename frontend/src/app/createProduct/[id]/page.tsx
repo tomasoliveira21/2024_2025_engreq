@@ -60,8 +60,6 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
     getSeasons();
   }, [session]);
 
-  console.log("seasons: ", seasons);
-
   if (!session) {
     return <div>Loading session...</div>;
   }
