@@ -106,7 +106,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity, 10),
         photoUrl: formData.photoUrl,
-        //season: formData.season, TODO
+        salesPeriod: Number(formData.season),
       });
 
       setFormData({
@@ -120,7 +120,6 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
       });
 
       setError("");
-      // TODO: Redirect
     } catch (err) {
       setError("Failed to register the product. Please try again.");
     }
@@ -134,7 +133,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
 
     setFormData({ ...formData, season: selectedSeasons });
   };
-  
+
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
       <main className="grid grid-cols-12 gap-8">
@@ -193,16 +192,21 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
               />
             </div>
             <Select
-              isMulti
               options={
                 seasons?.map((salePeriod) => ({
                   value: salePeriod.id,
                   label: salePeriod.name,
                 })) || []
               }
-              onChange={handleSeasonSelection}
-              placeholder="Select seasons..."
-              className="basic-multi-select text-black"
+              onChange={(selectedOption) => {
+                setFormData({
+                  ...formData,
+                  season: selectedOption ? selectedOption.value : "",
+                });
+              }}
+              placeholder="Select a season..."
+              isClearable
+              className="basic-single-select text-black"
               classNamePrefix="select"
               styles={{
                 control: (base) => ({

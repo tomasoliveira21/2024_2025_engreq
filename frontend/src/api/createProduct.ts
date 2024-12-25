@@ -9,6 +9,7 @@ export const createProduct = async (
     price: number;
     quantity: number;
     photoUrl: string;
+    salesPeriod: number
   }
 ) => {
   try {
