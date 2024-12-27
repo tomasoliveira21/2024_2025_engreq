@@ -248,11 +248,38 @@ const updateSeason = async (seasonId, seasonData) => {
     }
 };
 
+/**
+ *
+ * @param amapId
+ * @param name
+ * @returns {Promise<boolean>}
+ */
+const checkSeasonName = async (amapId, name) => {
+    logger.info(`Check if season name exist: ${name}`);
+
+    try {
+        // Find the season by name
+        const season = await SalePeriod.findOne({
+            where: {
+                AMAPId: amapId,
+                name: name,
+            }
+        });
+
+        return !!season;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error checking if season name exist: `, error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestAmapsList,
     requestAmapsKpis,
     requestAmapSeason,
     insertNewSeason,
     deleteSeason,
-    updateSeason
+    updateSeason,
+    checkSeasonName
 };

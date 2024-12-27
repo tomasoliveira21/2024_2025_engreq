@@ -1,8 +1,14 @@
 const logger = require('../utils/logger');
 const express = require('express');
 const authentication = require('../middlewares/authentication');
-const { getSubscriptionList, getSubscriptionHistory, createOrderSubscription } = require('../controllers/subscriptionController');
-const {checkCoproducerRole} = require("../middlewares/permissions");
+const {
+    getSubscriptionList,
+    getSubscriptionHistory,
+    createOrderSubscription,
+    updateOrderSubscription
+} = require('../controllers/subscriptionController');
+const { checkCoproducerRole, checkProducerRole} = require("../middlewares/permissions");
+const {updateBasketData} = require("../controllers/productController");
 
 const router = express.Router();
 
@@ -16,8 +22,8 @@ const router = express.Router();
  *
  * /subscription:
  *   get:
- *     summary: "Get a list of subscription active"
- *     description: "This endpoint retrieves a list of all subscription available"
+ *     summary: "Get a list of subscription order (pending status)"
+ *     description: "This endpoint retrieves a list of all subscription (weekly or monthly) in status pending"
  *     tags:
  *       - "Subscription"
  *     responses:
@@ -37,7 +43,7 @@ router.get('/', authentication, getSubscriptionList);
  * /subscription/history:
  *   get:
  *     summary: "Get a list of subscription history"
- *     description: "This endpoint retrieves a list of all subscription available"
+ *     description: "This endpoint retrieves a list of all subscription (weekly or monthly) in status completed or cancelled"
  *     tags:
  *       - "Subscription"
  *     responses:
@@ -47,7 +53,6 @@ router.get('/', authentication, getSubscriptionList);
  *         description: "No subscription found"
  */
 router.get('/history', authentication, getSubscriptionHistory);
-
 
 /**
  * @swagger
@@ -88,36 +93,45 @@ router.get('/history', authentication, getSubscriptionHistory);
  *     responses:
  *       201:
  *         description: "Subscription created successfully"
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   description: "The unique ID of the newly subscription"
- *                   example: 1
- *                 periodType:
- *                   type: string
- *                   description: "The period type for the subscription"
- *                   example: "weekly"
- *                 itemType:
- *                   type: string
- *                   description: "The type of the item subscribed"
- *                   example: "product"
- *                 itemId:
- *                   type: integer
- *                   description: "The ID of the item subscribed"
- *                   example: 1
- *                 quantity:
- *                   type: integer
- *                   description: "The quantity of the item subscribed"
- *                   example: 10
  *       400:
  *         description: "Invalid input data"
  *       500:
  *         description: "Internal server error"
  */
 router.post('/', authentication, checkCoproducerRole, createOrderSubscription);
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "Subscription"
+ *     description: "Endpoints related to subscription management"
+ *
+ * /subscription/{id}:
+ *   put:
+ *     summary: "Update the subscription data"
+ *     description: "This endpoint create a new subscription"
+ *     tags:
+ *       - "Subscription"
+ *     requestBody:
+ *       description: "Endpoint to update the subscription status"
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 description: "Status of the subscription"
+ *                 example: "completed"
+ *     responses:
+ *       201:
+ *         description: "Subscription created successfully"
+ *       400:
+ *         description: "Invalid input data"
+ *       500:
+ *         description: "Internal server error"
+ */
+router.put('/:id', authentication, checkProducerRole, updateOrderSubscription);
 
 module.exports = router;

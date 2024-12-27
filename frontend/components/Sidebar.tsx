@@ -6,7 +6,7 @@ import {
   LogoutIcon,
   ShoppingCartIcon,
   ClipboardIcon,
-  CreditCardIcon,
+  ClipboardListIcon,
   ShieldCheckIcon,
   AdjustmentsIcon
 } from "@heroicons/react/outline";
@@ -32,12 +32,12 @@ function Sidebar() {
     router.push("/cart");
   };
 
-  const goToOrders = () => {
-    router.push("/orders");
+  const goToHistory = () => {
+    router.push("/history");
   };
 
-  const goToSubscriptions = () => {
-    router.push("/subscriptions");
+  const goToOrders = () => {
+    router.push("/orders");
   };
 
   const goToProfile = () => {
@@ -72,13 +72,14 @@ function Sidebar() {
       <img className="m-1 h-13 w-20" src="/soc.png" alt="" />
       <SidebarRow Icon={HomeIcon} title="AMAP's" onClick={goToHome} aria-label="Go to AMAP's page" />
       <SidebarRow Icon={ShoppingCartIcon} title="Cart" onClick={goToCart} aria-label="Go to Cart's page" />
-      <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders} aria-label="Go to Orders page"/>
-      <SidebarRow Icon={CreditCardIcon} title="Subscriptions" onClick={goToSubscriptions}/>
+      <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
+      <SidebarRow Icon={ClipboardListIcon} title="History" onClick={goToHistory} aria-label="Go to History page"/>
       {/* SidebarRow only visible to Producers and Admins */}
-      {
+      {/*
         (userRole === "Producer" || userRole === "Admin") && (
           <SidebarRow Icon={ShieldCheckIcon} title="Producer Page" onClick={goToProducer} aria-label="Go to Producer's page" />
         )
+        */
       }
       {/* SidebarRow only visible to Admins */}
       {

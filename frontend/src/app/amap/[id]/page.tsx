@@ -191,7 +191,7 @@ export default function Amap({ params }: { params: { id: string } }) {
               />
               <button
                 className="px-4 py-2 text-white bg-blue-900 rounded"
-                onClick={() => router.push("/createProduct")}
+                onClick={() => router.push(`/createProduct/${id}`)}
                 aria-label="Create a new product"
               >
                 Create Product
@@ -231,7 +231,7 @@ export default function Amap({ params }: { params: { id: string } }) {
                   </td>
                   <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {product.SalePeriods && product.SalePeriods.length > 0
-                      ? product.SalePeriods.map((period) => period.season).join(
+                      ? product.SalePeriods.map((period) => period.name).join(
                           ", "
                         )
                       : "N/A"}
@@ -302,7 +302,7 @@ export default function Amap({ params }: { params: { id: string } }) {
                   </td>
                   <td className="w-1/5 border border-gray-300 px-4 py-2">
                     {basket.SalePeriods && basket.SalePeriods.length > 0
-                      ? basket.SalePeriods.map((basket) => basket.season).join(
+                      ? basket.SalePeriods.map((basket) => basket.name).join(
                           ", "
                         )
                       : "N/A"}
