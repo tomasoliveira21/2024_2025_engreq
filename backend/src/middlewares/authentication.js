@@ -48,6 +48,7 @@ const authentication = async (req, res, next) => {
             id      : user.user.id,
             email   : user.user.email,
             phone   : user.user.phone,
+            user_id : sessionExtraData.id,
             role    : sessionExtraData.role,
             amapId  : sessionExtraData.AMAPId,
         }

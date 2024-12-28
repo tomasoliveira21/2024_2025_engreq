@@ -13,7 +13,7 @@ const getUserData = async (userEmail) => {
     try {
         // Query data
         const userData = await User.findOne({
-            attributes: ['email', 'role', 'AMAPId'], // Only select these columns
+            attributes: ['id', 'email', 'role', 'AMAPId'], // Only select these columns
             where: {
                 email: userEmail,
             },
