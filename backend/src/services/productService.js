@@ -690,9 +690,6 @@ const requestDeleteBasketData = async (basketId) => {
     }
 };
 
-
-
-
 module.exports = {
     requestProductsByAmap,
     requestProductDetails,

@@ -8,7 +8,9 @@ const {
     requestCartHistory,
     deleteCartItem,
     insertCartItem,
-    updateCart
+    updateCart,
+    requestProducerKpis,
+    requestCoproducerKpis
 } = require('../services/subscriptionService');
 
 const {
@@ -552,6 +554,31 @@ const updateItemCart = async (req, res, next) => {
     }
 };
 
+const getUserKpis = async (req, res, next) => {
+    logger.info(`Request getUserKpis`);
+    try {
+        const userRole = req.user.role;
+        const userEmail = req.user.email;
+        let userKpis;
+
+        // Producer KPIs
+        if (userRole === 'Producer') {
+            userKpis = await requestProducerKpis(userEmail);
+        }
+        // Coproducer KPIs
+        else {
+            userKpis = await requestCoproducerKpis(userEmail);
+        }
+
+        res.status(200).json({ kpis: userKpis });
+    } catch (error) {
+        next(error);
+    }
+
+
+
+};
+
 module.exports = {
     getSubscriptionList,
     getSubscriptionHistory,
@@ -562,5 +589,6 @@ module.exports = {
     getCartHistory,
     addItemToCart,
     cartCheckout,
-    updateItemCart
+    updateItemCart,
+    getUserKpis
 };

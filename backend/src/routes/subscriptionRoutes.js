@@ -11,14 +11,17 @@ const {
     deleteCartItemAction,
     addItemToCart,
     cartCheckout,
-    updateItemCart
+    updateItemCart,
+    getUserKpis
 } = require('../controllers/subscriptionController');
 const { checkCoproducerRole, checkProducerRole} = require("../middlewares/permissions");
 const {updateBasketData} = require("../controllers/productController");
 
 const router = express.Router();
 
-// Order routes
+/**
+ * CART
+ */
 
 /**
  * @swagger
@@ -291,5 +294,30 @@ router.get('/cart/history', authentication, getCartHistory);
  *         description: Cart item not found
  */
 router.delete('/cart/:itemId', authentication, deleteCartItemAction);
+
+/**
+ * KPI
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "Subscription"
+ *     description: "Endpoints related to subscription management"
+ *
+ * /subscription/kpis:
+ *   get:
+ *     summary: "Get a user KPIS indicators"
+ *     description: "This endpoint retrieves a user KPIS indicators"
+ *     tags:
+ *       - "Subscription"
+ *     responses:
+ *       200:
+ *         description: "A User KPIS indicators"
+ *       404:
+ *         description: "No KPIS found"
+ */
+router.get('/kpis', authentication, getUserKpis);
+
 
 module.exports = router;

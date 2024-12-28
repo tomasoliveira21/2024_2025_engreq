@@ -310,6 +310,59 @@ const insertDeliveryDates = async (seasonData) => {
     }
 };
 
+/**
+ *
+ * @param amapId
+ * @returns {Promise<*|null>}
+ */
+const requestAmapProfile = async (amapId) => {
+    try {
+        // GET AMAP
+        const amapProfile = await AMAPs.findByPk(amapId);
+
+        logger.info(`AMAP Profile successfully: ${amapId}`);
+        return amapProfile;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating season: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param amapId
+ * @param amapData
+ * @returns {Promise<*|null>}
+ */
+const updateAmap = async (amapId, amapData) => {
+    try {
+        // Find the season by ID
+        const amapProfile = await AMAPs.findByPk(amapId);
+
+        // Not found
+        if (!amapProfile) {
+            logger.warn(`AMAP with ID ${amapId} not found`);
+            return null;
+        }
+
+        // Build the update object dynamically
+        const updateFields = {};
+        if (amapData.name !== undefined) updateFields.name = amapData.name;
+        if (amapData.description !== undefined) updateFields.description = amapData.description;
+
+        // Update data
+        const updatedAmap = await amapProfile.update(updateFields);
+
+        logger.info(`AMAP Profile updated successfully: ${amapId}`);
+        return updatedAmap;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating season: `, error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestAmapsList,
     requestAmapsKpis,
@@ -318,5 +371,7 @@ module.exports = {
     insertDeliveryDates,
     deleteSeason,
     updateSeason,
-    checkSeasonName
+    checkSeasonName,
+    requestAmapProfile,
+    updateAmap
 };

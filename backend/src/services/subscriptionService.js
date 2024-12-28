@@ -3,8 +3,10 @@ const Order = require('../domain/models/Order');
 const OrderDetails = require('../domain/models/OrderDetails');
 const User = require('../domain/models/User');
 const Subscription = require('../domain/models/Subscription');
+const Producer = require('../domain/models/Producer');
 const { Op } = require('sequelize');
 const Cart = require('../domain/models/Cart');
+const { Sequelize } = require('sequelize');
 
 /**
  *
@@ -342,6 +344,153 @@ const updateCart = async (cartId, cartData) => {
     }
 };
 
+/**
+ *
+ * @param userEmail
+ * @returns {Promise<{orderCosts: {totalCostSum: number, paidCostSum: number}, orderCount: number}|{}>}
+ */
+const requestProducerKpis = async (userEmail) => {
+    logger.info('Requesting Producer KPIs');
+    let kpis = {};
+
+    try {
+        // Fetch all Producer - Order Count
+        const orderCount = await Order.count({
+            include: [
+                {
+                    model: OrderDetails,
+                    attributes: [],
+                    include: [
+                        {
+                            model: Producer,
+                            attributes: [],
+                            include: [
+                                {
+                                    model: User,
+                                    attributes: [],
+                                    where: { email: userEmail },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        });
+        kpis.orderCount = orderCount;
+
+        // Order costs
+        const orderCosts = await Order.findAll({
+            attributes: [
+                [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalCostSum'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.paidCost')), 'paidCostSum'],
+            ],
+                include: [
+                    {
+                        model: OrderDetails,
+                        attributes: [],
+                        include: [
+                            {
+                                model: Producer,
+                                attributes: [],
+                                include: [
+                                    {
+                                        model: User,
+                                        attributes: [],
+                                        where: { email: userEmail },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            group: [],
+            raw: true,
+        });
+
+        // Extract sums from the orderCosts result
+        if (orderCosts.length > 0) {
+            const totalCostSum = parseFloat(orderCosts[0].totalCostSum.toFixed(2));
+            const paidCostSum = parseFloat(orderCosts[0].paidCostSum.toFixed(2));
+            kpis.orderCosts = {
+                totalCostSum: totalCostSum || 0,
+                paidCostSum: paidCostSum || 0
+            };
+        } else {
+            kpis.orderCosts = { totalCostSum: 0, paidCostSum: 0 };
+        }
+
+        logger.info('Successfully retrieved Producer KPIs', { kpis });
+
+        return kpis;
+    } catch (error) {
+        // Detailed logging for better debugging
+        logger.error('Error fetching AMAPs KPIs', { message: error.message, stack: error.stack });
+        return { orderCount: 0, orderCosts: { totalCostSum: 0, paidCostSum: 0 } }; // Return default values on error
+    }
+};
+
+/**
+ *
+ * @param userEmail
+ * @returns {Promise<{orderCosts: {totalCostSum: number, paidCostSum: number}, orderCount: number}|{}>}
+ */
+const requestCoproducerKpis = async (userEmail) => {
+    logger.info('Requesting Coproducer KPIs');
+    let kpis = {};
+
+    try {
+        // Fetch all Coproducer - Order Count
+        const orderCount = await Order.count({
+            include: [
+                {
+                    model: User,
+                    where: { email: userEmail },
+                    required: true,
+                },
+            ]
+        });
+        kpis.orderCount = orderCount;
+
+        // Order costs
+        const orderCosts = await Order.findAll({
+            attributes: [
+                [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalCostSum'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.paidCost')), 'paidCostSum'],
+            ],
+            include: [
+                {
+                    model: User,
+                    attributes: [],
+                    where: { email: userEmail },
+                    required: true,
+                }
+            ],
+            group: [],
+            raw: true,
+        });
+
+        // Extract sums from the orderCosts result
+        if (orderCosts.length > 0) {
+            const totalCostSum = parseFloat(orderCosts[0].totalCostSum.toFixed(2));
+            const paidCostSum = parseFloat(orderCosts[0].paidCostSum.toFixed(2));
+            kpis.orderCosts = {
+                totalCostSum: totalCostSum || 0,
+                paidCostSum: paidCostSum || 0
+            };
+        } else {
+            kpis.orderCosts = { totalCostSum: 0, paidCostSum: 0 };
+        }
+
+        logger.info('Successfully retrieved Coproducer KPIs', { kpis });
+
+        return kpis;
+    } catch (error) {
+        // Detailed logging for better debugging
+        logger.error('Error fetching Coproducer KPIs', { message: error.message, stack: error.stack });
+        return { orderCount: 0, orderCosts: { totalCostSum: 0, paidCostSum: 0 } };
+    }
+};
+
 module.exports = {
     requestSubscriptionList,
     requestSubscriptionHistory,
@@ -351,5 +500,7 @@ module.exports = {
     requestCartHistory,
     deleteCartItem,
     insertCartItem,
-    updateCart
+    updateCart,
+    requestProducerKpis,
+    requestCoproducerKpis
 };

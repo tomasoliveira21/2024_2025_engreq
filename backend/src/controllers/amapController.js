@@ -7,7 +7,9 @@ const {
     insertDeliveryDates,
     deleteSeason,
     updateSeason,
-    checkSeasonName
+    checkSeasonName,
+    requestAmapProfile,
+    updateAmap
 } = require('../services/amapService');
 
 /**
@@ -241,11 +243,74 @@ const updateAmapSeason = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getAmapProfile = async (req, res, next) => {
+    logger.info(`Request getAmapProfile`);
+    try {
+        const { amapId } = req.params;
+        const amapProfile = await requestAmapProfile(amapId);
+        res.status(200).json({ amap: amapProfile });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const updateAmapProfile = async (req, res, next) => {
+    logger.info(`Update AMAP Profile`);
+
+    try {
+        // Arguments
+        const { amapId } = req.params;
+        const { name, description } = req.body;
+
+        // Validations
+        if (!amapId) {
+            logger.warn(`Missing AMAP ID to update`);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error: missing AMAP ID to update',
+            });
+        }
+
+        // Update the season
+        const updatedAmap = await updateAmap(amapId, { name, description});
+
+        // Return response
+        return res.status(200).json({
+            success: true,
+            message: 'AMAP profile updated successfully',
+            season: updatedAmap,
+        });
+    } catch (err) {
+        // Error
+        logger.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+        });
+    }
+};
+
 module.exports = {
     getAmapsList,
     getAmapsKpis,
     getAmapSeason,
     createAmapSeason,
     deleteAmapSeason,
-    updateAmapSeason
+    updateAmapSeason,
+    getAmapProfile,
+    updateAmapProfile
 };

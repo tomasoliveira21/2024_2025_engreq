@@ -180,6 +180,8 @@ router.post('/', authentication, checkProducerRole, createProduct);
  */
 router.put('/:productId', authentication, checkProducerRole, updateProductData);
 
+router.delete('/:productId', authentication, checkProducerRole, deleteProductData);
+
 /**
  * BASKET
  */
@@ -337,12 +339,14 @@ router.post('/basket', authentication, checkProducerRole, createBasket);
  */
 router.put('/basket/:id', authentication, checkProducerRole, updateBasketData);
 
+router.delete('/basket/:basketId', authentication, checkProducerRole, deleteBasketData);
+
+/**
+ * PRODUCER
+ */
 router.get('/producer/:producerId', authentication, checkProducerRole, getAllProducerProducts);
 
 router.get('/basket/producer/:producerId', authentication, checkProducerRole, getAllProducerBaskets);
 
-router.delete('/basket/:basketId', authentication, checkProducerRole, deleteBasketData);
-
-router.delete('/:productId', authentication, checkProducerRole, deleteProductData);
 
 module.exports = router;

@@ -1,13 +1,85 @@
 const logger = require('../utils/logger');
 const express = require('express');
 const authentication = require('../middlewares/authentication');
-const { getAmapsList, getAmapsKpis, getAmapSeason, createAmapSeason, updateAmapSeason, deleteAmapSeason } = require('../controllers/amapController');
+const {
+    getAmapsList,
+    getAmapsKpis,
+    getAmapSeason,
+    createAmapSeason,
+    updateAmapSeason,
+    deleteAmapSeason,
+    getAmapProfile,
+    updateAmapProfile
+} = require('../controllers/amapController');
 const { checkAMAPAccess } = require('../middlewares/permissions');
 
 const router = express.Router();
 
 // AMAP routes
 
+/**
+ * AMAP Profile
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "AMAP"
+ *     description: "Endpoints related to AMAP management"
+ *   - name: "Profile"
+ *     description: "Endpoints AMAP profile"
+ *
+ * /amap/profile/{amapId}:
+ *   get:
+ *     summary: "Get AMAP profile details"
+ *     description: "This endpoint retrieves AMAP profile details"
+ *     tags:
+ *       - "Profile"
+ *     responses:
+ *       200:
+ *         description: "A AMAP profile"
+ *       404:
+ *         description: "No AMAPs found"
+ */
+router.get('/profile/:amapId', authentication, getAmapProfile);
+
+/**
+ * @swagger
+ * /amap/profile/{amapId}:
+ *   put:
+ *     summary: Update AMAP profile
+ *     description: Updates the AMAP profile information .
+ *     tags:
+ *       - "Profile"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the AMAP
+ *                 example: "AMAP Porto"
+ *               description:
+ *                 type: string
+ *                 description: Description of the AMAP
+ *                 example: "A community-focused AMAP offering organic produce."
+
+ *     responses:
+ *       200:
+ *         description: AMAP profile updated successfully
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: AMAP profile not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.put('/profile/:amapId', authentication, updateAmapProfile);
 /**
  * LIST
  */
@@ -126,7 +198,7 @@ router.post('/:amapId/season', authentication, checkAMAPAccess, createAmapSeason
 
 /**
  * @swagger
- * /season/{seasonId}:
+ * /amap/season/{seasonId}:
  *   put:
  *     summary: Update a specific season
  *     description: Updates the details of a season by its ID.
