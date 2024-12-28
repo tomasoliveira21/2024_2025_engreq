@@ -17,6 +17,7 @@ const OrderDetails = require('./models/OrderDetails');
 const Subscriptions = require('./models/Subscription');
 const SalePeriod = require('./models/SalePeriod');
 const Cart = require('./models/Cart');
+const DeliveryDate = require('./models/DeliveryDate');
 
 User.hasOne(Producer, { foreignKey: 'userId' });
 User.belongsTo(AMAP, { foreignKey: 'AMAPId' });
@@ -87,7 +88,7 @@ SalePeriod.belongsToMany(Basket, { through: 'BasketSalePeriods' });
 // Cart
 Cart.belongsTo(User, { foreignKey: 'userId' });
 
+SalePeriod.hasMany(DeliveryDate);
 
-
-
+DeliveryDate.belongsTo(SalePeriod);
 

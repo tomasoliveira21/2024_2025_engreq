@@ -7,7 +7,7 @@ Order.init({
     totalCost: { type: DataTypes.FLOAT, allowNull: false },
     paidCost: { type: DataTypes.FLOAT, allowNull: false },
     orderDate: { type: DataTypes.DATE, allowNull: false },
-    status: { type: DataTypes.ENUM('pending', 'completed', 'cancelled') },
+    status: { type: DataTypes.ENUM('pending', 'completed', 'cancelled','in-progress') },
 }, { sequelize, modelName: 'Order' });
 
 module.exports = Order;
