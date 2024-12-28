@@ -8,6 +8,7 @@ const User = require('../domain/models/User');
 const SalePeriod = require('../domain/models/SalePeriod');
 const ProductSalePeriod = require('../domain/models/ProductSalePeriod');
 const BasketSalePeriod = require('../domain/models/BasketSalePeriod');
+const DeliveryDate = require("../domain/models/DeliveryDate");
 
 /**
  * Products by AMAP
@@ -96,6 +97,13 @@ const requestProductDetails = async (productID) => {
                         attributes: []
                     },
                     required: false,
+                    include: [
+                        {
+                            model: DeliveryDate,
+                            attributes: ['date'],
+                            required: false,
+                        }
+                    ],
                 }
             ],
         });
@@ -352,6 +360,13 @@ const requestBasketDetails = async (basketId) => {
                         attributes: []
                     },
                     required: false,
+                    include: [
+                        {
+                            model: DeliveryDate,
+                            attributes: ['date'],
+                            required: false,
+                        }
+                    ],
                 }
             ],
         });

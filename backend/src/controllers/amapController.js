@@ -4,6 +4,7 @@ const {
     requestAmapsKpis,
     requestAmapSeason,
     insertNewSeason,
+    insertDeliveryDates,
     deleteSeason,
     updateSeason,
     checkSeasonName
@@ -74,10 +75,13 @@ const createAmapSeason = async (req, res, next) => {
     // Logger
     logger.info(`Create new AMAP season`);
 
+    // Configs
+    let incrementDays = 7; // Delivery days to increment
+
     try {
         // Arguments
-        const { amapId } = req.params;
-        const { name, startDate, endDate, season } = req.body;
+        const {amapId} = req.params;
+        const {name, startDate, endDate, season} = req.body;
         const validSeasons = ['summer', 'spring', 'winter', 'autumn'];
 
         // Validate data
@@ -106,11 +110,33 @@ const createAmapSeason = async (req, res, next) => {
             });
         }
 
-        // Data
-        const seasonData = { amapId, name, startDate, endDate, season};
-
         // Insert season
+        const seasonData = {amapId, name, startDate, endDate, season};
         const newSeason = await insertNewSeason(seasonData);
+
+        // Delivery dates
+        const salesPeriodId = newSeason.id;
+        const dates = [];
+        let currentDate = new Date(startDate);
+
+        // TODO - This data is necessary?
+        const longitude = null;
+        const latitude = null;
+        const location = null;
+
+        // Insert delivery
+        while (currentDate <= new Date(endDate)) {
+            // Date handle
+            currentDate.setDate(currentDate.getDate() + incrementDays);
+            dates.push(new Date(currentDate));
+
+            // Insert delivery date
+            const deliveryData = {currentDate, longitude, latitude, location, salesPeriodId};
+            const newSeasonDeliveries = await insertDeliveryDates(deliveryData);
+        }
+
+        // Add dates to response
+        newSeason.deliveryDate = dates;
 
         // Return response
         return res.status(201).json({

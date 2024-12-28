@@ -427,7 +427,6 @@ const deleteBasketData = async (req, res, next) => {
     }
 };
 
-
 module.exports = {
     getProductsByAmap,
     getProductDetails,

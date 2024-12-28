@@ -3,6 +3,7 @@ const AMAPs = require('../domain/models/AMAP');
 const User = require('../domain/models/User');
 const Order = require('../domain/models/Order');
 const SalePeriod = require('../domain/models/SalePeriod');
+const DeliveryDate = require('../domain/models/DeliveryDate');
 const { Sequelize } = require('sequelize');
 
 /**
@@ -143,7 +144,14 @@ const requestAmapSeason = async (amapId) => {
             attributes: ['id', 'name', 'startDate', 'endDate', 'season'],
             where: {
                 AMAPId: amapId,
-            }
+            },
+            include: [
+                {
+                    model: DeliveryDate,
+                    attributes: ['date'],
+                    required: false,
+                }
+            ],
         });
 
         // Logger
@@ -274,11 +282,40 @@ const checkSeasonName = async (amapId, name) => {
     }
 };
 
+/**
+ *
+ * @param seasonData
+ * @returns {Promise<*>}
+ */
+const insertDeliveryDates = async (seasonData) => {
+    logger.info('Insert Delivery dates');
+
+    try {
+        // Create a new season
+        const newDeliveryDate = await DeliveryDate.create({
+            date: seasonData.currentDate,
+            longitude: seasonData.longitude,
+            latitude: seasonData.latitude,
+            location: seasonData.location,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            SalePeriodId: seasonData.salesPeriodId,
+        });
+
+        logger.info('Delivery date created successfully:', newDeliveryDate);
+        return newDeliveryDate;
+    } catch (error) {
+        logger.error('Error creating new delivery date:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestAmapsList,
     requestAmapsKpis,
     requestAmapSeason,
     insertNewSeason,
+    insertDeliveryDates,
     deleteSeason,
     updateSeason,
     checkSeasonName

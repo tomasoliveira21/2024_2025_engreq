@@ -71,7 +71,9 @@ const requestSubscriptionList = async (userEmail) => {
                 periodType: {
                     [Op.ne]: 'single purchase'
                 },
-                status: "pending"
+                status: {
+                    [Op.or]: ['pending', 'in-progress']
+                }
             },
             include: [
                 {
