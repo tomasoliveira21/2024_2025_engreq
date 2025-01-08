@@ -71,8 +71,6 @@ function Sidebar() {
     fetchUserRole();
   }, []);
   
-  console.log('userRole: ', userRole);
-
   return (
     <div className="flex flex-col col-span-2 items-center px-4 md:items-start" aria-label="Sidebar Navigation">
       <img className="m-1 h-13 w-20" src="/soc.png" alt="" />
