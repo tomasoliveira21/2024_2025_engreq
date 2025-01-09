@@ -263,7 +263,7 @@ const deleteCartItem = async (itemId) => {
 
     try {
         // Find the cart item by ID
-        const cartItem = await Cart.findByPk(itemId);
+        const cartItem = await Cart.findOne({ where: { itemId } });
 
         if (!cartItem) {
             const errorMessage = `Cart item with ID ${itemId} not found`;
@@ -319,7 +319,7 @@ const insertCartItem = async (cartData) => {
 const updateCart = async (cartId, cartData) => {
     try {
         // Find the cart by ID
-        const cartItem = await Cart.findByPk(cartId);
+        const cartItem = await Cart.findOne({ where: { itemId: cartId } });
 
         // Not found
         if (!cartItem) {
