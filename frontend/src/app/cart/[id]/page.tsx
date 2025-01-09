@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import { createSubscription } from "@/api/createSubscription";
+
+import { createCartItem } from "@/api/createCartItem";
+
 import { useSearchParams } from "next/navigation";
 import { fetchBasket } from "@/api/fetchBasket";
 import { fetchProduct } from "@/api/fetchProduct";
@@ -35,14 +38,13 @@ export default function Cart({ params }: { params: { id: number } }) {
   const handleSubscription = async () => {
     setIsSubscribing(true);
     const subscriptionData = {
-      periodType: periodType,
       itemType: itemType || "",
       itemId: id,
       quantity: quantity,
     };
 
     try {
-      const success = await createSubscription(
+      const success = await createCartItem(
         session?.access_token ?? "",
         subscriptionData
       );
