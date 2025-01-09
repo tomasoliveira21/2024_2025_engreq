@@ -1,4 +1,4 @@
-export interface Order {
+export interface HistoryS {
   id: number;
   periodType: string;
   totalCost: number;

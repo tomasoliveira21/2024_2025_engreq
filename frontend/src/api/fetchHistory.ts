@@ -1,7 +1,9 @@
-export const fetchOrders = async (sessionToken: string): Promise<[]> => {
+import { HistoryS } from "@/types/historyS";
+
+export const fetchHistory = async (sessionToken: string): Promise<HistoryS[]> => {
   const apiUrl = "http://127.0.0.1:3001/";
   try {
-    const response = await fetch(`${apiUrl}subscription`, {
+    const response = await fetch(`${apiUrl}subscription/history`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
