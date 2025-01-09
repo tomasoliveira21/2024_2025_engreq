@@ -55,26 +55,35 @@ export default function Login() {
 
       const userId = session.user.id;
       // Retrieve role and nif from metadata
-      const role = session.user.user_metadata.role || 'Co-Producer';
+      const roleFromMetadata = session.user.user_metadata.role || 'Co-Producer';
       const nif = session.user.user_metadata.nif || null;
       const name = session.user.user_metadata.name || null;
-      console.log('User data:', { userId, role, nif, name });
-      const { data: { user }, error } = await supabase.auth.getUser();     
+      console.log('User data:', { userId, roleFromMetadata, nif, name });
+      
+      const { data: existingUser, error: fetchError } = await supabase
+        .from('Users')
+        .select('*')
+        .eq('authuserid', userId)
+        .single();    
 
       // Insert or update the user's data in the `public.user` table
+      const role = existingUser?.role || roleFromMetadata;
+      console.log('Existing user data role:', existingUser?.role);
+
       const { error: insertError } = await supabase
         .from('Users')
-        .upsert([
-          {
-            authuserid: userId,
-            email: session.user.email,
-            name: name,
-            role: role,
-            nif: nif,
-          },
-        ],
-        { onConflict: 'email' }
-      );
+        .upsert(
+          [
+            {
+              authuserid: userId,
+              email: session.user.email,
+              name: name,
+              role: role,
+              nif: nif,
+            },
+          ],
+          { onConflict: 'email' }
+        );
 
       if (insertError) {
         console.error('Data sync error:', insertError);
