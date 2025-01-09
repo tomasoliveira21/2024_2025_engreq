@@ -4,15 +4,15 @@ import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../components/Sidebar";
-import { fetchOrders } from "@/api/fetchOrders";
+import { fetchHistory } from "@/api/fetchHistory";
 import { fetchKPIs } from "@/api/fetchKPIs";
-import { Order } from "@/types/orders";
+import { HistoryS } from "@/types/historyS";
 import { KPIs } from "@/types/kpis";
 
 export default function Subscription() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<HistoryS[]>([]);
   const [kpis, setKpis] = useState<KPIs | null>(null);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function Subscription() {
       if (session) {
         try {
           setIsLoading(true);
-          const fetchedOrders = await fetchOrders(session.access_token);
+          const fetchedOrders = await fetchHistory(session.access_token);
           setOrders(fetchedOrders);
         } catch (error) {
           console.error("Error fetching orders:", error);

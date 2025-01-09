@@ -8,7 +8,8 @@ import {
   ClipboardIcon,
   ClipboardListIcon,
   ShieldCheckIcon,
-  AdjustmentsIcon
+  AdjustmentsIcon,
+  ViewBoardsIcon
 } from "@heroicons/react/outline";
 
 import SidebarRow from "./SidebarRow";
@@ -44,6 +45,10 @@ function Sidebar() {
     router.push("/profile");
   };
 
+  const goToAmapManagement = () => {
+    router.push("/amapManagement");
+  };
+
   const goToProducer = () => {
     router.push("/producer");
   };
@@ -66,7 +71,6 @@ function Sidebar() {
     fetchUserRole();
   }, []);
   
-
   return (
     <div className="flex flex-col col-span-2 items-center px-4 md:items-start" aria-label="Sidebar Navigation">
       <img className="m-1 h-13 w-20" src="/soc.png" alt="" />
@@ -88,6 +92,11 @@ function Sidebar() {
         )
       }
       <SidebarRow Icon={UserIcon} title="Profile" onClick={goToProfile} aria-label="Go to Profile's page" />
+      {
+        userRole === "AMAP Admin" && (
+          <SidebarRow Icon={ViewBoardsIcon} title="Amap Management" onClick={goToAmapManagement} aria-label="Go to Manager's page" />
+        )
+      }
       <SidebarRow Icon={LogoutIcon} title="Sign Out" onClick={logout} aria-label="Back to login page" />
     </div>
   );
