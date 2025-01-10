@@ -19,6 +19,8 @@ const OrderCard = ({ order }: OrderCardProps) => {
             className={`${
               order.status === "completed"
                 ? "text-green-500"
+                : order.status === "cancelled"
+                ? "text-red-500"
                 : "text-yellow-500"
             } font-medium`}
           >
@@ -32,10 +34,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
       </div>
       <div className="space-y-4">
         {order.OrderDetails?.map((detail) => (
-          <div
-            key={detail.id}
-            className="p-3 border rounded-lg bg-gray-900"
-          >
+          <div key={detail.id} className="p-3 border rounded-lg bg-gray-900">
             <h3 className="text-lg font-semibold text-yellow-400">
               {detail.itemType === "product"
                 ? detail.Product?.name
