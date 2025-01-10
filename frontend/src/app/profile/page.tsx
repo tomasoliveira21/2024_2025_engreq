@@ -94,7 +94,7 @@ export default function Profile({params}: { params: { id: string } }) {
                 return (<ConsumerView/>);
             case "Producer":
                 return <ProducerView products={products} baskets={baskets} producer={producer} user={user} setBaskets={setBaskets} setProducts={setProducts} session={session} />;
-            case "AMAPAdmin":
+            case "AMAP Admin":
                 return <AMAPAdminView/>;
             case "Admin":
                 return <AdminView/>;

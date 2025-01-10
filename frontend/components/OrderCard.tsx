@@ -1,8 +1,9 @@
 import React from "react";
 import { Subscription } from "@/types/order";
+import { HistoryS } from "@/types/historyS";
 
 type OrderCardProps = {
-  order: Subscription;
+  order: Subscription | HistoryS;
 };
 
 const OrderCard = ({ order }: OrderCardProps) => {
