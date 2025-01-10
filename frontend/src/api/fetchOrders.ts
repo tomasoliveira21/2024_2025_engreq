@@ -1,4 +1,6 @@
-export const fetchOrders = async (sessionToken: string): Promise<[]> => {
+import { Subscription } from "@/types/order";
+
+export const fetchOrders = async (sessionToken: string): Promise<Subscription[]> => {
   const apiUrl = "http://127.0.0.1:3001/";
   try {
     const response = await fetch(`${apiUrl}subscription`, {
@@ -13,7 +15,8 @@ export const fetchOrders = async (sessionToken: string): Promise<[]> => {
       throw new Error("Network response was not ok");
     }
 
-    const data = await response.json();
+    const data: { subscription: Subscription[] } = await response.json();
+
     return data.subscription;
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);

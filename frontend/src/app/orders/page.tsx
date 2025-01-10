@@ -5,11 +5,13 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import { fetchOrders } from "@/api/fetchOrders";
 import Sidebar from "../../../components/Sidebar";
+import { Subscription } from "@/types/order";
+import OrderCard from "../../../components/OrderCard";
 
 export default function Orders() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<Subscription[]>([]);
 
   useEffect(() => {
     async function getSession() {
@@ -27,7 +29,6 @@ export default function Orders() {
         try {
           setIsLoading(true);
           const fetchedOrders = await fetchOrders(session.access_token);
-          console.log("fetchedOrders: ", fetchedOrders);
           setOrders(fetchedOrders);
         } catch (error) {
           console.error("Error fetching orders:", error);
@@ -56,11 +57,8 @@ export default function Orders() {
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
           {orders.length > 0 ? (
-            orders.map((order, index) => (
-              <div key={index} className="p-4 bg-gray-800 rounded">
-                {/* TODO: FAZER UPDATE A ISTO */}
-                <p>{JSON.stringify(order)}</p>
-              </div>
+            orders.map((order) => (
+              <OrderCard key={order.id} order={order} />
             ))
           ) : (
             <div>No orders found.</div>
