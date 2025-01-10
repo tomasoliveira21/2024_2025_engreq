@@ -118,7 +118,7 @@ export default function Product({ params }: { params: { id: string } }) {
                   <button
                     onClick={handleSubscription}
                     disabled={isSubscribing}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                    className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
                   >
                     <div aria-live="assertive">
                       {isSubscribing ? "Subscribing..." : "Subscribe to Product"}
@@ -145,13 +145,13 @@ export default function Product({ params }: { params: { id: string } }) {
 
               {product.Producer.Certificates &&
                 product.Producer.Certificates.length > 0 && (
-                  <div className=" p-6 rounded-lg shadow-md w-1/2 ml-8">
+                  <div className="p-6 rounded-lg shadow-md w-1/2 ml-8">
                     <h1 className="text-lg font-bold mb-2 mt-4 text-white"></h1>
                     <div className="grid grid-cols-1 gap-4">
                       {product.Producer.Certificates.map((cert) => (
                         <div
                           key={cert.id}
-                          className="  p-4 rounded-lg  flex items-center text-white"
+                          className="p-4 rounded-lg flex items-center text-white"
                         >
                           <img
                             src="https://cdn3.iconfinder.com/data/icons/approve-3/100/check_mark_approve_ok-10-512.png"
@@ -187,6 +187,11 @@ export default function Product({ params }: { params: { id: string } }) {
           </div>
         </div>
       </main>
+      <style jsx global>{`
+        body {
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
 }
