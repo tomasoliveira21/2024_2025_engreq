@@ -76,7 +76,13 @@ function Sidebar() {
       <img className="m-1 h-13 w-20" src="/soc.png" alt="" />
       <SidebarRow Icon={HomeIcon} title="AMAP's" onClick={goToHome} aria-label="Go to AMAP's page" />
       <SidebarRow Icon={ShoppingCartIcon} title="Cart" onClick={goToCart} aria-label="Go to Cart's page" />
-      <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
+
+      { 
+        userRole === "Co-Producer" && (
+          <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
+        )
+      }
+
       <SidebarRow Icon={ClipboardListIcon} title="History" onClick={goToHistory} aria-label="Go to History page"/>
       {/* SidebarRow only visible to Producers and Admins */}
       {/*
