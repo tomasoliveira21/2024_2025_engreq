@@ -377,10 +377,11 @@ const requestProducerAccountBalance = async (amapId) => {
             attributes: [
                 [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalCostSum'],
                 [Sequelize.fn('SUM', Sequelize.col('Order.paidCost')), 'paidCostSum'],
-                [Sequelize.literal('SUM("Order"."totalCost") - SUM("Order"."paidCost")'), 'pendingValue'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.paidCost')), 'pendingValue'],
             ],
             where: {
                 status: 'in-progress',
+                paidCost: { [Sequelize.Op.gt]: 0 }
             },
             include: [{
                 model: OrderDetails,
@@ -458,6 +459,7 @@ const requestCoproducerAccountBalance = async (amapId) => {
                 },
             }],
             group: ['User.id'],
+            having: Sequelize.literal('SUM("Order"."totalCost") - SUM("Order"."paidCost") > 0'),
             order: [[Sequelize.col('User.id'), 'ASC']],
         });
 

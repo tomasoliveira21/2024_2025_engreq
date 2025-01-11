@@ -13,7 +13,10 @@ const {
     getProducerAccountBalance,
     getCoproducerAccountBalance
 } = require('../controllers/amapController');
-const { checkAMAPAccess } = require('../middlewares/permissions');
+const {
+    checkAMAPAccess,
+    checkAMAPRole
+} = require('../middlewares/permissions');
 
 const router = express.Router();
 
@@ -294,7 +297,7 @@ router.delete('/season/:seasonId', authentication, deleteAmapSeason);
  *       404:
  *         description: "No account found"
  */
-router.get('/balance/producer', authentication, getProducerAccountBalance);
+router.get('/balance/producer', authentication, checkAMAPRole, getProducerAccountBalance);
 
 /**
  * @swagger
@@ -316,6 +319,6 @@ router.get('/balance/producer', authentication, getProducerAccountBalance);
  *       404:
  *         description: "No account found"
  */
-router.get('/balance/coproducer', authentication, getCoproducerAccountBalance);
+router.get('/balance/coproducer', authentication, checkAMAPRole, getCoproducerAccountBalance);
 
 module.exports = router;

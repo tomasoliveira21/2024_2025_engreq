@@ -25,6 +25,26 @@ const checkAMAPAccess = (req, res, next) => {
 };
 
 /**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
+const checkAMAPRole = async (req, res, next) => {
+    // Variables
+    const userRole = req.user?.role ?? 'errorRole';
+
+    // Validate AMAP Role
+    if (userRole === "errorRole" || userRole !== "AMAP Admin") {
+        logger.error(`Forbidden: User do not have access to AMAP Admin Endpoints (${userRole})`);
+        return res.status(403).json({ message: 'Forbidden: User do not have access to AMAP Admin Endpoints.' });
+    }
+
+    next();
+};
+
+/**
  * Check Producer Role
  * @param req
  * @param res
@@ -86,6 +106,7 @@ const checkCoproducerRole = async (req, res, next) => {
 
 module.exports = {
     checkAMAPAccess,
+    checkAMAPRole,
     checkProducerRole,
     checkCoproducerRole
 };
