@@ -1,6 +1,8 @@
+import { BalanceDetail } from "@/types/producerBalance";
+
 export const fetchCoproducerBalance = async (
   sessionToken: string
-): Promise<[]> => {
+): Promise<BalanceDetail[]> => {
   const apiUrl = "http://127.0.0.1:3001/";
   try {
     const response = await fetch(`${apiUrl}amap/balance/coproducer`, {
@@ -21,7 +23,7 @@ export const fetchCoproducerBalance = async (
       throw new Error("Invalid response format");
     }
 
-    return data.balance
+    return data.balance as BalanceDetail[];
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);
     return [];
