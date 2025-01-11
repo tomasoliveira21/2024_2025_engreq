@@ -197,20 +197,6 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
             </div>
             <p className="text-gray-400 mb-6">Welcome, {user?.name}! Below are your business details:</p>
             <div className="space-y-4">
-                {producer?.photoUrl ? (
-                    <div>
-                        <img
-                            src={producer?.photoUrl}
-                            alt="Producer Photo"
-                            className="w-32 h-32 rounded-full object-cover border border-gray-700 shadow-md"
-                        />
-                    </div>
-                ) : (
-                    <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-600">
-                        No Photo
-                    </div>
-                )}
-
                 {isEditingDetails ? (
                     <div className="space-y-4">
                         <div>
@@ -227,7 +213,9 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                             <input
                                 type="text"
                                 value={editableDetails.businessName}
-                                onChange={(e) => setEditableDetails({...editableDetails, businessName: e.target.value})}
+                                onChange={(e) =>
+                                    setEditableDetails({...editableDetails, businessName: e.target.value})
+                                }
                                 className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
                             />
                         </div>
@@ -235,32 +223,23 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                             <label className="block text-gray-400 font-medium mb-1">Description</label>
                             <textarea
                                 value={editableDetails.description}
-                                onChange={(e) => setEditableDetails({...editableDetails, description: e.target.value})}
+                                onChange={(e) =>
+                                    setEditableDetails({...editableDetails, description: e.target.value})
+                                }
                                 className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
                             />
                         </div>
                         <div>
                             <label className="block text-gray-400 font-medium mb-1">Location</label>
                             <LocationPicker
-                                onLocationSelect={(location) => {
-                                    setEditableDetails(prev => ({
+                                onLocationSelect={(location) =>
+                                    setEditableDetails((prev) => ({
                                         ...prev,
-                                        location: {
-                                            ...location,
-                                            id: prev.location.id
-                                        }
-                                    }));
-                                }}
+                                        location,
+                                    }))
+                                }
                                 initialLocation={editableDetails.location}
                             />
-                            {editableDetails.location.address && (
-                                <div className="mt-2 text-sm text-gray-400">
-                                    <p>Address: {editableDetails.location.address}</p>
-                                    <p>City: {editableDetails.location.city}</p>
-                                    <p>Country: {editableDetails.location.country}</p>
-                                    <p>Postal Code: {editableDetails.location.postalCode}</p>
-                                </div>
-                            )}
                         </div>
                         <div className="flex space-x-4">
                             <button
@@ -291,22 +270,15 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                             <span className="font-medium text-gray-200">Description:</span>{" "}
                             <span className="text-gray-300">{producer?.description}</span>
                         </div>
-                        <div>
-                            <span className="font-medium text-gray-200">Location:</span>{" "}
-                            <span className="text-gray-300">{producer?.locationId}</span>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-200">Email:</span>{" "}
-                            <span className="text-gray-300">{user?.email}</span>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-200">NIF:</span>{" "}
-                            <span className="text-gray-300">{user?.nif}</span>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-200">Role:</span>{" "}
-                            <span className="text-gray-300">{user?.role}</span>
-                        </div>
+                        {locationDetails && (
+                            <div>
+                                <span className="font-medium text-gray-200">Location:</span>{" "}
+                                <span className="text-gray-300">
+                {locationDetails.address}, {locationDetails.city}, {locationDetails.country} -{" "}
+                                    {locationDetails.postalCode}
+              </span>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -394,7 +366,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                                     type="text"
                                     value={(selectedItem as Product).name}
                                     onChange={(e) =>
-                                        setSelectedItem({ ...selectedItem, name: e.target.value })
+                                        setSelectedItem({...selectedItem, name: e.target.value})
                                     }
                                     className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
                                 />
