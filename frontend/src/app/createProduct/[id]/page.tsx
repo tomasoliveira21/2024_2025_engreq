@@ -31,6 +31,7 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
   const [query, setQuery] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [seasons, setSeasons] = useState<SeasonResponse[]>();
+  const [selectedSeason, setSelectedSeason] = useState<SeasonResponse | null>(null);
   const { id } = params;
 
   useEffect(() => {
@@ -125,13 +126,9 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleSeasonSelection = (selectedOptions: any) => {
-    const selectedSeasons = selectedOptions.map((option: any) => ({
-      id: option.value,
-      name: option.label,
-    }));
-
-    setFormData({ ...formData, season: selectedSeasons });
+  const handleSeasonSelection = (season:SeasonResponse) => {
+    setFormData({ ...formData, season: season.id });
+    setSelectedSeason(season);
   };
 
   return (
@@ -143,38 +140,38 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
         <div className="col-span-8 mt-8">
           <h2 className="text-2xl font-bold mb-6">Register Product</h2>
           <form
-            className="bg-gray-700 p-6 rounded-lg shadow-lg space-y-4"
-            onSubmit={handleSubmit}
+              className="bg-gray-700 p-6 rounded-lg shadow-lg space-y-4"
+              onSubmit={handleSubmit}
           >
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
                 Name
               </label>
               <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
               <label
-                htmlFor="description"
-                className="block text-sm font-medium mb-2"
+                  htmlFor="description"
+                  className="block text-sm font-medium mb-2"
               >
                 Description
               </label>
               <input
-                type="text"
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -182,133 +179,136 @@ export default function CreateProduct({ params }: { params: { id: string } }) {
                 Type
               </label>
               <input
-                type="text"
-                id="type"
-                name="type"
-                value={formData.type}
-                onChange={handleInputChange}
-                required
-                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  id="type"
+                  name="type"
+                  value={formData.type}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <Select
-              options={
-                seasons?.map((salePeriod) => ({
-                  value: salePeriod.id,
-                  label: salePeriod.name,
-                })) || []
-              }
-              onChange={(selectedOption) => {
-                setFormData({
-                  ...formData,
-                  season: selectedOption ? selectedOption.value : "",
-                });
-              }}
-              placeholder="Select a season..."
-              isClearable
-              className="basic-single-select text-black"
-              classNamePrefix="select"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  backgroundColor: "#4B5563",
-                  color: "white",
-                  borderRadius: "0.375rem",
-                  padding: "0.5rem",
-                }),
-                menu: (base) => ({
-                  ...base,
-                  backgroundColor: "#374151",
-                  color: "white",
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isFocused ? "#1F2937" : "#374151",
-                  color: "white",
-                }),
-              }}
-            />
+            <table className="min-w-full bg-gray-700 text-white">
+              <thead>
+              <tr>
+                <th className="py-2 px-4">Select</th>
+                <th className="py-2 px-4">Season Name</th>
+                <th className="py-2 px-4">Start Date</th>
+                <th className="py-2 px-4">End Date</th>
+              </tr>
+              </thead>
+              <tbody>
+              {seasons?.map((season) => (
+                  <tr key={season.id} className="border-t border-gray-600">
+                    <td className="py-2 px-4 text-center">
+                      <input
+                          type="radio"
+                          name="season"
+                          value={season.id}
+                          checked={formData.season === season.id}
+                          onChange={() => handleSeasonSelection(season)}
+                      />
+                    </td>
+                    <td className="py-2 px-4 text-center">{season.name}</td>
+                    <td className="py-2 px-4 text-center">{new Date(season.startDate).toLocaleDateString()}</td>
+                    <td className="py-2 px-4 text-center">{new Date(season.endDate).toLocaleDateString()}</td>
+                  </tr>
+              ))}
+              </tbody>
+            </table>
+            {selectedSeason && (
+                <div className="mt-4 p-4 bg-gray-800 rounded-md">
+                  <h3 className="text-lg font-bold mb-2">Selected Season's Delivery Dates</h3>
+                  <span>future delivery dates</span>
+{/*                  <ul>
+                    {selectedSeason.DeliveryDates.map((dateString) => {
+                      const date = new Date(dateString);
+                      return <li key={date.toISOString()}>{date.toLocaleDateString()}</li>;
+                    })}
+                  </ul>*/}
+                </div>
+            )}
             <div>
               <label htmlFor="price" className="block text-sm font-medium mb-2">
                 Price
               </label>
               <input
-                type="number"
-                step="0.01"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                required
-                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="quantity"
-                className="block text-sm font-medium mb-2"
-              >
-                Quantity
-              </label>
-              <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleInputChange}
-                required
-                className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Photo</label>
-              {formData.photoUrl ? (
-                <img
-                  src={formData.photoUrl}
-                  alt="Selected"
-                  className="w-40 h-40 object-cover mb-2"
+                  type="number"
+                    step="0.01"
+                    id="price"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
                 />
-              ) : (
-                <p>No photo selected</p>
-              )}
+              </div>
+              <div>
+                <label
+                    htmlFor="quantity"
+                    className="block text-sm font-medium mb-2"
+                >
+                  Quantity
+                </label>
+                <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Photo</label>
+                {formData.photoUrl ? (
+                    <img
+                        src={formData.photoUrl}
+                        alt="Selected"
+                        className="w-40 h-40 object-cover mb-2"
+                    />
+                ) : (
+                    <p>No photo selected</p>
+                )}
+                <button
+                    type="button"
+                    onClick={handleOpenModal}
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                    aria-label="Select a photo for the product"
+                >
+                  Select Photo
+                </button>
+              </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <button
-                type="button"
-                onClick={handleOpenModal}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-                aria-label="Select a photo for the product"
+                  type="submit"
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-md transition"
               >
-                Select Photo
+                Register Product
               </button>
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button
-              type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-md transition"
-            >
-              Register Product
-            </button>
           </form>
           {isModalOpen && (
-            <Modal onClose={handleCloseModal}>
-              <div className="p-6">
-                <h2 className="text-lg font-bold mb-4">Search Photos</h2>
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    placeholder="Search images..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="w-full px-3 py-2 rounded bg-gray-800 text-white"
-                    aria-label="Type to search images"
-                  />
-                  <button
-                    onClick={handleSearchImages}
-                    className="px-4 py-2 mt-2 bg-blue-500 text-white rounded"
-                    aria-label="Search images"
-                  >
-                    Search
-                  </button>
-                </div>
+              <Modal onClose={handleCloseModal}>
+                <div className="p-6">
+                  <h2 className="text-lg font-bold mb-4">Search Photos</h2>
+                  <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search images..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+                        aria-label="Type to search images"
+                    />
+                    <button
+                        onClick={handleSearchImages}
+                        className="px-4 py-2 mt-2 bg-blue-500 text-white rounded"
+                        aria-label="Search images"
+                    >
+                      Search
+                    </button>
+                  </div>
                 <div className="grid grid-cols-3 gap-4">
                   {images.map((url) => (
                     <img
