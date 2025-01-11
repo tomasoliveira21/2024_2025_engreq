@@ -237,7 +237,38 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI1NmNmYTg2ZS00OTE0LTQwNzItOWM0My1lZGRkYzE4YWZhYjciLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM1Mzk3MjE0LCJpYXQiOjE3MzUzOTM2MTQsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiIxMDkwNDcwQGlzZXAuaXBwLnB0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiVGVzdCBVc2VyIiwibmlmIjoxMDExMDExMDEsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicm9sZSI6IkNvLVByb2R1Y2VyIiwic3ViIjoiNTZjZmE4NmUtNDkxNC00MDcyLTljNDMtZWRkZGMxOGFmYWI3In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzQyNTkwMzJ9XSwic2Vzc2lvbl9pZCI6ImVkNDRhMTY5LWY5MGItNDVmNi1hNGM3LWY2MzUxMGZhMjhhMiIsImlzX2Fub255bW91cyI6ZmFsc2V9.hsy4SjkrjilirfsOq_uZh6sVzHHHJLB3fRne0pfInC8",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjExNTgwLCJpYXQiOjE3MzY2MDc5ODAsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.-6qYm5LnsEFdG5L-vMhGxsGCmUKPh1qeeJu8DWk9_8s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/amap/4/season",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"amap",
+								"4",
+								"season"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get season delivery dates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjExNTgwLCJpYXQiOjE3MzY2MDc5ODAsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.-6qYm5LnsEFdG5L-vMhGxsGCmUKPh1qeeJu8DWk9_8s",
 									"type": "string"
 								}
 							]
@@ -285,6 +316,99 @@
 							"path": [
 								"amap",
 								"kpis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Coproducer Account balance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjE1OTU4LCJpYXQiOjE3MzY2MTIzNTgsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.0l81npzcPQ5D3lqmu4JnkigM_8sQ497crpn-EuDmjME",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/amap/balance/coproducer",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"amap",
+								"balance",
+								"coproducer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Producer Account balance Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjE1OTU4LCJpYXQiOjE3MzY2MTIzNTgsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.0l81npzcPQ5D3lqmu4JnkigM_8sQ497crpn-EuDmjME",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/amap/balance/producer",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"amap",
+								"balance",
+								"producer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Producer Account values",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjE1OTU4LCJpYXQiOjE3MzY2MTIzNTgsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.0l81npzcPQ5D3lqmu4JnkigM_8sQ497crpn-EuDmjME",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/amap/balance/producer",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"amap",
+								"balance",
+								"producer"
 							]
 						}
 					},
@@ -640,7 +764,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI1NmNmYTg2ZS00OTE0LTQwNzItOWM0My1lZGRkYzE4YWZhYjciLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM0OTA1NjQ1LCJpYXQiOjE3MzQ5MDIwNDUsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiIxMDkwNDcwQGlzZXAuaXBwLnB0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiVGVzdCBVc2VyIiwibmlmIjoxMDExMDExMDEsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicm9sZSI6IkNvLVByb2R1Y2VyIiwic3ViIjoiNTZjZmE4NmUtNDkxNC00MDcyLTljNDMtZWRkZGMxOGFmYWI3In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzQyNTkwMzJ9XSwic2Vzc2lvbl9pZCI6ImVkNDRhMTY5LWY5MGItNDVmNi1hNGM3LWY2MzUxMGZhMjhhMiIsImlzX2Fub255bW91cyI6ZmFsc2V9.MmdW1LI3gSNeeZIvf7tDN19jjAnvtR3yA4TGME7BgIc",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjE1OTU4LCJpYXQiOjE3MzY2MTIzNTgsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.0l81npzcPQ5D3lqmu4JnkigM_8sQ497crpn-EuDmjMEa",
 									"type": "string"
 								}
 							]
@@ -649,7 +773,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"pending\"\r\n}",
+							"raw": "{\r\n    \"status\": \"pending\",\r\n    \"quantity\": 5\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1006,6 +1130,45 @@
 							"port": "3001",
 							"path": [
 								"payment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI1NmNmYTg2ZS00OTE0LTQwNzItOWM0My1lZGRkYzE4YWZhYjciLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM1Mzg4MDkyLCJpYXQiOjE3MzUzODQ0OTIsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiIxMDkwNDcwQGlzZXAuaXBwLnB0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiVGVzdCBVc2VyIiwibmlmIjoxMDExMDExMDEsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicm9sZSI6IkNvLVByb2R1Y2VyIiwic3ViIjoiNTZjZmE4NmUtNDkxNC00MDcyLTljNDMtZWRkZGMxOGFmYWI3In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzQyNTkwMzJ9XSwic2Vzc2lvbl9pZCI6ImVkNDRhMTY5LWY5MGItNDVmNi1hNGM3LWY2MzUxMGZhMjhhMiIsImlzX2Fub255bW91cyI6ZmFsc2V9.WZhkXyMR0-A-aD56st97pKbUPum-nMLs-L3qWppMIDI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemType\": \"product\",\r\n    \"itemId\": 10,\r\n    \"quantity\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/subscription/cart",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"subscription",
+								"cart"
 							]
 						}
 					},
