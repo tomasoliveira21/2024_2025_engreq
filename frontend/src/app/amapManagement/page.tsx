@@ -5,6 +5,7 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../components/Sidebar";
 import { fetchProducerBalance } from "@/api/fetchProducerBalance";
+import { fetchCoproducerBalance } from "@/api/fetchCoproducerBalance";
 import { BalanceDetail } from "@/types/producerBalance";
 import ProducerBalanceList from "../../../components/ProducerBalanceList";
 
@@ -22,6 +23,24 @@ export default function Orders() {
     }
     getSession();
   }, []);
+
+  useEffect(() => {
+    const getCoproducerBalance = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedCoproducerBalance = await fetchCoproducerBalance(session.access_token);
+          console.log('fetchedCoproducerBalance: ', fetchedCoproducerBalance);
+        } catch (error) {
+          console.error("Error fetching Producer Balance:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    getCoproducerBalance();
+  }, [session]);
 
   useEffect(() => {
     const getProducerBalance = async () => {
