@@ -5,13 +5,16 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../components/Sidebar";
 import { fetchProducerBalance } from "@/api/fetchProducerBalance";
+import { fetchCoproducerBalance } from "@/api/fetchCoproducerBalance";
 import { BalanceDetail } from "@/types/producerBalance";
 import ProducerBalanceList from "../../../components/ProducerBalanceList";
+import CoProducerBalanceList from "../../../components/CoProducerBalanceList";
 
 export default function Orders() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [producerBalance, setProducerBalance] = useState<BalanceDetail[]>([]);
+  const [coproducerBalance, setCoproducerBalance] = useState<BalanceDetail[]>([]);
 
   useEffect(() => {
     async function getSession() {
@@ -22,6 +25,24 @@ export default function Orders() {
     }
     getSession();
   }, []);
+
+  useEffect(() => {
+    const getCoproducerBalance = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedCoproducerBalance = await fetchCoproducerBalance(session.access_token);
+          setCoproducerBalance(fetchedCoproducerBalance);
+        } catch (error) {
+          console.error("Error fetching Co-Producer Balance:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    getCoproducerBalance();
+  }, [session]);
 
   useEffect(() => {
     const getProducerBalance = async () => {
@@ -57,6 +78,7 @@ export default function Orders() {
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
           <h1>Triggering the calculation of amounts to be paid by Co-producers</h1>
+          <CoProducerBalanceList balanceDetails={coproducerBalance} />
 
           <h1>Triggering the calculation of amounts to be received by Producers</h1>
           <ProducerBalanceList balanceDetails={producerBalance} />
