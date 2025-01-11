@@ -25,8 +25,16 @@ export default function Product({ params }: { params: { id: string } }) {
       setSession(session);
 
       if (session) {
-        const role = session.user.user_metadata.role;
-        setUserRole(role);
+          // Get the role from the database
+          const userId = session?.user.id;
+          const { data: existingUser } = await supabase
+          .from('Users')
+          .select('*')
+          .eq('authuserid', userId)
+          .single(); 
+
+          const role = existingUser?.role;
+          setUserRole(role);
       }
     }
     getSession();

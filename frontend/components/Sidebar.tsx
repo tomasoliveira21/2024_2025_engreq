@@ -62,8 +62,15 @@ function Sidebar() {
     const fetchUserRole = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Get the role from the registration metadata
-        const role = session.user.user_metadata.role;
+        // Get the role from the database
+        const userId = session.user.id;
+        const { data: existingUser } = await supabase
+        .from('Users')
+        .select('*')
+        .eq('authuserid', userId)
+        .single(); 
+
+        const role = existingUser?.role;
         setUserRole(role);
       }
     };
@@ -77,11 +84,7 @@ function Sidebar() {
       <SidebarRow Icon={HomeIcon} title="AMAP's" onClick={goToHome} aria-label="Go to AMAP's page" />
       <SidebarRow Icon={ShoppingCartIcon} title="Cart" onClick={goToCart} aria-label="Go to Cart's page" />
 
-      { 
-        userRole === "Co-Producer" && (
-          <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
-        )
-      }
+      <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
 
       <SidebarRow Icon={ClipboardListIcon} title="History" onClick={goToHistory} aria-label="Go to History page"/>
       {/* SidebarRow only visible to Producers and Admins */}
