@@ -9,7 +9,9 @@ const {
     updateAmapSeason,
     deleteAmapSeason,
     getAmapProfile,
-    updateAmapProfile
+    updateAmapProfile,
+    getProducerAccountBalance,
+    getCoproducerAccountBalance
 } = require('../controllers/amapController');
 const { checkAMAPAccess } = require('../middlewares/permissions');
 
@@ -267,5 +269,53 @@ router.put('/season/:seasonId', authentication, updateAmapSeason);
  *         description: Season not found
  */
 router.delete('/season/:seasonId', authentication, deleteAmapSeason);
+
+/**
+ * Balance account
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "AMAP"
+ *     description: "Endpoints related to AMAP management"
+ *   - name: "Account Balance"
+ *     description: "Get account balance"
+ *
+ * /amap/balance/producer:
+ *   get:
+ *     summary: "Get producer account balance"
+ *     description: "This endpoint retrieves producer account balance"
+ *     tags:
+ *       - "Account Balance"
+ *     responses:
+ *       200:
+ *         description: "A list of AMAP producers account balance"
+ *       404:
+ *         description: "No account found"
+ */
+router.get('/balance/producer', authentication, getProducerAccountBalance);
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "AMAP"
+ *     description: "Endpoints related to AMAP management"
+ *   - name: "Account Balance"
+ *     description: "Get account balance"
+ *
+ * /amap/balance/coproducer:
+ *   get:
+ *     summary: "Get co-producer account balance"
+ *     description: "This endpoint retrieves co-producer account balance"
+ *     tags:
+ *       - "Account Balance"
+ *     responses:
+ *       200:
+ *         description: "A list of AMAP co-producers account balance"
+ *       404:
+ *         description: "No account found"
+ */
+router.get('/balance/coproducer', authentication, getCoproducerAccountBalance);
 
 module.exports = router;

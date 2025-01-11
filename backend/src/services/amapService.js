@@ -5,6 +5,8 @@ const Order = require('../domain/models/Order');
 const SalePeriod = require('../domain/models/SalePeriod');
 const DeliveryDate = require('../domain/models/DeliveryDate');
 const { Sequelize } = require('sequelize');
+const OrderDetails = require("../domain/models/OrderDetails");
+const Producer = require("../domain/models/Producer");
 
 /**
  * LIST
@@ -363,6 +365,111 @@ const updateAmap = async (amapId, amapData) => {
     }
 };
 
+/**
+ *
+ * @param amapId
+ * @returns {Promise<*>}
+ */
+const requestProducerAccountBalance = async (amapId) => {
+    try {
+        // GET Account Balance
+        const producerAccount = await Order.findAll({
+            attributes: [
+                [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalCostSum'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.paidCost')), 'paidCostSum'],
+                [Sequelize.literal('SUM("Order"."totalCost") - SUM("Order"."paidCost")'), 'pendingValue'],
+            ],
+            where: {
+                status: 'in-progress',
+            },
+            include: [{
+                model: OrderDetails,
+                attributes: [],
+                include: [{
+                    model: Producer,
+                    attributes: ['id', 'businessName', 'description'],
+                    include: [{
+                        model: User,
+                        attributes: ['id', 'email', 'nif', 'name'],
+                        where: {
+                            AMAPId: amapId,
+                        },
+                    }],
+                }],
+            }],
+            group: [
+                'OrderDetails->Producer->User.id',
+                'OrderDetails->Producer.id'
+            ],
+            order: [[Sequelize.col('OrderDetails->Producer->User.id'), 'ASC']],
+            raw: true,
+            nest: true,
+        });
+
+        // Adjust response
+        const formattedResults = producerAccount.map(entry => ({
+            totalCostSum        : entry.totalCostSum,
+            paidCostSum         : entry.paidCostSum,
+            pendingValue        : entry.pendingValue,
+            User                : {
+                id              : entry.OrderDetails.Producer.User.id,
+                email           : entry.OrderDetails.Producer.User.email,
+                nif             : entry.OrderDetails.Producer.User.nif,
+                name            : entry.OrderDetails.Producer.User.name,
+            },
+            Producer            : {
+                id              : entry.OrderDetails.Producer.id,
+                businessName    : entry.OrderDetails.Producer.businessName,
+                description     : entry.OrderDetails.Producer.description,
+            }
+        }));
+
+        logger.info(`Request Producer Account Balance AMAP: ${amapId}`);
+        return formattedResults;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error requesting Producer Account Balance AMAP: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param amapId
+ * @returns {Promise<*>}
+ */
+const requestCoproducerAccountBalance = async (amapId) => {
+    try {
+        // GET Account Balance
+        const coproducerAccount = await Order.findAll({
+            attributes: [
+                [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalCostSum'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.paidCost')), 'paidCostSum'],
+                [Sequelize.literal('SUM("Order"."totalCost") - SUM("Order"."paidCost")'), 'pendingValue'],
+            ],
+            where: {
+                status: 'in-progress',
+            },
+            include: [{
+                model: User,
+                attributes: ['id', 'email', 'nif', 'name'],
+                where: {
+                    AMAPId: amapId,
+                },
+            }],
+            group: ['User.id'],
+            order: [[Sequelize.col('User.id'), 'ASC']],
+        });
+
+        logger.info(`Request CoProducer Account Balance AMAP: ${amapId}`);
+        return coproducerAccount;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error requesting CoProducer Account Balance AMAP: `, error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestAmapsList,
     requestAmapsKpis,
@@ -373,5 +480,7 @@ module.exports = {
     updateSeason,
     checkSeasonName,
     requestAmapProfile,
-    updateAmap
+    updateAmap,
+    requestProducerAccountBalance,
+    requestCoproducerAccountBalance
 };

@@ -9,7 +9,9 @@ const {
     updateSeason,
     checkSeasonName,
     requestAmapProfile,
-    updateAmap
+    updateAmap,
+    requestProducerAccountBalance,
+    requestCoproducerAccountBalance
 } = require('../services/amapService');
 
 /**
@@ -304,6 +306,43 @@ const updateAmapProfile = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getProducerAccountBalance = async (req, res, next) => {
+    logger.info(`Request getProducerAccountBalance`);
+    try {
+        const amapId = req.user.amapId;
+        const producerAccountBalance = await requestProducerAccountBalance(amapId);
+        res.status(200).json({ balance: producerAccountBalance });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getCoproducerAccountBalance = async (req, res, next) => {
+    logger.info(`Request getCoproducerAccountBalance`);
+    try {
+        const amapId = req.user.amapId;
+        const coproducerAccountBalance = await requestCoproducerAccountBalance(amapId);
+        res.status(200).json({ balance: coproducerAccountBalance });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
     getAmapsList,
     getAmapsKpis,
@@ -312,5 +351,7 @@ module.exports = {
     deleteAmapSeason,
     updateAmapSeason,
     getAmapProfile,
-    updateAmapProfile
+    updateAmapProfile,
+    getProducerAccountBalance,
+    getCoproducerAccountBalance
 };
