@@ -5,7 +5,7 @@ const { getProductsByAmap, getProductDetails, createProduct, updateProductData, 
     getAllProducerProducts,
     getAllProducerBaskets,
     deleteBasketData,
-    deleteProductData
+    deleteProductData, getBasketSalePeriodsData, getProductSalePeriodsData
 } = require('../controllers/productController');
 
 const router = express.Router();
@@ -347,6 +347,10 @@ router.delete('/basket/:basketId', authentication, checkProducerRole, deleteBask
 router.get('/producer/:producerId', authentication, checkProducerRole, getAllProducerProducts);
 
 router.get('/basket/producer/:producerId', authentication, checkProducerRole, getAllProducerBaskets);
+
+router.get('/basket/salePeriods/:basketId', authentication, getBasketSalePeriodsData);
+
+router.get('/product/salePeriods/:productId', authentication, getProductSalePeriodsData);
 
 
 module.exports = router;

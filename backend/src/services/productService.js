@@ -190,6 +190,23 @@ const updateProduct = async (productId, productData) => {
 };
 
 
+const getProductSalePeriods = async (productId) => {
+    try {
+        const productSalePeriod = await ProductSalePeriod.findOne({
+            where: {
+                ProductId: productId,
+            },
+        });
+
+        return productSalePeriod;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error fetching ProductSalesPeriod for productID ${productId}: `, error);
+        throw error;
+    }
+}
+
+
 /**
  *
  * @param productId
@@ -468,6 +485,22 @@ const updateBasket = async (basketId, basketData) => {
     }
 };
 
+const getBasketSalePeriods = async (basketId) => {
+    try {
+        const basketSalePeriod = await BasketSalePeriod.findOne({
+            where: {
+                BasketId: basketId,
+            },
+        });
+
+        return basketSalePeriod;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error fetching BasketSalesPeriod for basketID ${basketId}: `, error);
+        throw error;
+    }
+}
+
 
 /**
  *
@@ -706,5 +739,7 @@ module.exports = {
     requestAllProducerProducts,
     requestProducerBaskets,
     requestDeleteBasketData,
-    requestDeleteProductData
+    requestDeleteProductData,
+    getProductSalePeriods,
+    getBasketSalePeriods,
 };

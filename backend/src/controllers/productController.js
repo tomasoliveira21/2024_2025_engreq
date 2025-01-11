@@ -4,7 +4,8 @@ const {requestProductsByAmap, requestProductDetails, insertNewProduct, updatePro
     requestAllProducerProducts,
     requestProducerBaskets,
     requestDeleteBasketData,
-    requestDeleteProductData
+    requestDeleteProductData,
+    getProductSalePeriods, getBasketSalePeriods
 } = require("../services/productService");
 
 /**
@@ -114,6 +115,23 @@ const updateProductData = async (req, res, next) => {
     }
 };
 
+const getProductSalePeriodsData = async (req, res, next) => {
+    logger.info(`Get product sale periods`);
+    // Arguments
+    const { productId } = req.params;
+
+    // Logger
+    logger.info(`Get getProductSalePeriods (productId: ${productId})`);
+
+    // Request products
+    try {
+        const salePeriods = await getProductSalePeriods(productId);
+        res.status(200).json({ salePeriods: salePeriods });
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 /**
  * Controller function to create a new product.
@@ -220,6 +238,22 @@ const getBasketDetails = async (req, res, next) => {
         next(error);
     }
 };
+
+const getBasketSalePeriodsData = async (req, res, next) => {
+    // Arguments
+    const { basketId } = req.params;
+
+    // Logger
+    logger.info(`Get getBasketSalePeriods (basketId: ${basketId})`);
+
+    // Request products
+    try {
+        const salePeriods = await getBasketSalePeriods(basketId);
+        res.status(200).json({ salePeriods: salePeriods });
+    } catch (error) {
+        next(error);
+    }
+}
 
 /**
  *
@@ -440,4 +474,6 @@ module.exports = {
     getAllProducerBaskets,
     deleteBasketData,
     deleteProductData,
+    getProductSalePeriodsData,
+    getBasketSalePeriodsData
 };
