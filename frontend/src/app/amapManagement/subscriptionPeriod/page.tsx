@@ -7,7 +7,7 @@ import Sidebar from "../../../../components/Sidebar";
 import { fetchAmapSeasons } from "@/api/fetchAmapSeasons";
 import { SeasonDetail } from "@/types/amapSeasons";
 import SeasonList from "../../../../components/SeasonList";
-
+import CreateSeasonForm from "../../../../components/CreateSeasonForm";
 
 export default function Orders() {
   const [session, setSession] = useState<Session | null>(null);
@@ -24,21 +24,21 @@ export default function Orders() {
     getSession();
   }, []);
 
-  useEffect(() => {
-    const getAmapSeasons = async () => {
-      if (session) {
-        try {
-          setIsLoading(true);
-          const fetchedAmapSeasons = await fetchAmapSeasons(session.access_token);
-          setSeasons(fetchedAmapSeasons);
-        } catch (error) {
-          console.error("Error fetching Amap Seasons:", error);
-        } finally {
-          setIsLoading(false);
-        }
+  const getAmapSeasons = async () => {
+    if (session) {
+      try {
+        setIsLoading(true);
+        const fetchedAmapSeasons = await fetchAmapSeasons(session.access_token);
+        setSeasons(fetchedAmapSeasons);
+      } catch (error) {
+        console.error("Error fetching Amap Seasons:", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     getAmapSeasons();
   }, [session]);
 
@@ -58,6 +58,10 @@ export default function Orders() {
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
           <h1 className="text-2xl font-bold mb-4">Seasons</h1>
+          <CreateSeasonForm
+            sessionToken={session.access_token}
+            onSeasonCreated={getAmapSeasons}
+          />
           <SeasonList seasons={seasons} />
         </div>
       </main>
