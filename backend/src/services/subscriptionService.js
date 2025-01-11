@@ -7,6 +7,12 @@ const Producer = require('../domain/models/Producer');
 const { Op } = require('sequelize');
 const Cart = require('../domain/models/Cart');
 const { Sequelize } = require('sequelize');
+const {requestProductDetails} = require("./productService");
+const Product = require("../domain/models/Product");
+const Certificate = require("../domain/models/Certificate");
+const SalePeriod = require("../domain/models/SalePeriod");
+const DeliveryDate = require("../domain/models/DeliveryDate");
+const ProductSalePeriod = require("../domain/models/ProductSalePeriod");
 
 /**
  *
@@ -168,6 +174,7 @@ const updateSubscription = async (subscriptionId, subscriptionData) => {
         // Build the update object dynamically
         const updateFields = {};
         if (subscriptionData.status !== undefined) updateFields.status = subscriptionData.status;
+        if (subscriptionData.paidCost !== undefined) updateFields.paidCost = subscriptionData.paidCost;
         updateFields.updatedAt = new Date();
 
         // Update data
@@ -556,8 +563,36 @@ const requestCoproducerKpis = async (userEmail) => {
     }
 };
 
+
+/**
+ *
+ * @param orderID
+ * @returns {Promise<*|*[]>}
+ */
+const requestOrderDetails = async (orderID) => {
+    logger.info(`Fetching order details (Order: ${orderID})`);
+    try {
+        // Query data
+        let orderDetails = await Order.findOne({
+            attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
+            where: {
+                id: orderID,
+            }
+        });
+
+        // Logger
+        logger.info(`Retrieved order details`);
+
+        return orderDetails;
+    } catch (error) {
+        logger.error('Error fetching order details:', error.message);
+        return [];
+    }
+};
+
 module.exports = {
     requestSubscriptionList,
+    requestOrderDetails,
     requestSubscriptionHistory,
     insertNewOrderSubscription,
     updateSubscription,

@@ -559,6 +559,13 @@ const updateItemCart = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
 const getUserKpis = async (req, res, next) => {
     logger.info(`Request getUserKpis`);
     try {
@@ -579,9 +586,6 @@ const getUserKpis = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-
-
-
 };
 
 module.exports = {

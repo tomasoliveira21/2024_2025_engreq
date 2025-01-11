@@ -3,6 +3,13 @@ const supabase = require('../utils/supabase');
 const logger = require("../utils/logger");
 const {getUserData} = require("../services/userService");
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
 const authentication = async (req, res, next) => {
     const authorizationHeader = req.headers['authorization'];
     const BEARER = 'Bearer';
