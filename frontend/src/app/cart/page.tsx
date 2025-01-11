@@ -38,7 +38,7 @@ const Cart = () => {
           const items = await fetchCart(session.access_token);
           const itemsWithProductNames = await Promise.all(
             items.map(async (item) => {
-              const product = await fetchProduct(session.access_token, item.itemId);
+              const product = await fetchProduct(session.access_token, item.itemId.toString());
               return { ...item, productName: product[0].name, price: product[0].price };
             })
           );
