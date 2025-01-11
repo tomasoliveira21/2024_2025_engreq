@@ -7,6 +7,7 @@ const {
     insertDeliveryDates,
     deleteSeason,
     updateSeason,
+    requestSeasonDates,
     checkSeasonName,
     requestAmapProfile,
     updateAmap,
@@ -62,6 +63,24 @@ const getAmapSeason = async (req, res, next) => {
     try {
         const season = await requestAmapSeason(amapId);
         res.status(200).json({ season: season });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getSeasonDeliveryDates = async (req, res, next) => {
+    logger.info(`Request getSeasonDeliveryDates`);
+    const { seasonId } = req.params;
+    try {
+        const dates = await requestSeasonDates(seasonId);
+        res.status(200).json({ deliveryDates: dates });
     } catch (error) {
         next(error);
     }
@@ -350,6 +369,7 @@ module.exports = {
     createAmapSeason,
     deleteAmapSeason,
     updateAmapSeason,
+    getSeasonDeliveryDates,
     getAmapProfile,
     updateAmapProfile,
     getProducerAccountBalance,

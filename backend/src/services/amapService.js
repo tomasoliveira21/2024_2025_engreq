@@ -166,6 +166,33 @@ const requestAmapSeason = async (amapId) => {
     }
 };
 
+
+/**
+ *
+ * @param seasonId
+ * @returns {Promise<*|*[]>}
+ */
+const requestSeasonDates = async (seasonId) => {
+    logger.info(`Fetching Season dates (Season: ${seasonId})`);
+    try {
+        // Query data
+        const seasonDates = await DeliveryDate.findAll({
+            attributes: ['date'],
+            where: {
+                SalePeriodId: seasonId,
+            }
+        });
+
+        // Logger
+        logger.info(`Retrieved Season dates: ${JSON.stringify(seasonDates)}`);
+
+        return seasonDates;
+    } catch (error) {
+        logger.error('Error fetching AMAP season:', error.message);
+        return [];
+    }
+};
+
 /**
  *
  * @param seasonData
@@ -478,6 +505,7 @@ module.exports = {
     insertDeliveryDates,
     deleteSeason,
     updateSeason,
+    requestSeasonDates,
     checkSeasonName,
     requestAmapProfile,
     updateAmap,
