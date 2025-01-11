@@ -9,18 +9,20 @@ interface CreateSeasonFormProps {
   onSeasonCreated: () => void;
 }
 
-const CreateSeasonForm = ({ sessionToken, onSeasonCreated }: CreateSeasonFormProps) => {
+const CreateSeasonForm = ({
+  sessionToken,
+  onSeasonCreated,
+}: CreateSeasonFormProps) => {
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [season, setSeason] = useState("");
 
+  const isFormValid = name && startDate && endDate && season;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !startDate || !endDate || !season) {
-      alert("Please fill in all fields.");
-      return;
-    }
+    if (!isFormValid) return;
 
     try {
       await createSeason(sessionToken, {
@@ -81,7 +83,12 @@ const CreateSeasonForm = ({ sessionToken, onSeasonCreated }: CreateSeasonFormPro
       </select>
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm text-white"
+        className={`px-4 py-2 rounded-md text-sm text-white ${
+          isFormValid
+            ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+            : "bg-gray-600 cursor-not-allowed"
+        }`}
+        disabled={!isFormValid}
       >
         Create
       </button>
