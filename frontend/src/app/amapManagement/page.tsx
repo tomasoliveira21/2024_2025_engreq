@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../components/Sidebar";
@@ -11,6 +12,7 @@ import ProducerBalanceList from "../../../components/ProducerBalanceList";
 import CoProducerBalanceList from "../../../components/CoProducerBalanceList";
 
 export default function Orders() {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [producerBalance, setProducerBalance] = useState<BalanceDetail[]>([]);
@@ -77,10 +79,25 @@ export default function Orders() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-          <h1>Triggering the calculation of amounts to be paid by Co-producers</h1>
+          <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2">
+            Define Subscription Period
+          </h1>
+          <button
+            onClick={() => router.push(`amapManagement/subscriptionPeriod`)}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium text-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            style={{ alignSelf: "flex-start" }}
+          >
+            Navigate to Subscription Period page
+          </button>
+
+          <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
+            Triggering the Calculation of Amounts to be Paid by Co-Producers
+          </h1>
           <CoProducerBalanceList balanceDetails={coproducerBalance} />
 
-          <h1>Triggering the calculation of amounts to be received by Producers</h1>
+          <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
+            Triggering the Calculation of Amounts to be Received by Producers
+          </h1>
           <ProducerBalanceList balanceDetails={producerBalance} />
         </div>
       </main>
