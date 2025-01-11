@@ -184,6 +184,42 @@ const updateSubscription = async (subscriptionId, subscriptionData) => {
 
 /**
  *
+ * @param subscriptionId
+ * @param detailsData
+ * @returns {Promise<*|null>}
+ */
+const updateOrderDetails = async (subscriptionId, detailsData) => {
+    try {
+        // Update fields
+        const orderId = detailsData.id;
+        const newQuantity = detailsData.quantity;
+
+        // Find the Order by ID
+        const order = await Order.findOne({
+            where: { id: orderId }, include: OrderDetails });
+
+        // Check if order exist
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        // Update quantity
+        const updatedOrderDetails = await OrderDetails.update(
+            { quantity: newQuantity },
+            { where: { orderId: order.id } }
+        );
+
+        logger.info(`Order details updated successfully: ${subscriptionId}`);
+        return updatedOrderDetails;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating Order details: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
  * @param userEmail
  * @returns {Promise<*|*[]>}
  */
@@ -525,6 +561,7 @@ module.exports = {
     requestSubscriptionHistory,
     insertNewOrderSubscription,
     updateSubscription,
+    updateOrderDetails,
     requestCartList,
     requestCartHistory,
     deleteCartItem,

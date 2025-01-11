@@ -133,6 +133,10 @@ router.post('/', authentication, checkCoproducerRole, createOrderSubscription);
  *                 type: string
  *                 description: "Status of the subscription"
  *                 example: "completed"
+ *               quantity:
+ *                 type: number
+ *                 description: "Quantity of the item"
+ *                 example: "5"
  *     responses:
  *       201:
  *         description: "Subscription created successfully"

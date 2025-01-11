@@ -381,7 +381,6 @@ const requestProducerAccountBalance = async (amapId) => {
             ],
             where: {
                 status: 'in-progress',
-                paidCost: { [Sequelize.Op.gt]: 0 }
             },
             include: [{
                 model: OrderDetails,
@@ -459,7 +458,6 @@ const requestCoproducerAccountBalance = async (amapId) => {
                 },
             }],
             group: ['User.id'],
-            having: Sequelize.literal('SUM("Order"."totalCost") - SUM("Order"."paidCost") > 0'),
             order: [[Sequelize.col('User.id'), 'ASC']],
         });
 
