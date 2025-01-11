@@ -80,10 +80,11 @@ export default function Profile({params}: { params: { id: string } }) {
 
     useEffect(() => {
         const getBaskets = async () => {
-            if (session) {
+            if (session && producer?.id) {
                 try {
+                    const producerId : string = String(producer.id);
                     setIsLoading(true);
-                    const fetchedBaskets = await fetchProducerBaskets(session.access_token, producer?.id);
+                    const fetchedBaskets = await fetchProducerBaskets(session.access_token, producerId);
                     setBaskets(fetchedBaskets);
                 } catch (error) {
                     console.error("Error fetching baskets:", error);
