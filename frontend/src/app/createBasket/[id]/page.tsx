@@ -13,6 +13,7 @@ import Modal from "../../../../components/Modal";
 import { fetchImages } from "@/api/fetchImages";
 import { fetchSeasons } from "@/api/fetchSeasons";
 import { SeasonResponse } from "@/types/seasons";
+import {fetchSeasonDates} from "@/api/fetchSeasonDates";
 
 export default function CreateBasket({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -33,6 +34,8 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [seasons, setSeasons] = useState<SeasonResponse[]>();
   const [selectedSeason, setSelectedSeason] = useState<SeasonResponse | null>(null);
+  const [selectedDeliveryDates, setSelectedDeliveryDates] = useState<Date[]>();
+
 
 
   const { id } = params;
@@ -65,6 +68,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     getProducts();
   }, [session]);
 
+
   // Input change handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -91,6 +95,8 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     setFormData({ ...formData, photoUrl: url });
     handleCloseModal();
   };
+
+
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -160,6 +166,31 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     setFormData({ ...formData, season: season.id });
     setSelectedSeason(season);
   };
+
+/*
+  useEffect(() => {
+    const getSeasonsDates = async () => {
+      if (selectedSeason && session) {
+        try {
+          const deliveryDates = await fetchSeasonDates(session.access_token, selectedSeason.id);
+          if (Array.isArray(deliveryDates.deliveryDates)) {
+            const dates = deliveryDates.deliveryDates.map((item: { date: string }) => new Date(item.date));
+            setSelectedDeliveryDates(dates);
+          } else {
+            setSelectedDeliveryDates([]);
+          }
+        } catch (error) {
+          console.error("Error fetching Seasons:", error);
+          setSelectedDeliveryDates([]);
+        }
+      }
+    };
+    getSeasonsDates();
+  }, [selectedSeason]);
+  if (!session) {
+    return <div>Loading session...</div>;
+  }
+*/
 
 
   return (
@@ -236,13 +267,17 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
             {selectedSeason && (
                 <div className="mt-4 p-4 bg-gray-800 rounded-md">
                   <h3 className="text-lg font-bold mb-2">Selected Season's Delivery Dates</h3>
-                  <span>future delivery dates</span>
-                  {/*                  <ul>
-                    {selectedSeason.DeliveryDates.map((dateString) => {
-                      const date = new Date(dateString);
-                      return <li key={date.toISOString()}>{date.toLocaleDateString()}</li>;
-                    })}
-                  </ul>*/}
+                  <div>
+                    {selectedDeliveryDates?.map((item, index) => (
+                        <span key={item.toISOString()}>
+                                            {item.toLocaleDateString()}
+                          {index < selectedDeliveryDates.length - 1 && " | "}
+                                        </span>
+                    ))}
+                    {selectedDeliveryDates?.length === 0 && (
+                        <p>No delivery dates available for this season.</p>
+                    )}
+                  </div>
                 </div>
             )}
             <div>
