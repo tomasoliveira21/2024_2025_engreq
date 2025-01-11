@@ -32,6 +32,9 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [seasons, setSeasons] = useState<SeasonResponse[]>();
+  const [selectedSeason, setSelectedSeason] = useState<SeasonResponse | null>(null);
+
+
   const { id } = params;
 
   // Fetch session on component mount
@@ -153,14 +156,11 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     setFormData({ ...formData, products: selectedProducts });
   };
 
-  const handleSeasonSelection = (selectedOptions: any) => {
-    const selectedSeasons = selectedOptions.map((option: any) => ({
-      id: option.value,
-      name: option.label,
-    }));
-
-    setFormData({ ...formData, season: selectedSeasons });
+  const handleSeasonSelection = (season:SeasonResponse) => {
+    setFormData({ ...formData, season: season.id });
+    setSelectedSeason(season);
   };
+
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -205,43 +205,46 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
                 className="w-full p-3 bg-gray-600 text-white rounded-md border-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <Select
-              options={
-                seasons?.map((salePeriod) => ({
-                  value: salePeriod.id,
-                  label: salePeriod.name,
-                })) || []
-              }
-              onChange={(selectedOption) => {
-                setFormData({
-                  ...formData,
-                  season: selectedOption ? selectedOption.value : "",
-                });
-              }}
-              placeholder="Select a season..."
-              isClearable
-              className="basic-single-select text-black"
-              classNamePrefix="select"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  backgroundColor: "#4B5563",
-                  color: "white",
-                  borderRadius: "0.375rem",
-                  padding: "0.5rem",
-                }),
-                menu: (base) => ({
-                  ...base,
-                  backgroundColor: "#374151",
-                  color: "white",
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isFocused ? "#1F2937" : "#374151",
-                  color: "white",
-                }),
-              }}
-            />
+            <table className="min-w-full bg-gray-700 text-white">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4">Select</th>
+                  <th className="py-2 px-4">Season Name</th>
+                  <th className="py-2 px-4">Start Date</th>
+                  <th className="py-2 px-4">End Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {seasons?.map((season) => (
+                  <tr key={season.id} className="border-t border-gray-600">
+                    <td className="py-2 px-4 text-center">
+                      <input
+                        type="radio"
+                        name="season"
+                        value={season.id}
+                        checked={formData.season === season.id}
+                        onChange={() => handleSeasonSelection(season)}
+                      />
+                    </td>
+                    <td className="py-2 px-4 text-center">{season.name}</td>
+                    <td className="py-2 px-4 text-center">{new Date(season.startDate).toLocaleDateString()}</td>
+                    <td className="py-2 px-4 text-center">{new Date(season.endDate).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {selectedSeason && (
+                <div className="mt-4 p-4 bg-gray-800 rounded-md">
+                  <h3 className="text-lg font-bold mb-2">Selected Season's Delivery Dates</h3>
+                  <span>future delivery dates</span>
+                  {/*                  <ul>
+                    {selectedSeason.DeliveryDates.map((dateString) => {
+                      const date = new Date(dateString);
+                      return <li key={date.toISOString()}>{date.toLocaleDateString()}</li>;
+                    })}
+                  </ul>*/}
+                </div>
+            )}
             <div>
               <label htmlFor="price" className="block text-sm font-medium mb-2">
                 Price

@@ -7,6 +7,12 @@ const Producer = require('../domain/models/Producer');
 const { Op } = require('sequelize');
 const Cart = require('../domain/models/Cart');
 const { Sequelize } = require('sequelize');
+const {requestProductDetails} = require("./productService");
+const Product = require("../domain/models/Product");
+const Certificate = require("../domain/models/Certificate");
+const SalePeriod = require("../domain/models/SalePeriod");
+const DeliveryDate = require("../domain/models/DeliveryDate");
+const ProductSalePeriod = require("../domain/models/ProductSalePeriod");
 
 /**
  *
@@ -168,6 +174,7 @@ const updateSubscription = async (subscriptionId, subscriptionData) => {
         // Build the update object dynamically
         const updateFields = {};
         if (subscriptionData.status !== undefined) updateFields.status = subscriptionData.status;
+        if (subscriptionData.paidCost !== undefined) updateFields.paidCost = subscriptionData.paidCost;
         updateFields.updatedAt = new Date();
 
         // Update data
@@ -178,6 +185,42 @@ const updateSubscription = async (subscriptionId, subscriptionData) => {
     } catch (error) {
         // Log the error and rethrow it
         logger.error(`Error updating subscription: `, error);
+        throw error;
+    }
+};
+
+/**
+ *
+ * @param subscriptionId
+ * @param detailsData
+ * @returns {Promise<*|null>}
+ */
+const updateOrderDetails = async (subscriptionId, detailsData) => {
+    try {
+        // Update fields
+        const orderId = detailsData.id;
+        const newQuantity = detailsData.quantity;
+
+        // Find the Order by ID
+        const order = await Order.findOne({
+            where: { id: orderId }, include: OrderDetails });
+
+        // Check if order exist
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        // Update quantity
+        const updatedOrderDetails = await OrderDetails.update(
+            { quantity: newQuantity },
+            { where: { orderId: order.id } }
+        );
+
+        logger.info(`Order details updated successfully: ${subscriptionId}`);
+        return updatedOrderDetails;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error updating Order details: `, error);
         throw error;
     }
 };
@@ -520,11 +563,40 @@ const requestCoproducerKpis = async (userEmail) => {
     }
 };
 
+
+/**
+ *
+ * @param orderID
+ * @returns {Promise<*|*[]>}
+ */
+const requestOrderDetails = async (orderID) => {
+    logger.info(`Fetching order details (Order: ${orderID})`);
+    try {
+        // Query data
+        let orderDetails = await Order.findOne({
+            attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
+            where: {
+                id: orderID,
+            }
+        });
+
+        // Logger
+        logger.info(`Retrieved order details`);
+
+        return orderDetails;
+    } catch (error) {
+        logger.error('Error fetching order details:', error.message);
+        return [];
+    }
+};
+
 module.exports = {
     requestSubscriptionList,
+    requestOrderDetails,
     requestSubscriptionHistory,
     insertNewOrderSubscription,
     updateSubscription,
+    updateOrderDetails,
     requestCartList,
     requestCartHistory,
     deleteCartItem,

@@ -9,6 +9,9 @@ export type SalePeriod = {
 export interface SeasonResponse {
     name: any;
     id: any;
+    startDate: Date;
+    endDate: Date;
+    DeliveryDates: Date[];
     season: SalePeriod[];
   }
   

@@ -4,6 +4,7 @@ const {
     requestSubscriptionHistory,
     insertNewOrderSubscription,
     updateSubscription,
+    updateOrderDetails,
     requestCartList,
     requestCartHistory,
     deleteCartItem,
@@ -220,7 +221,7 @@ const updateOrderSubscription = async (req, res, next) => {
     try {
         // Arguments
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, quantity } = req.body;
         const validStatus = ['pending', 'completed', 'cancelled'];
 
         if (!id) {
@@ -239,11 +240,14 @@ const updateOrderSubscription = async (req, res, next) => {
             });
         }
 
-        // Filter out undefined or null fields
-        const subscriptionData = {status};
-
         // Update subscription
+        const subscriptionData = {status};
         const updatedSubscription = await updateSubscription(id, subscriptionData);
+
+        // Update quantity
+        const detailsData = {id, quantity};
+        const updatedQuantity = await updateOrderDetails(id, detailsData);
+
 
         // Return response
         return res.status(201).json({
@@ -555,6 +559,13 @@ const updateItemCart = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
 const getUserKpis = async (req, res, next) => {
     logger.info(`Request getUserKpis`);
     try {
@@ -575,9 +586,6 @@ const getUserKpis = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-
-
-
 };
 
 module.exports = {

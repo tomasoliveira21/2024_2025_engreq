@@ -8,11 +8,13 @@ const {
     createAmapSeason,
     updateAmapSeason,
     deleteAmapSeason,
+    getSeasonDeliveryDates,
     getAmapProfile,
     updateAmapProfile,
     getProducerAccountBalance,
     getCoproducerAccountBalance
 } = require('../controllers/amapController');
+
 const {
     checkAMAPAccess,
     checkAMAPRole
@@ -272,6 +274,28 @@ router.put('/season/:seasonId', authentication, updateAmapSeason);
  *         description: Season not found
  */
 router.delete('/season/:seasonId', authentication, deleteAmapSeason);
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "AMAP"
+ *     description: "Endpoints related to AMAP management"
+ *   - name: "Season"
+ *     description: "Endpoints related to Season, a subsection of AMAP"
+ *
+ * /amap/season/{seasonId}/dates:
+ *   get:
+ *     summary: "Get season delivery dates"
+ *     description: "This endpoint retrieves season delivery dates"
+ *     tags:
+ *       - "Season"
+ *     responses:
+ *       200:
+ *         description: "A list of AMAP season"
+ *       404:
+ *         description: "No seasons found"
+ */
+router.get('/season/:seasonId/dates', authentication, getSeasonDeliveryDates);
 
 /**
  * Balance account
