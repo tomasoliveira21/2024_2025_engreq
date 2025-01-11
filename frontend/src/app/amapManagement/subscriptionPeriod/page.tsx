@@ -5,11 +5,14 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../../components/Sidebar";
 import { fetchAmapSeasons } from "@/api/fetchAmapSeasons";
+import { SeasonDetail } from "@/types/amapSeasons";
+import SeasonList from "../../../../components/SeasonList";
 
 
 export default function Orders() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [seasons, setSeasons] = useState<SeasonDetail[]>([]);
 
   useEffect(() => {
     async function getSession() {
@@ -21,35 +24,31 @@ export default function Orders() {
     getSession();
   }, []);
 
-
   useEffect(() => {
-    const getProducerBalance = async () => {
+    const getAmapSeasons = async () => {
       if (session) {
         try {
           setIsLoading(true);
           const fetchedAmapSeasons = await fetchAmapSeasons(session.access_token);
-          console.log('fetchedAmapSeasons: ', fetchedAmapSeasons);
+          setSeasons(fetchedAmapSeasons);
         } catch (error) {
-          console.error("Error fetching Producer Balance:", error);
+          console.error("Error fetching Amap Seasons:", error);
         } finally {
           setIsLoading(false);
         }
       }
     };
 
-    getProducerBalance();
+    getAmapSeasons();
   }, [session]);
-  
 
   if (!session) {
     return <div>Loading session...</div>;
   }
 
-  /*
   if (isLoading) {
     return <div>Loading data...</div>;
   }
-  */
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -58,7 +57,8 @@ export default function Orders() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-            YO
+          <h1 className="text-2xl font-bold mb-4">Seasons</h1>
+          <SeasonList seasons={seasons} />
         </div>
       </main>
     </div>
