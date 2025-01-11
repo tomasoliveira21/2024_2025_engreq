@@ -3,7 +3,7 @@ import {Basket} from "@/types/basket";
 import {Producer} from "@/types/producer";
 import {User} from "@/types/user";
 import {Session, SupabaseClient} from "@supabase/auth-helpers-nextjs";
-import React, {useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {updateBasket} from "@/api/updateBasket";
 import {updateProduct} from "@/api/updateProduct";
 import {deleteBasket} from "@/api/deleteBasket";
@@ -12,7 +12,7 @@ import {LocationPicker} from "@/app/profile/utils/location-picker";
 
 
 
-export function ProducerView({ products, baskets, producer, user,setProducts,setBaskets, session, supabase }: { products: Product[]; baskets: Basket[]; producer: Producer; user: User; setProducts:{setProducts}; setBaskets:{setBaskets}; session: Session; supabase: SupabaseClient}) {
+export function ProducerView({ products, baskets, producer, user,setProducts,setBaskets, session, supabase }: { products: Product[]; baskets: Basket[]; producer: Producer | null; user: User | null; setProducts:Dispatch<SetStateAction<Product[]>>; setBaskets:Dispatch<SetStateAction<Basket[]>>; session: Session; supabase: SupabaseClient}) {
     const [selectedItem, setSelectedItem] = useState<Product | Basket | null>(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [isEditingDetails, setIsEditingDetails] = useState(false);
@@ -27,7 +27,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
 
     useEffect(() => {
         if (producer?.locationId) {
-            fetchLocationDetails(producer.locationId);
+            fetchLocationDetails(String(producer.locationId));
         }
     }, [producer]);
 
@@ -161,7 +161,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
             await supabase
                 .from("Users")
                 .update({ name: editableDetails.name })
-                .eq("id", user.id);
+                .eq("id", user?.id);
 
             await supabase
                 .from("Producers")
@@ -170,7 +170,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                     description: editableDetails.description,
                     locationId: locationId,
                 })
-                .eq("id", producer.id);
+                .eq("id", producer?.id);
 
             window.location.reload();
             setIsEditingDetails(false);

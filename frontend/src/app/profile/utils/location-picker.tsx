@@ -79,7 +79,7 @@ export function LocationPicker({ onLocationSelect, initialLocation }: LocationPi
         }
     };
 
-    const handleMapClick = (event: google.maps.KmlMouseEvent) => {
+    const handleMapClick = (event: google.maps.MapMouseEvent) => {
         const lat = event.latLng?.lat();
         const lng = event.latLng?.lng();
 

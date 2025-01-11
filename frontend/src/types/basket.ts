@@ -11,7 +11,7 @@ export interface Basket {
     name: string;
     description: string;
     type: string;
-    photoUrl: string | null;
+    photoUrl: string | undefined;
     price: number;
     weight: number;
     SalePeriods: SalePeriod[];

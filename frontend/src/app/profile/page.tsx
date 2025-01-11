@@ -136,7 +136,7 @@ export default function Profile({params}: { params: { id: string } }) {
                     ...prev!,
                     businessName: editableBusinessName || "",
                     description: editableDescription || "",
-                    locationId: editableLocation || ""
+                    locationId: editableLocation ? Number(editableLocation) : 0,
                 }));
             }
 
