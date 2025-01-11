@@ -6,9 +6,12 @@ import { fetchCart } from "@/api/fetchCart";
 import { fetchProduct } from "@/api/fetchProduct";
 import { deleteCartItem } from "@/api/deleteCartItem";
 import { updateCartItem } from "@/api/updateCartItem";
+import { handleCheckout } from "@/api/handleCheckout";
 import { Carts } from "@/types/cart";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<Carts[]>([]);
@@ -51,31 +54,6 @@ const Cart = () => {
     fetchCartItems();
   }, [session]);
 
-  // Checkout the cart
-  const handleCheckout = async () => {
-    if (!session) return;
-
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:3001/subscription/cart/checkout",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Checkout failed.");
-      }
-
-      setCartItems([]);
-      alert("Checkout successful!");
-    } catch (err) {
-      setError("Checkout failed. Please try again.");
-    }
-  };
 
   const handleUpdateCartItem = async (id: number, quantity: number) => {
     if (!session) return;
@@ -101,6 +79,26 @@ const Cart = () => {
     }
   };    
 
+  const handleCheckoutSubmit = async () => {
+    if (!session) return;
+    
+    const refreshToast = toast.loading("Processing checkout...");
+
+    const success = await handleCheckout(session.access_token);
+
+    if (success) {     
+      toast.success("Checkout successful!", {
+        id: refreshToast
+      });
+      setCartItems([]);
+    } else {
+      toast.error("Failed to checkout.", {
+        id: refreshToast,
+      });
+      setError("Failed to checkout.");
+    }
+  }
+
   // Calculate total price
   const calculateTotal = () =>
     cartItems.reduce(
@@ -122,6 +120,7 @@ const Cart = () => {
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-blue-500 rounded-lg shadow-md">
+      <Toaster />
       <h2 className="text-2xl font-bold mb-4 text-center">Shopping Cart</h2>
       {Array.isArray(cartItems) && cartItems.length > 0 ? (
         <div className="space-y-4">
@@ -158,7 +157,7 @@ const Cart = () => {
           </div>
 
           <button
-            onClick={handleCheckout}
+            onClick={handleCheckoutSubmit}
             className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-600 transition"
           >
             Checkout

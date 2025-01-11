@@ -284,6 +284,35 @@ const deleteCartItem = async (itemId) => {
 
 /**
  *
+ * @param id
+ * @returns {Promise<*>}
+ */
+const deleteCart = async (id) => {
+    logger.info(`Delete cart (item: ${id})`);
+
+    try {
+        // Find the cart item by ID
+        const cartId = await Cart.findOne({ where: { id } });
+
+        if (!cartId) {
+            const errorMessage = `Cart with ID ${id} not found`;
+            logger.warn(errorMessage);
+            throw new Error(errorMessage);
+        }
+
+        // Delete the cart item
+        await cartId.destroy();
+
+        logger.info(`Cart deleted successfully: ${id} `);
+        return cartId;
+    } catch (error) {
+        logger.error('Error deleting cart:', error);
+        throw error;
+    }
+};
+
+/**
+ *
  * @param cartData
  * @returns {Promise<*>}
  */
@@ -499,6 +528,7 @@ module.exports = {
     requestCartList,
     requestCartHistory,
     deleteCartItem,
+    deleteCart,
     insertCartItem,
     updateCart,
     requestProducerKpis,

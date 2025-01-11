@@ -7,6 +7,7 @@ const {
     requestCartList,
     requestCartHistory,
     deleteCartItem,
+    deleteCart,
     insertCartItem,
     updateCart,
     requestProducerKpis,
@@ -496,7 +497,7 @@ const cartCheckout = async (req, res, next) => {
             const newOrderSubscription = await insertNewOrderSubscription(orderData);
 
             // Delete Cart item
-            const deletedCart = await deleteCartItem(cartId);
+            const deletedCart = await deleteCart(cartId);
         }
 
         return res.status(201).json({
