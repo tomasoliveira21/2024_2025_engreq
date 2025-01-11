@@ -31,6 +31,11 @@ export default function Profile({params}: { params: { id: string } }) {
     const [baskets, setBaskets] = useState<Basket[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    // State variables for editable fields
+    const [editableName, setEditableName] = useState("");
+    const [editableBusinessName, setEditableBusinessName] = useState("");
+    const [editableDescription, setEditableDescription] = useState("");
+    const [editableLocation, setEditableLocation] = useState("");
 
     useEffect(() => {
         async function getSession() {
@@ -45,13 +50,28 @@ export default function Profile({params}: { params: { id: string } }) {
             }
 
             const userId = session.user.id;
-            // Retrieve role and nif from metadata
             const role = session.user.user_metadata.role || 'Co-Producer';
-            const user = await supabase.from('Users').select('*').eq('authuserid',userId).single();
-            setUser(user.data);
-            if(role == 'Producer'){
-                const producerData = await supabase.from('Producers').select('*').eq('userId',user.data.id).single();
-                setProducer(producerData.data);
+            const user = await supabase.from('Users').select('*').eq('authuserid', userId).single();
+
+            if (user.data) {
+                setUser(user.data);
+                // Set user name immediately when we have the data
+                setEditableName(user.data.name || "");
+            }
+
+            if (role === 'Producer') {
+                const producerData = await supabase.from('Producers')
+                    .select('*')
+                    .eq('userId', user.data?.id)
+                    .single();
+
+                if (producerData.data) {
+                    setProducer(producerData.data);
+                    // Set producer-specific fields with fallbacks to empty strings
+                    setEditableBusinessName(producerData.data.businessName || "");
+                    setEditableDescription(producerData.data.description || "");
+                    setEditableLocation(producerData.data.locationId || "");
+                }
             }
         }
 
@@ -92,12 +112,63 @@ export default function Profile({params}: { params: { id: string } }) {
         getProducts();
     }, [session, producer]);
 
+    const handleSave = async () => {
+        if (!user) return;
+
+        try {
+            // Update user details
+            await supabase.from('Users')
+                .update({ name: editableName || "" })
+                .eq('id', user.id);
+
+            // Update producer details if applicable
+            if (producer) {
+                await supabase.from('Producers')
+                    .update({
+                        businessName: editableBusinessName || "",
+                        description: editableDescription || "",
+                        locationId: editableLocation || ""
+                    })
+                    .eq('id', producer.id);
+
+                setProducer(prev => ({
+                    ...prev!,
+                    businessName: editableBusinessName || "",
+                    description: editableDescription || "",
+                    locationId: editableLocation || ""
+                }));
+            }
+
+            setUser(prev => ({
+                ...prev!,
+                name: editableName || ""
+            }));
+
+            alert("Profile updated successfully!");
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("Failed to update profile.");
+        }
+    };
+
+
     const renderContent = () => {
         switch (session?.user.user_metadata.role) {
-            case "Co-Producer":
-                return (<ConsumerView/>);
             case "Producer":
-                return <ProducerView products={products} baskets={baskets} producer={producer} user={user} setBaskets={setBaskets} setProducts={setProducts} session={session} />;
+                return (
+                    <div>
+                        <ProducerView
+                            products={products}
+                            baskets={baskets}
+                            producer={producer}
+                            user={user}
+                            setBaskets={setBaskets}
+                            setProducts={setProducts}
+                            session={session}
+                            supabase={supabase}
+                        />
+                    </div>
+                );
             case "AMAP Admin":
                 return <AMAPAdminView/>;
             case "Admin":

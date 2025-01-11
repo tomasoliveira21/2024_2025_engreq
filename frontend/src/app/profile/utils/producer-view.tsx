@@ -2,17 +2,83 @@ import {Product} from "@/types/product";
 import {Basket} from "@/types/basket";
 import {Producer} from "@/types/producer";
 import {User} from "@/types/user";
-import {Session} from "@supabase/auth-helpers-nextjs";
-import React, {useState} from "react";
+import {Session, SupabaseClient} from "@supabase/auth-helpers-nextjs";
+import React, {useEffect, useState} from "react";
 import {updateBasket} from "@/api/updateBasket";
 import {updateProduct} from "@/api/updateProduct";
 import {deleteBasket} from "@/api/deleteBasket";
 import {deleteProduct} from "@/api/deleteProduct";
+import {LocationPicker} from "@/app/profile/utils/location-picker";
 
 
-export function ProducerView({ products, baskets, producer, user,setProducts,setBaskets, session }: { products: Product[]; baskets: Basket[]; producer: Producer; user: User; setProducts:{setProducts}; setBaskets:{setBaskets}; session: Session  }) {
+
+export function ProducerView({ products, baskets, producer, user,setProducts,setBaskets, session, supabase }: { products: Product[]; baskets: Basket[]; producer: Producer; user: User; setProducts:{setProducts}; setBaskets:{setBaskets}; session: Session; supabase: SupabaseClient}) {
     const [selectedItem, setSelectedItem] = useState<Product | Basket | null>(null);
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isEditingDetails, setIsEditingDetails] = useState(false);
+    const [locationDetails, setLocationDetails] = useState<{
+        address: string;
+        city: string;
+        country: string;
+        postalCode: string;
+        latitude: number;
+        longitude: number;
+    } | null>(null);
+
+    useEffect(() => {
+        if (producer?.locationId) {
+            fetchLocationDetails(producer.locationId);
+        }
+    }, [producer]);
+
+    const fetchLocationDetails = async (locationId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from("Locations")
+                .select("address, city, country, postalCode, latitude, longitude")
+                .eq("id", locationId)
+                .single();
+
+            if (error) {
+                console.error("Failed to fetch location details:", error);
+            } else {
+                setLocationDetails(data);
+            }
+        } catch (error) {
+            console.error("Error fetching location details:", error);
+        }
+    };
+
+    const [editableDetails, setEditableDetails] = useState({
+        name: user?.name || "",
+        businessName: producer?.businessName || "",
+        description: producer?.description || "",
+        location: {
+            address: "",
+            city: "",
+            country: "",
+            postalCode: "",
+            latitude: 0,
+            longitude: 0,
+        },
+    });
+
+    const handleEditDetails = () => {
+        setEditableDetails({
+            name: user?.name || "",
+            businessName: producer?.businessName || "",
+            description: producer?.description || "",
+            location: locationDetails || {
+                address: "",
+                city: "",
+                country: "",
+                postalCode: "",
+                latitude: 0,
+                longitude: 0,
+            },
+        });
+        setIsEditingDetails(true);
+    };
 
     const openEditModal = (item: Product | Basket) => {
         setSelectedItem(item);
@@ -66,10 +132,69 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
         }
     };
 
+    const handleSaveDetails = async () => {
+        try {
+            const locationData = {
+                address: editableDetails.location.address,
+                city: editableDetails.location.city,
+                country: editableDetails.location.country,
+                postalCode: editableDetails.location.postalCode,
+                latitude: editableDetails.location.latitude,
+                longitude: editableDetails.location.longitude,
+            };
+
+            let locationId = producer?.locationId;
+
+            if (locationId) {
+                await supabase.from("Locations").update(locationData).eq("id", locationId);
+            } else {
+                const { data: newLocation, error } = await supabase
+                    .from("Locations")
+                    .insert(locationData)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                locationId = newLocation.id;
+            }
+
+            await supabase
+                .from("Users")
+                .update({ name: editableDetails.name })
+                .eq("id", user.id);
+
+            await supabase
+                .from("Producers")
+                .update({
+                    businessName: editableDetails.businessName,
+                    description: editableDetails.description,
+                    locationId: locationId,
+                })
+                .eq("id", producer.id);
+
+            window.location.reload();
+            setIsEditingDetails(false);
+        } catch (error) {
+            console.error("Error updating details:", error);
+            alert("Failed to update details");
+        }
+    };
+
+
     return (
         <div className="border-l-4 border-yellow-500 pl-4 dark:bg-gray-900">
             {/* Producer Details */}
-            <h2 className="text-xl font-semibold text-gray-100 mb-4">Producer Dashboard</h2>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-gray-100">Producer Dashboard</h2>
+                {!isEditingDetails && (
+                    <button
+                        onClick={handleEditDetails}
+                        className="px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg shadow hover:bg-yellow-600"
+                    >
+                        Edit Details
+                    </button>
+                )}
+            </div>
             <p className="text-gray-400 mb-6">Welcome, {user?.name}! Below are your business details:</p>
             <div className="space-y-4">
                 {producer?.photoUrl ? (
@@ -81,40 +206,109 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                         />
                     </div>
                 ) : (
-                    <div
-                        className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-600"
-                    >
+                    <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-600">
                         No Photo
                     </div>
                 )}
-                <div>
-                    <span className="font-medium text-gray-200">Name:</span>{" "}
-                    <span className="text-gray-300">{user?.name}</span>
-                </div>
-                <div>
-                    <span className="font-medium text-gray-200">Business Name:</span>{" "}
-                    <span className="text-gray-300">{producer?.businessName}</span>
-                </div>
-                <div>
-                    <span className="font-medium text-gray-200">Description:</span>{" "}
-                    <span className="text-gray-300">{producer?.description}</span>
-                </div>
-                <div>
-                    <span className="font-medium text-gray-200">Location:</span>{" "}
-                    <span className="text-gray-300">{producer?.locationId}</span>
-                </div>
-                <div>
-                    <span className="font-medium text-gray-200">Email:</span>{" "}
-                    <span className="text-gray-300">{user?.email}</span>
-                </div>
-                <div>
-                    <span className="font-medium text-gray-200">NIF:</span>{" "}
-                    <span className="text-gray-300">{user?.nif}</span>
-                </div>
-                <div>
-                    <span className="font-medium text-gray-200">Role:</span>{" "}
-                    <span className="text-gray-300">{user?.role}</span>
-                </div>
+
+                {isEditingDetails ? (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-gray-400 font-medium mb-1">Name</label>
+                            <input
+                                type="text"
+                                value={editableDetails.name}
+                                onChange={(e) => setEditableDetails({...editableDetails, name: e.target.value})}
+                                className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-gray-400 font-medium mb-1">Business Name</label>
+                            <input
+                                type="text"
+                                value={editableDetails.businessName}
+                                onChange={(e) => setEditableDetails({...editableDetails, businessName: e.target.value})}
+                                className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-gray-400 font-medium mb-1">Description</label>
+                            <textarea
+                                value={editableDetails.description}
+                                onChange={(e) => setEditableDetails({...editableDetails, description: e.target.value})}
+                                className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-gray-400 font-medium mb-1">Location</label>
+                            <LocationPicker
+                                onLocationSelect={(location) => {
+                                    setEditableDetails(prev => ({
+                                        ...prev,
+                                        location: {
+                                            ...location,
+                                            id: prev.location.id
+                                        }
+                                    }));
+                                }}
+                                initialLocation={editableDetails.location}
+                            />
+                            {editableDetails.location.address && (
+                                <div className="mt-2 text-sm text-gray-400">
+                                    <p>Address: {editableDetails.location.address}</p>
+                                    <p>City: {editableDetails.location.city}</p>
+                                    <p>Country: {editableDetails.location.country}</p>
+                                    <p>Postal Code: {editableDetails.location.postalCode}</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={() => setIsEditingDetails(false)}
+                                className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg shadow hover:bg-gray-600"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveDetails}
+                                className="px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg shadow hover:bg-yellow-600"
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div>
+                            <span className="font-medium text-gray-200">Name:</span>{" "}
+                            <span className="text-gray-300">{user?.name}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-200">Business Name:</span>{" "}
+                            <span className="text-gray-300">{producer?.businessName}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-200">Description:</span>{" "}
+                            <span className="text-gray-300">{producer?.description}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-200">Location:</span>{" "}
+                            <span className="text-gray-300">{producer?.locationId}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-200">Email:</span>{" "}
+                            <span className="text-gray-300">{user?.email}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-200">NIF:</span>{" "}
+                            <span className="text-gray-300">{user?.nif}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-200">Role:</span>{" "}
+                            <span className="text-gray-300">{user?.role}</span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Products Section */}
