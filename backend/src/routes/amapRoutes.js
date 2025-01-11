@@ -12,7 +12,8 @@ const {
     getAmapProfile,
     updateAmapProfile,
     getProducerAccountBalance,
-    getCoproducerAccountBalance
+    getCoproducerAccountBalance,
+    getProducerAccountValues
 } = require('../controllers/amapController');
 
 const {
@@ -344,5 +345,27 @@ router.get('/balance/producer', authentication, checkAMAPRole, getProducerAccoun
  *         description: "No account found"
  */
 router.get('/balance/coproducer', authentication, checkAMAPRole, getCoproducerAccountBalance);
+
+/**
+ * @swagger
+ * tags:
+ *   - name: "AMAP"
+ *     description: "Endpoints related to AMAP management"
+ *   - name: "Account Balance"
+ *     description: "Get account balance"
+ *
+ * /amap/account/producer:
+ *   get:
+ *     summary: "Get producer account"
+ *     description: "This endpoint retrieves producer account"
+ *     tags:
+ *       - "Account Balance"
+ *     responses:
+ *       200:
+ *         description: "A list of AMAP producers account"
+ *       404:
+ *         description: "No account found"
+ */
+router.get('/account/producer', authentication, checkAMAPRole, getProducerAccountValues);
 
 module.exports = router;
