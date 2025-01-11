@@ -81,7 +81,7 @@ const Cart = () => {
 
   const handleCheckoutSubmit = async () => {
     if (!session) return;
-    
+
     const refreshToast = toast.loading("Processing checkout...");
 
     const success = await handleCheckout(session.access_token);
@@ -119,53 +119,62 @@ const Cart = () => {
   }
 
   return (
-    <div className="max-w-xl mx-auto p-4 bg-blue-500 rounded-lg shadow-md">
-      <Toaster />
-      <h2 className="text-2xl font-bold mb-4 text-center">Shopping Cart</h2>
-      {Array.isArray(cartItems) && cartItems.length > 0 ? (
-        <div className="space-y-4">
-          {cartItems.map((item) => (
-            <div
-              key={item.itemId}
-              className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
-            >
-              <div>
-                <h3 className="text-lg font-semibold text-black">{item.productName}</h3>
-                <p className="text-gray-600">${(item.price || 0).toFixed(2)}</p>
-              </div>
+    <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
+      <main className="grid grid-cols-12 gap-8">
+        <div className="col-span-3">
+          <Sidebar />
+        </div>
+        <div className="col-span-8 grid gap-8 mt-8">
+          <div className="w-3/5 mx-auto p-4 bg-blue-500 rounded-lg shadow-md">
+            <Toaster />
+            <h2 className="text-2xl font-bold mb-4 text-center">Shopping Cart</h2>
+            {Array.isArray(cartItems) && cartItems.length > 0 ? (
+              <div className="space-y-4">
+                {cartItems.map((item) => (
+                  <div
+                    key={item.itemId}
+                    className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
+                  >
+                    <div>
+                      <h3 className="text-lg font-semibold text-black">{item.productName}</h3>
+                      <p className="text-gray-600">${(item.price || 0).toFixed(2)}</p>
+                    </div>
 
-              <div className="flex items-center space-x-4">
-                <input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={(e) => handleUpdateCartItem(item.itemId, parseInt(e.target.value))}
-                  className="w-16 p-1 border rounded text-center text-gray-600"
-                />
+                    <div className="flex items-center space-x-4">
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => handleUpdateCartItem(item.itemId, parseInt(e.target.value))}
+                        className="w-16 p-1 border rounded text-center text-gray-600"
+                      />
+                      <button
+                        onClick={() => handleDeleteCartItem(item.itemId)}
+                        className="text-red-500 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="text-right font-bold text-lg">
+                  Total: ${calculateTotal()}
+                </div>
+
                 <button
-                  onClick={() => handleDeleteCartItem(item.itemId)}
-                  className="text-red-500 hover:underline"
+                  onClick={handleCheckoutSubmit}
+                  className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-600 transition"
                 >
-                  Remove
+                  Checkout
                 </button>
               </div>
-            </div>
-          ))}
-
-          <div className="text-right font-bold text-lg">
-            Total: ${calculateTotal()}
+            ) : (
+              <p className="text-center text-gray-600">Your cart is empty.</p>
+            )}
           </div>
-
-          <button
-            onClick={handleCheckoutSubmit}
-            className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-600 transition"
-          >
-            Checkout
-          </button>
         </div>
-      ) : (
-        <p className="text-center text-gray-600">Your cart is empty.</p>
-      )}
+      </main>
     </div>
   );
 };
