@@ -223,7 +223,8 @@ const updateAmapSeason = async (req, res, next) => {
 
     try {
         // Arguments
-        const { seasonId, name, startDate, endDate, season } = req.body;
+        const { seasonId } = req.params;
+        const { name, startDate, endDate, season } = req.body;
 
         // Validations
         if (!name || !startDate || !endDate || !season) {
