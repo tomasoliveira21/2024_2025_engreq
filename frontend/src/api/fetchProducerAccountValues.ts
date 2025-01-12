@@ -4,7 +4,7 @@ export const fetchProducerAccountValues = async (
     sessionToken: string
     ): Promise<AccountValues[]> => {
     const apiUrl = "http://localhost:3001/";
-    const response = await fetch(`${apiUrl}amap/account/producer`, {
+    const response = await fetch(`${apiUrl}amap/account/coproducer`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

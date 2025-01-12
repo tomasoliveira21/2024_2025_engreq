@@ -4,6 +4,9 @@ import {Basket} from "@/types/basket";
 import {Producer} from "@/types/producer";
 import {User} from "@/types/user";
 import {Session, SupabaseClient} from "@supabase/auth-helpers-nextjs";
+import ProducerAccountValues from "../../../../components/ProducerAccountValues";
+import { AccountValues } from "@/types/producerBalance";
+import { fetchProducerAccountValues } from "@/api/fetchProducerAccountValues";
 
 export function ConsumerView({ user, session, supabase }: { user: User | null; session: Session; supabase: SupabaseClient}) {
     const [isEditing, setIsEditing] = useState(false);
@@ -11,6 +14,7 @@ export function ConsumerView({ user, session, supabase }: { user: User | null; s
     const [photo, setPhoto] = useState(user?.photoUrl || "");
     const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [producerAccountValues, setProducerAccountValues] = useState<AccountValues[]>([]);
 
     const [consumerDetails, setConsumerDetails] = useState({
         name: user?.name,
@@ -78,6 +82,24 @@ export function ConsumerView({ user, session, supabase }: { user: User | null; s
 
         }
     };
+
+    useEffect(() => {
+        const getProducerAccountValues = async () => {
+          if (session) {
+            try {
+              setIsLoading(true);
+              const fetchedProducerAccountValues = await fetchProducerAccountValues(session.access_token);
+              setProducerAccountValues(fetchedProducerAccountValues);
+            } catch (error) {
+              console.error("Error fetching Producer Account Values:", error);
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        };
+    
+        getProducerAccountValues();
+      }, [session]);
 
     return (
         <div className="border-l-4 border-yellow-500 pl-4 dark:bg-gray-900">
@@ -161,6 +183,11 @@ export function ConsumerView({ user, session, supabase }: { user: User | null; s
                         </button>
                     </div>
                 )}
+
+            <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
+                Co-Producer Account Balances and Pending Values
+            </h1>
+            <ProducerAccountValues accountDetails={producerAccountValues} />
 
             </div>
         </div>

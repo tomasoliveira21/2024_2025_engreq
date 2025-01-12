@@ -24,8 +24,8 @@ export interface BalanceUser {
   }
 
   export interface AccountValues {
+    deliveryValue: number;
+    paidValue: number;
     pendingValue: number;
-    User: BalanceUser;
-    Producer: BalanceProducer;
   }
   

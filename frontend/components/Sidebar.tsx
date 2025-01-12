@@ -117,7 +117,7 @@ function Sidebar() {
       <SidebarRow Icon={UserIcon} title="Profile" onClick={goToProfile} aria-label="Go to Profile's page" />
       {
         userRole === "AMAP Admin" && (
-          <SidebarRow Icon={ViewBoardsIcon} title="Amap Management" onClick={goToAmapManagement} aria-label="Go to Manager's page" />
+          <SidebarRow Icon={ViewBoardsIcon} title="AMAP Management" onClick={goToAmapManagement} aria-label="Go to Manager's page" />
         )
       }
       <SidebarRow Icon={LogoutIcon} title="Sign Out" onClick={logout} aria-label="Back to login page" />
