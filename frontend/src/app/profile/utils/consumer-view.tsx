@@ -1,11 +1,82 @@
-import React from "react";
+import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Product} from "@/types/product";
+import {Basket} from "@/types/basket";
+import {Producer} from "@/types/producer";
+import {User} from "@/types/user";
+import {Session, SupabaseClient} from "@supabase/auth-helpers-nextjs";
 
-export function ConsumerView() {
-    const consumerDetails = {
-        name: "John Doe", // Replace with actual data
-        email: "john.doe@example.com", // Replace with actual data
-        nif: "123456789", // Replace with actual data
-        role: "Consumer", // Replace with actual data
+export function ConsumerView({ user, session, supabase }: { user: User | null; session: Session; supabase: SupabaseClient}) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [name, setName] = useState(user?.name || "");
+    const [photo, setPhoto] = useState(user?.photoUrl || "");
+    const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [consumerDetails, setConsumerDetails] = useState({
+        name: user?.name,
+        email: user?.email,
+        nif: user?.nif,
+        role: user?.role,
+        photo: user?.photoUrl,
+    });
+
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleCancelClick = () => {
+        setIsEditing(false);
+        setNewPhotoFile(null); // Reset file selection
+    };
+
+    const handleSaveClick = async () => {
+        try {
+            let uploadedPhotoUrl = photo;
+
+            if (newPhotoFile) {
+                const { data, error } = await supabase.storage
+                    .from("photos")
+                    .upload(`users/${user?.id}/profile.jpg`, newPhotoFile, {
+                        upsert: true,
+                    });
+
+                if (error) throw error;
+
+                const { data: urlData } = supabase.storage
+                    .from("photos")
+                    .getPublicUrl(`users/${user?.id}/profile.jpg`);
+                uploadedPhotoUrl = urlData.publicUrl;
+            }
+
+            // Save updates to user profile
+            await supabase
+                .from("Users")
+                .update({ name, photoUrl: uploadedPhotoUrl })
+                .eq("id", user?.id);
+
+            setPhoto(uploadedPhotoUrl);
+            setConsumerDetails((prevDetails) => ({
+                ...prevDetails,
+                photo: uploadedPhotoUrl,
+            }));
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
+    };
+
+    const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setNewPhotoFile(file);
+            const url = URL.createObjectURL(file)
+            setPhoto(url);
+            setConsumerDetails((prevDetails) => ({
+                ...prevDetails,
+                photo: url,
+            }));
+
+        }
     };
 
     return (
@@ -14,7 +85,7 @@ export function ConsumerView() {
                 Consumer Dashboard
             </h2>
             <p className="text-gray-400 mb-6">
-                Welcome, {consumerDetails.name}! Below are your business details:
+                Welcome, {consumerDetails.name}! Below are your user details:
             </p>
             <div className="space-y-4">
                 {consumerDetails.photo ? (
@@ -32,10 +103,6 @@ export function ConsumerView() {
                     </div>
                 )}
                 <div>
-                    <span className="font-medium text-gray-200">Name:</span>{" "}
-                    <span className="text-gray-300">{consumerDetails.name}</span>
-                </div>
-                <div>
                     <span className="font-medium text-gray-200">Email:</span>{" "}
                     <span className="text-gray-300">{consumerDetails.email}</span>
                 </div>
@@ -47,6 +114,54 @@ export function ConsumerView() {
                     <span className="font-medium text-gray-200">Role:</span>{" "}
                     <span className="text-gray-300">{consumerDetails.role}</span>
                 </div>
+
+                {isEditing ? (<div className="space-y-4">
+                    <div>
+                        <label className={"font-medium text-gray-200"}>Name: </label>
+                        <input
+                            type={"text"}
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            className={"m1-2 px-2 py-1 rounded bg-gray-800 text-gray-300 border border-gray-600"}
+                        />
+                    </div>
+                    <div>
+                        <label className="font-medium text-gray-200">Upload Photo:</label>
+                        <input
+                            type="file"
+                            onChange={handlePhotoChange}
+                            className="ml-2 text-gray-300"
+                        />
+                    </div>
+                    <div className="space-x-2">
+                        <button
+                            onClick={handleSaveClick}
+                            className="px-4 py-2 bg-green-500 text-white rounded shadow"
+                        >
+                            Save
+                        </button>
+                        <button
+                            onClick={handleCancelClick}
+                            className="px-4 py-2 bg-gray-700 text-white rounded shadow"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>) : (
+                    <div>
+                        <div>
+                            <span className="font-medium text-gray-200">Name:</span>{" "}
+                            <span className="text-gray-300">{name}</span>
+                        </div>
+                        <button
+                            onClick={handleEditClick}
+                            className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded shadow"
+                        >
+                            Edit
+                        </button>
+                    </div>
+                )}
+
             </div>
         </div>
     );

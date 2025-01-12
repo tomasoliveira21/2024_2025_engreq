@@ -3,7 +3,7 @@ import {Basket} from "@/types/basket";
 import {Producer} from "@/types/producer";
 import {User} from "@/types/user";
 import {Session, SupabaseClient} from "@supabase/auth-helpers-nextjs";
-import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
+import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from "react";
 import {updateBasket} from "@/api/updateBasket";
 import {updateProduct} from "@/api/updateProduct";
 import {deleteBasket} from "@/api/deleteBasket";
@@ -24,6 +24,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
     const [selectedItem, setSelectedItem] = useState<Product | Basket | null>(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [isEditingDetails, setIsEditingDetails] = useState(false);
+    const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
     const [locationDetails, setLocationDetails] = useState<{
         address: string;
         city: string;
@@ -91,6 +92,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
             latitude: 0,
             longitude: 0,
         },
+        photoUrl: user?.photoUrl
     });
 
     const handleEditDetails = () => {
@@ -106,6 +108,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                 latitude: 0,
                 longitude: 0,
             },
+            photoUrl: user?.photoUrl
         });
         setIsEditingDetails(true);
     };
@@ -119,6 +122,19 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
     const closeModal = () => {
         setSelectedItem(null);
         setModalOpen(false);
+    };
+
+    const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setNewPhotoFile(file);
+            const url = URL.createObjectURL(file)
+            setEditableDetails((prevDetails) => ({
+                ...prevDetails,
+                photoUrl: url,
+            }));
+
+        }
     };
 
     const handleSave = async (updatedItem: Product | Basket) => {
@@ -165,6 +181,28 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
 
     const handleSaveDetails = async () => {
         try {
+            let uploadedPhotoUrl = editableDetails.photoUrl;
+
+            if (newPhotoFile) {
+                const { data, error } = await supabase.storage
+                    .from("photos")
+                    .upload(`users/${user?.id}/profile.jpg`, newPhotoFile, {
+                        upsert: true,
+                    });
+
+                if (error) throw error;
+
+                const { data: urlData } = supabase.storage
+                    .from("photos")
+                    .getPublicUrl(`users/${user?.id}/profile.jpg`);
+                uploadedPhotoUrl = urlData.publicUrl;
+            }
+
+            setEditableDetails((prevDetails) => ({
+                ...prevDetails,
+                photoUrl: uploadedPhotoUrl,
+            }));
+
             const locationData = {
                 address: editableDetails.location.address,
                 city: editableDetails.location.city,
@@ -191,7 +229,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
 
             await supabase
                 .from("Users")
-                .update({ name: editableDetails.name })
+                .update({ name: editableDetails.name, photoUrl: editableDetails.photoUrl })
                 .eq("id", user?.id);
 
             await supabase
@@ -260,8 +298,30 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
             </div>
             <p className="text-gray-400 mb-6">Welcome, {user?.name}! Below are your business details:</p>
             <div className="space-y-4">
+                {editableDetails.photoUrl ? (
+                    <div>
+                        <img
+                            src={editableDetails.photoUrl}
+                            alt="Producer Photo"
+                            className="w-32 h-32 rounded-full object-cover border border-gray-700 shadow-md"
+                        />
+                    </div>
+                ) : (
+                    <div
+                        className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border border-gray-600">
+                        No Photo
+                    </div>
+                )}
                 {isEditingDetails ? (
                     <div className="space-y-4">
+                        <div>
+                            <label className="font-medium text-gray-200">Upload Photo:</label>
+                            <input
+                                type="file"
+                                onChange={handlePhotoChange}
+                                className="ml-2 text-gray-300"
+                            />
+                        </div>
                         <div>
                             <label className="block text-gray-400 font-medium mb-1">Name</label>
                             <input
@@ -326,7 +386,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                             <span className="text-gray-300">{user?.name}</span>
                         </div>
                         <div>
-                            <span className="font-medium text-gray-200">Business Name:</span>{" "}
+                        <span className="font-medium text-gray-200">Business Name:</span>{" "}
                             <span className="text-gray-300">{producer?.businessName}</span>
                         </div>
                         <div>

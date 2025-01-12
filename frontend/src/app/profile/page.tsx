@@ -23,6 +23,7 @@ import {AdminView} from "@/app/profile/utils/admin-view";
 
 
 export default function Profile({params}: { params: { id: string } }) {
+
     const [user, setUser] = useState<User | null>(null);
     const [producer, setProducer] = useState<Producer | null>(null);
     const {id} = params;
@@ -30,6 +31,7 @@ export default function Profile({params}: { params: { id: string } }) {
     const [products, setProducts] = useState<Product[]>([]);
     const [baskets, setBaskets] = useState<Basket[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [photo, setPhoto] = useState(user?.photoUrl || "");
 
     // State variables for editable fields
     const [editableName, setEditableName] = useState("");
@@ -37,6 +39,9 @@ export default function Profile({params}: { params: { id: string } }) {
     const [editableDescription, setEditableDescription] = useState("");
     const [editableLocation, setEditableLocation] = useState("");
 
+
+
+    // session
     useEffect(() => {
         async function getSession() {
             const {
@@ -50,39 +55,52 @@ export default function Profile({params}: { params: { id: string } }) {
             }
 
             const userId = session.user.id;
-            const role = session.user.user_metadata.role || 'Co-Producer';
-            const user = await supabase.from('Users').select('*').eq('authuserid', userId).single();
+            const getUser = await supabase.from('Users').select('*').eq('authuserid', userId).single();
 
-            if (user.data) {
-                setUser(user.data);
+            if (getUser.data) {
                 // Set user name immediately when we have the data
-                setEditableName(user.data.name || "");
-            }
+                setEditableName(getUser.data.name || "");
+                //fetchUserPhoto();
+                // Update the photoUrl to the fetched photo or use the default if unavailable
+                const updatedUser : User = {
+                    id: getUser.data.id,
+                    email: getUser.data.email,
+                    nif: getUser.data.nif,
+                    AMAPId: getUser.data.AMAPId,
+                    name: getUser.data.name,
+                    authuserid: getUser.data.authuserid,
+                    role: getUser.data.role,
+                    photoUrl: getUser.data.photoUrl
+                };
+                setUser(updatedUser);
 
-            if (role === 'Producer') {
-                const producerData = await supabase.from('Producers')
-                    .select('*')
-                    .eq('userId', user.data?.id)
-                    .single();
+                if (getUser.data.role === 'Producer') {
+                    const producerData = await supabase.from('Producers')
+                        .select('*')
+                        .eq('userId', getUser.data.id)
+                        .single();
 
-                if (producerData.data) {
-                    setProducer(producerData.data);
-                    // Set producer-specific fields with fallbacks to empty strings
-                    setEditableBusinessName(producerData.data.businessName || "");
-                    setEditableDescription(producerData.data.description || "");
-                    setEditableLocation(producerData.data.locationId || "");
+                    if (producerData.data) {
+                        setProducer(producerData.data);
+                        // Set producer-specific fields with fallbacks to empty strings
+                        setEditableBusinessName(producerData.data.businessName || "");
+                        setEditableDescription(producerData.data.description || "");
+                        setEditableLocation(producerData.data.locationId || "");
+                    }
                 }
+
             }
         }
 
         getSession();
     }, []);
 
+    // baskets
     useEffect(() => {
         const getBaskets = async () => {
-            if (session && producer?.id) {
+            if (session) {
                 try {
-                    const producerId : string = String(producer.id);
+                    const producerId : string = String(producer?.id);
                     setIsLoading(true);
                     const fetchedBaskets = await fetchProducerBaskets(session.access_token, producerId);
                     setBaskets(fetchedBaskets);
@@ -96,6 +114,7 @@ export default function Profile({params}: { params: { id: string } }) {
         getBaskets();
     }, [session, producer]);
 
+    // products
     useEffect(() => {
         const getProducts = async () => {
             if (session) {
@@ -113,48 +132,8 @@ export default function Profile({params}: { params: { id: string } }) {
         getProducts();
     }, [session, producer]);
 
-    const handleSave = async () => {
-        if (!user) return;
-
-        try {
-            // Update user details
-            await supabase.from('Users')
-                .update({ name: editableName || "" })
-                .eq('id', user.id);
-
-            // Update producer details if applicable
-            if (producer) {
-                await supabase.from('Producers')
-                    .update({
-                        businessName: editableBusinessName || "",
-                        description: editableDescription || "",
-                        locationId: editableLocation || ""
-                    })
-                    .eq('id', producer.id);
-
-                setProducer(prev => ({
-                    ...prev!,
-                    businessName: editableBusinessName || "",
-                    description: editableDescription || "",
-                    locationId: editableLocation ? Number(editableLocation) : 0,
-                }));
-            }
-
-            setUser(prev => ({
-                ...prev!,
-                name: editableName || ""
-            }));
-
-            alert("Profile updated successfully!");
-        } catch (error) {
-            console.error("Error updating profile:", error);
-            alert("Failed to update profile.");
-        }
-    };
-
-
     const renderContent = () => {
-        switch (session?.user.user_metadata.role) {
+        switch (user?.role) {
             case "Producer":
                 return (
                     <div>
@@ -170,6 +149,14 @@ export default function Profile({params}: { params: { id: string } }) {
                         />
                     </div>
                 );
+            case "Co-Producer":
+                return (<div>
+                    <ConsumerView
+                    user={user}
+                    session={session}
+                    supabase={supabase}
+                    />
+                </div>)
             case "AMAP Admin":
                 return <AMAPAdminView/>;
             case "Admin":
@@ -178,6 +165,15 @@ export default function Profile({params}: { params: { id: string } }) {
                 return <p className="text-gray-600">Loading profile...</p>;
         }
     };
+
+    if (!user) {
+        return <div>Loading user...</div>;
+    }
+
+    if (!session) {
+        return <div>Loading session...</div>;
+    }
+
     return (
         <div className="flex min-h-screen">
             <div className="w-1/4 bg-black p-4">
