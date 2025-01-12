@@ -5,7 +5,6 @@ class Producer extends Model {}
 Producer.init({
     businessName: {type: DataTypes.STRING, allowNull: true},
     description: {type: DataTypes.STRING, allowNull: true},
-    photoUrl: { type: DataTypes.STRING, allowNull: true },
     locationId: {
         type: DataTypes.INTEGER,
         allowNull: true,

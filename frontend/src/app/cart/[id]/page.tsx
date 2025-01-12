@@ -9,6 +9,7 @@ import { fetchBasket } from "@/api/fetchBasket";
 import { fetchProduct } from "@/api/fetchProduct";
 import Sidebar from "../../../../components/Sidebar";
 import { loadStripe } from "@stripe/stripe-js";
+import { createCartItem } from "@/api/createCartItem";
 
 const stripePromise = loadStripe(
   "pk_test_51QgDGkGKHQBvF2vYycQckWdfnJIPNfO8Ry2GGMFOiUz34MT3cBT7HqFW6PXLJxCHVjlX43flixaiwnhBGKkwzQ1B000Pqpyo8n"
@@ -48,6 +49,12 @@ export default function Cart({ params }: { params: { id: number } }) {
       return;
     }
 
+    const addToCartData = {
+      itemType: itemType || "",
+      itemId: id,
+      quantity: quantity,
+    };
+
     const subscriptionData = {
       periodType,
       itemType: itemType || "",
@@ -56,10 +63,13 @@ export default function Cart({ params }: { params: { id: number } }) {
     };
 
     try {
-      const success = await createSubscription(
-        session?.access_token ?? "",
-        subscriptionData
-      );
+      let success;
+      if (actionType === "addToCart") {
+        success = await createCartItem(session?.access_token ?? "", addToCartData);
+      } else if (actionType === "subscribe") {
+        success = await createSubscription(session?.access_token ?? "", subscriptionData);
+      }
+      setSubscriptionSuccess(success ?? false);
 
       if (!success) {
         throw new Error("Failed to create subscription.");
@@ -129,6 +139,21 @@ export default function Cart({ params }: { params: { id: number } }) {
                 {itemName}
               </p>
 
+              {actionType === "addToCart" && (
+                <div className="mt-4">
+                  <label htmlFor="subscriptionType" className="block mb-2">
+                    Purchase Type:
+                  </label>
+                  <select
+                    id="subscriptionType"
+                    value={periodType}
+                    onChange={(e) => setPeriodType(e.target.value)}
+                    className="text-black p-2 rounded-lg w-full"
+                  >
+                    <option value="single purchase">Single Purchase</option>
+                  </select>
+                </div>
+              )}
               {actionType === "subscribe" && (
                 <div className="mt-4">
                   <label htmlFor="subscriptionType" className="block mb-2">
@@ -164,7 +189,7 @@ export default function Cart({ params }: { params: { id: number } }) {
                 type="submit"
                 className="mt-6 bg-green-500 text-white py-2 px-4 rounded-lg w-full"
               >
-                Subscribe
+                {actionType === "addToCart" ? "Add to Cart" : "Subscribe Basket"}
               </button>
               {subscriptionSuccess !== null && (
                 <div
@@ -172,9 +197,14 @@ export default function Cart({ params }: { params: { id: number } }) {
                     subscriptionSuccess ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {subscriptionSuccess
-                    ? "Subscription created successfully!"
-                    : "Failed to create subscription."}
+                  { subscriptionSuccess
+                    ? actionType === "addToCart"
+                      ? "Basket added to cart successfully!"
+                      : "Subscription created successfully!"
+                    : actionType === "addToCart"
+                      ? "Failed to add item to cart."
+                      : "Failed to create subscription."
+                  }
                 </div>
               )}
             </form>
