@@ -322,6 +322,68 @@
 					"response": []
 				},
 				{
+					"name": "Get producer KPIS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI4ZDM4NWFjYi0yMTFkLTQzNzktYjNjZC0zOWYxNzg0YWJjNWIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM2NjQ2OTE5LCJpYXQiOjE3MzY2NDMzMTksImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzM2NjA3OTgwfV0sInNlc3Npb25faWQiOiIzOTI5MjQxMy1jZWU4LTQ1YWYtYTE2Ni02YWRlNTUxZjc5MGIiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.hAM-Xks6SNh4RTsThz5g42TTZQ4rhyZoLJzCCzIvXoo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/amap/producer/kpis",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"amap",
+								"producer",
+								"kpis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get coproducer KPIS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJiSW9Ocnl6SThGcjlIZm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25laGh4eHZteG14b2hzcWRiY3h2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyZDY2ZjBlOC02NTllLTRiY2EtOGQwZi1lZDViMDJjOTJmNDkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzMzNjIwNjUxLCJpYXQiOjE3MzM2MTcwNTEsImVtYWlsIjoiMTA5MDQ3MEBpc2VwLmlwcC5wdCIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiIxMDkwNDcwQGlzZXAuaXBwLnB0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiQnJ1bm8gU2FudG9zIiwibmlmIjo1MDE1MDE1MDEsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicm9sZSI6IkNvLVByb2R1Y2VyIiwic3ViIjoiMmQ2NmYwZTgtNjU5ZS00YmNhLThkMGYtZWQ1YjAyYzkyZjQ5In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzM1ODg0OTZ9XSwic2Vzc2lvbl9pZCI6IjRiMzI5ODlkLWQwNDAtNGQ1MC04Y2FmLTJmNjNmNmRhNWFmYiIsImlzX2Fub255bW91cyI6ZmFsc2V9.Edh46JFfhSDOIXNSH9th8Cfod_FaqbeWKTwUeMFRyrI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/amap/coproducer/kpis",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"amap",
+								"coproducer",
+								"kpis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Coproducer Account balance",
 					"request": {
 						"auth": {

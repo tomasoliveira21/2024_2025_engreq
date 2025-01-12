@@ -47,20 +47,21 @@ router.get('/', authentication, getSubscriptionList);
 /**
  * @swagger
  * tags:
- *  - name: "Subscription"
- *   description: "Endpoints related to subscription management"
+ *   - name: "Subscription"
+ *     description: "Endpoints related to subscription management"
+ *
  * /subscription/producer:
- *  get:
- *   summary: "Get a list of producer orders"
- *  description: "This endpoint retrieves a list of all orders for a producer"
- * tags:
- * - "Subscription"
- * responses:
- * 200:
- * description: "A list of producer orders"
- * 404:
- * description: "No orders found"
-*/
+ *   get:
+ *     summary: "Get a list of producer history"
+ *     description: "This endpoint retrieves a list of all orders for a producer"
+ *     tags:
+ *       - "Subscription"
+ *     responses:
+ *       200:
+ *         description: "A list of producer orders"
+ *       404:
+ *         description: "No orders found"
+ */
 router.get('/producer', authentication, getProducerOrders);
 
 /**

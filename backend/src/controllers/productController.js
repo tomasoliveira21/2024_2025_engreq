@@ -115,6 +115,13 @@ const updateProductData = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
 const getProductSalePeriodsData = async (req, res, next) => {
     logger.info(`Get product sale periods`);
     // Arguments
@@ -239,6 +246,13 @@ const getBasketDetails = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
 const getBasketSalePeriodsData = async (req, res, next) => {
     // Arguments
     const { basketId } = req.params;

@@ -13,7 +13,8 @@ const {
     insertCartItem,
     updateCart,
     requestProducerKpis,
-    requestCoproducerKpis
+    requestCoproducerKpis,
+    insertDelivery
 } = require('../services/subscriptionService');
 
 const {
@@ -268,6 +269,7 @@ const updateOrderSubscription = async (req, res, next) => {
 
     try {
         // Arguments
+        let returnData = {};
         const { id } = req.params;
         const { status, quantity } = req.body;
         const validStatus = ['pending', 'completed', 'cancelled'];
@@ -288,20 +290,35 @@ const updateOrderSubscription = async (req, res, next) => {
             });
         }
 
-        // Update subscription
-        const subscriptionData = {status};
-        const updatedSubscription = await updateSubscription(id, subscriptionData);
-
         // Update quantity
-        const detailsData = {id, quantity};
-        const updatedQuantity = await updateOrderDetails(id, detailsData);
+        if (quantity !== null)
+        {
+            const detailsData = {id, quantity};
+            returnData = await updateOrderDetails(id, detailsData);
+        }
 
+        // Update subscription
+        if (status !== null)
+        {
+            const subscriptionData = {status};
+            returnData = await updateSubscription(id, subscriptionData);
+
+            // Create delivery
+            if (status === 'completed')
+            {
+                const cost = returnData.totalCost ?? 0;
+                const date = returnData.orderDate ?? 0;
+                const orderId = id;
+                const deliveryData = {orderId, cost, date};
+                const newDelivery = await insertDelivery(deliveryData);
+            }
+        }
 
         // Return response
         return res.status(201).json({
             success: true,
             message: 'Subscription updated successfully',
-            basket: updatedSubscription,
+            subscription: returnData,
         });
     } catch (err) {
         // Error handling

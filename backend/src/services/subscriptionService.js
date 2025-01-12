@@ -7,12 +7,7 @@ const Producer = require('../domain/models/Producer');
 const { Op } = require('sequelize');
 const Cart = require('../domain/models/Cart');
 const { Sequelize } = require('sequelize');
-const {requestProductDetails} = require("./productService");
-const Product = require("../domain/models/Product");
-const Certificate = require("../domain/models/Certificate");
-const SalePeriod = require("../domain/models/SalePeriod");
-const DeliveryDate = require("../domain/models/DeliveryDate");
-const ProductSalePeriod = require("../domain/models/ProductSalePeriod");
+const Delivery = require('../domain/models/Delivery');
 
 /**
  *
@@ -607,6 +602,32 @@ const requestCoproducerKpis = async (userEmail) => {
     }
 };
 
+/**
+ *
+ * @param deliveryData
+ * @returns {Promise<*>}
+ */
+const insertDelivery = async (deliveryData) => {
+    // Logger
+    logger.info(`Insert new delivery`);
+
+    try {
+        // Create delivery
+        const newDelivery = await Delivery.create({
+            deliveryDate: deliveryData.date,
+            cost: deliveryData.cost,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            orderId: deliveryData.orderId,
+        });
+
+        logger.log('Delivery created successfully:', newDelivery);
+        return newDelivery;
+    } catch (error) {
+        logger.error('Error creating delivery:', error);
+        throw error;
+    }
+};
 
 /**
  *
@@ -649,5 +670,6 @@ module.exports = {
     insertCartItem,
     updateCart,
     requestProducerKpis,
-    requestCoproducerKpis
+    requestCoproducerKpis,
+    insertDelivery
 };

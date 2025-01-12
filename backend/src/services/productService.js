@@ -189,7 +189,11 @@ const updateProduct = async (productId, productData) => {
     }
 };
 
-
+/**
+ *
+ * @param productId
+ * @returns {Promise<*>}
+ */
 const getProductSalePeriods = async (productId) => {
     try {
         const productSalePeriod = await ProductSalePeriod.findOne({
@@ -485,6 +489,11 @@ const updateBasket = async (basketId, basketData) => {
     }
 };
 
+/**
+ *
+ * @param basketId
+ * @returns {Promise<*>}
+ */
 const getBasketSalePeriods = async (basketId) => {
     try {
         const basketSalePeriod = await BasketSalePeriod.findOne({
