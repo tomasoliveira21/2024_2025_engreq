@@ -4,13 +4,15 @@ import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import { createSubscription } from "@/api/createSubscription";
-
-import { createCartItem } from "@/api/createCartItem";
-
 import { useSearchParams } from "next/navigation";
 import { fetchBasket } from "@/api/fetchBasket";
 import { fetchProduct } from "@/api/fetchProduct";
 import Sidebar from "../../../../components/Sidebar";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  "pk_test_51QgDGkGKHQBvF2vYycQckWdfnJIPNfO8Ry2GGMFOiUz34MT3cBT7HqFW6PXLJxCHVjlX43flixaiwnhBGKkwzQ1B000Pqpyo8n"
+);
 
 export default function Cart({ params }: { params: { id: number } }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -38,23 +40,51 @@ export default function Cart({ params }: { params: { id: number } }) {
 
   const handleSubscription = async () => {
     setIsSubscribing(true);
+    const stripe = await stripePromise;
+
+    if (!stripe) {
+      alert("Stripe not loaded!");
+      setIsSubscribing(false);
+      return;
+    }
+
     const subscriptionData = {
-      periodType: periodType,
+      periodType,
       itemType: itemType || "",
       itemId: id,
-      quantity: quantity,
+      quantity,
     };
 
     try {
-      let success;
-
-      success = await createSubscription(
+      // Chama seu endpoint para criar a assinatura
+      const success = await createSubscription(
         session?.access_token ?? "",
         subscriptionData
       );
 
-      setSubscriptionSuccess(success ?? false);
+      if (!success) {
+        throw new Error("Failed to create subscription.");
+      }
+
+      const { error } = await stripe.redirectToCheckout({
+        mode: "payment",
+        lineItems: [
+          {
+            price: "price_1QgDsVGKHQBvF2vYawX5KzMk",
+            quantity,
+          },
+        ],
+        successUrl: `${window.location.origin}?success=true`,
+        cancelUrl: `${window.location.origin}?canceled=true`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setSubscriptionSuccess(true);
     } catch (error) {
+      console.error(error);
       setSubscriptionSuccess(false);
     } finally {
       setIsSubscribing(false);
@@ -64,7 +94,6 @@ export default function Cart({ params }: { params: { id: number } }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSubscription();
-    console.log({ id, periodType, quantity });
   };
 
   useEffect(() => {
@@ -145,11 +174,7 @@ export default function Cart({ params }: { params: { id: number } }) {
                   }`}
                 >
                   {subscriptionSuccess
-                    ? actionType === "addToCart"
-                      ? "Basket added to cart successfully!"
-                      : "Subscription created successfully!"
-                    : actionType === "addToCart"
-                    ? "Failed to add item to cart."
+                    ? "Subscription created successfully!"
                     : "Failed to create subscription."}
                 </div>
               )}
