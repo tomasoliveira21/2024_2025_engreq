@@ -12,7 +12,8 @@ const {
     requestAmapProfile,
     updateAmap,
     requestProducerAccountBalance,
-    requestCoproducerAccountBalance
+    requestCoproducerAccountBalance,
+    requestProducerAccountValues
 } = require('../services/amapService');
 
 /**
@@ -362,6 +363,24 @@ const getCoproducerAccountBalance = async (req, res, next) => {
     }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getProducerAccountValues = async (req, res, next) => {
+    logger.info(`Request getProducerAccountValues`);
+    try {
+        const amapId = req.user.amapId;
+        const producerAccountValues = await requestProducerAccountValues(amapId);
+        res.status(200).json({ account: producerAccountValues });
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 module.exports = {
     getAmapsList,
@@ -374,5 +393,6 @@ module.exports = {
     getAmapProfile,
     updateAmapProfile,
     getProducerAccountBalance,
-    getCoproducerAccountBalance
+    getCoproducerAccountBalance,
+    getProducerAccountValues
 };

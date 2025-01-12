@@ -7,6 +7,7 @@ const DeliveryDate = require('../domain/models/DeliveryDate');
 const { Sequelize } = require('sequelize');
 const OrderDetails = require("../domain/models/OrderDetails");
 const Producer = require("../domain/models/Producer");
+const Delivery = require("../domain/models/Delivery");
 
 /**
  * LIST
@@ -497,6 +498,81 @@ const requestCoproducerAccountBalance = async (amapId) => {
     }
 };
 
+/**
+ *
+ * @param amapId
+ * @returns {Promise<*>}
+ */
+const requestProducerAccountValues = async (amapId) => {
+    try {
+        // GET Account Balance
+        const producerAccount = await Order.findAll({
+            attributes: [
+                [Sequelize.literal('SUM("Deliveries"."cost") - SUM("Order"."paidCost")'), 'pendingDeliveryValue'],
+            ],
+            where: {
+                status: 'in-progress',
+            },
+            include: [
+                {
+                    model: OrderDetails,
+                    attributes: [],
+                    include: [
+                        {
+                            model: Producer,
+                            attributes: ['id', 'businessName', 'description'],
+                            include: [
+                                {
+                                    model: User,
+                                    attributes: ['id', 'email', 'nif', 'name'],
+                                    where: {
+                                        AMAPId: amapId,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    model: Delivery,
+                    attributes: []
+                },
+            ],
+            group: [
+                'OrderDetails->Producer->User.id',
+                'OrderDetails->Producer.id',
+                'Deliveries.id',
+            ],
+            order: [[Sequelize.col('OrderDetails->Producer->User.id'), 'ASC']],
+            raw: true,
+            nest: true,
+        });
+
+        // Adjust response
+        const formattedResults = producerAccount.map(entry => ({
+            pendingValue        : entry.pendingDeliveryValue ?? 0,
+            User                : {
+                id              : entry.OrderDetails.Producer.User.id,
+                email           : entry.OrderDetails.Producer.User.email,
+                nif             : entry.OrderDetails.Producer.User.nif,
+                name            : entry.OrderDetails.Producer.User.name,
+            },
+            Producer            : {
+                id              : entry.OrderDetails.Producer.id,
+                businessName    : entry.OrderDetails.Producer.businessName,
+                description     : entry.OrderDetails.Producer.description,
+            }
+        }));
+
+        logger.info(`Request Producer Account : ${amapId}`);
+        return formattedResults;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error requesting Producer Account : `, error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestAmapsList,
     requestAmapsKpis,
@@ -510,5 +586,6 @@ module.exports = {
     requestAmapProfile,
     updateAmap,
     requestProducerAccountBalance,
-    requestCoproducerAccountBalance
+    requestCoproducerAccountBalance,
+    requestProducerAccountValues
 };
