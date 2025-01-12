@@ -8,6 +8,7 @@ const { Sequelize } = require('sequelize');
 const OrderDetails = require("../domain/models/OrderDetails");
 const Producer = require("../domain/models/Producer");
 const Delivery = require("../domain/models/Delivery");
+const Product = require("../domain/models/Product");
 
 /**
  * LIST
@@ -125,6 +126,81 @@ const requestAmapsKpis = async (amapId) => {
         // Detailed logging for better debugging
         logger.error('Error fetching AMAPs KPIs', { message: error.message, stack: error.stack });
         return { orderCount: 0, orderCosts: { totalCostSum: 0, paidCostSum: 0 } }; // Return default values on error
+    }
+};
+
+/**
+ *
+ * @param amapId
+ * @param startDate
+ * @param endDate
+ * @returns {Promise<{}|*>}
+ */
+const requestProducerKpis = async (amapId, startDate, endDate) => {
+    logger.info('Requesting producer KPIs');
+
+    try {
+        const results = await Order.findAll({
+            attributes: [
+                [Sequelize.fn('COUNT', Sequelize.col('OrderDetails.id')), 'totalOrders'],
+                [Sequelize.fn('AVG', Sequelize.col('OrderDetails.quantity')), 'averageQuantity'],
+                [Sequelize.fn('AVG', Sequelize.col('OrderDetails.price')), 'averagePrice'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalValue'],
+            ],
+            where: {
+                orderDate: {
+                    [Sequelize.Op.gte]: new Date(startDate),
+                    [Sequelize.Op.lte]: new Date(endDate)
+                }
+            },
+            include: [
+                {
+                    model: OrderDetails,
+                    attributes: ['producerId'],
+                    include: [
+                        {
+                            model: Producer,
+                            attributes: ['id', 'businessName', 'description'],
+                            include: [
+                                {
+                                    model: User,
+                                    attributes: ['id', 'email', 'nif', 'name'],
+                                    where: { AMAPId: amapId },
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            group: ['OrderDetails.producerId', 'OrderDetails->Producer.id','OrderDetails->Producer->User.id'],
+            raw: true
+        });
+
+        // Adjust data
+        const transformedData = results.map(item => ({
+            totalOrders: parseInt(item.totalOrders, 10),
+            totalValue: parseFloat(item.totalValue),
+            averageQuantity: parseFloat(item.averageQuantity),
+            averagePrice: parseFloat(item.averagePrice),
+            producer: {
+                id: item["OrderDetails.Producer.id"],
+                businessName: item["OrderDetails.Producer.businessName"],
+                description: item["OrderDetails.Producer.description"],
+            },
+            user: {
+                id: item["OrderDetails.Producer.User.id"],
+                email: item["OrderDetails.Producer.User.email"],
+                nif: item["OrderDetails.Producer.User.nif"],
+                name: item["OrderDetails.Producer.User.name"]
+            },
+        }));
+
+        logger.info('Successfully retrieved producer KPIs', { transformedData });
+
+        return transformedData;
+    } catch (error) {
+        logger.error('Error fetching producer KPIs', { message: error.message, stack: error.stack });
+        return {};
     }
 };
 
@@ -587,5 +663,6 @@ module.exports = {
     updateAmap,
     requestProducerAccountBalance,
     requestCoproducerAccountBalance,
-    requestProducerAccountValues
+    requestProducerAccountValues,
+    requestProducerKpis
 };
