@@ -23,6 +23,7 @@ export default function Amap({ params }: { params: { id: string } }) {
   const [baskets, setBaskets] = useState<Basket[]>([]);
   const [productFilter, setProductFilter] = useState("");
   const [basketFilter, setBasketFilter] = useState("");
+  const [userRole, setUserRole] = useState(null);
 
   const [productSortKey, setProductSortKey] = useState<keyof Product | null>(
     null
@@ -76,6 +77,26 @@ export default function Amap({ params }: { params: { id: string } }) {
     };
     getBaskets();
   }, [session]);
+
+    useEffect(() => {
+      const fetchUserRole = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Get the role from the database
+          const userId = session.user.id;
+          const { data: existingUser } = await supabase
+          .from('Users')
+          .select('*')
+          .eq('authuserid', userId)
+          .single(); 
+  
+          const role = existingUser?.role;
+          setUserRole(role);
+        }
+      };
+    
+      fetchUserRole();
+    }, []);
 
   useEffect(() => {
     if (!id) {
@@ -189,13 +210,15 @@ export default function Amap({ params }: { params: { id: string } }) {
                 onChange={(e) => setProductFilter(e.target.value)}
                 value={productFilter}
               />
-              <button
-                className="px-4 py-2 text-white bg-blue-900 rounded"
-                onClick={() => router.push(`/createProduct/${id}`)}
-                aria-label="Create a new product"
-              >
-                Create Product
-              </button>
+              {userRole === "Producer" && (
+                <button
+                  className="px-4 py-2 text-white bg-blue-900 rounded"
+                  onClick={() => router.push(`/createProduct/${id}`)}
+                  aria-label="Create a new product"
+                >
+                  Create Product
+                </button>
+              )}
             </div>
           </div>
           {sortedProducts.length > 0 ? (
@@ -260,13 +283,15 @@ export default function Amap({ params }: { params: { id: string } }) {
                 onChange={(e) => setBasketFilter(e.target.value)}
                 value={basketFilter}
               />
-              <button
-                className="px-4 py-2 text-white bg-blue-900 rounded"
-                onClick={() => router.push(`/createBasket/${id}`)}
-                aria-label="Create a new basket"
-              >
-                Create Basket
-              </button>
+              {userRole === "Producer" && (
+                <button
+                  className="px-4 py-2 text-white bg-blue-900 rounded"
+                  onClick={() => router.push(`/createBasket/${id}`)}
+                  aria-label="Create a new basket"
+                >
+                  Create Basket
+                </button>
+              )}
             </div>
           </div>
           {sortedBaskets.length > 0 ? (
