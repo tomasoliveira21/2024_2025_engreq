@@ -8,7 +8,6 @@ const { Sequelize } = require('sequelize');
 const OrderDetails = require("../domain/models/OrderDetails");
 const Producer = require("../domain/models/Producer");
 const Delivery = require("../domain/models/Delivery");
-const Product = require("../domain/models/Product");
 
 /**
  * LIST
@@ -204,6 +203,67 @@ const requestProducerKpis = async (amapId, startDate, endDate) => {
     }
 };
 
+/**
+ *
+ * @param amapId
+ * @param startDate
+ * @param endDate
+ * @returns {Promise<{}|*>}
+ */
+const requestCoproducerKpis = async (amapId, startDate, endDate) => {
+    logger.info('Requesting co-producer KPIs');
+
+    try {
+        const results = await Order.findAll({
+            attributes: [
+                [Sequelize.fn('COUNT', Sequelize.col('OrderDetails.id')), 'totalOrders'],
+                [Sequelize.fn('AVG', Sequelize.col('OrderDetails.quantity')), 'averageQuantity'],
+                [Sequelize.fn('AVG', Sequelize.col('OrderDetails.price')), 'averagePrice'],
+                [Sequelize.fn('SUM', Sequelize.col('Order.totalCost')), 'totalValue'],
+            ],
+            where: {
+                orderDate: {
+                    [Sequelize.Op.gte]: new Date(startDate),
+                    [Sequelize.Op.lte]: new Date(endDate)
+                }
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'email', 'nif', 'name'],
+                    where: { AMAPId: amapId },
+                },
+                {
+                    model: OrderDetails,
+                    attributes: [],
+                }
+            ],
+            group: ['User.id'],
+            raw: true
+        });
+
+        // Adjust data
+        const transformedData = results.map(item => ({
+            totalOrders: parseInt(item.totalOrders, 10),
+            totalValue: parseFloat(item.totalValue),
+            averageQuantity: parseFloat(item.averageQuantity),
+            averagePrice: parseFloat(item.averagePrice),
+            user: {
+                id: item["User.id"],
+                email: item["User.email"],
+                nif: item["User.nif"],
+                name: item["User.name"]
+            },
+        }));
+
+        logger.info('Successfully retrieved co-producer KPIs', { transformedData });
+
+        return transformedData;
+    } catch (error) {
+        logger.error('Error fetching co-producer KPIs', { message: error.message, stack: error.stack });
+        return {};
+    }
+};
 /**
  * SEASONS
  */
@@ -664,5 +724,6 @@ module.exports = {
     requestProducerAccountBalance,
     requestCoproducerAccountBalance,
     requestProducerAccountValues,
-    requestProducerKpis
+    requestProducerKpis,
+    requestCoproducerKpis
 };

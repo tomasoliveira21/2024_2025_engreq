@@ -14,7 +14,8 @@ const {
     requestProducerAccountBalance,
     requestCoproducerAccountBalance,
     requestProducerAccountValues,
-    requestProducerKpis
+    requestProducerKpis,
+    requestCoproducerKpis
 } = require('../services/amapService');
 
 /**
@@ -78,6 +79,56 @@ const getProducerKpis = async (req, res, next) => {
 
                 // Get season data
                 const amapKpis = await requestProducerKpis(userAmpId, startDate, endDate);
+
+                // Check KPI data
+                if (amapKpis && Array.isArray(amapKpis) && amapKpis.length > 0) {
+                    // Add season data
+                    returnData.push({
+                        'season': {
+                            'name': seasonName,
+                            'startDate': startDate,
+                            'endDate': endDate,
+                            'kpis': amapKpis
+                        }
+                    });
+                } else {
+                    console.warn(`No KPIs found for season: ${seasonName}`);
+                }
+            }
+        }
+
+        res.status(200).json({ kpis: returnData });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<void>}
+ */
+const getCoproducerKpis = async (req, res, next) => {
+    logger.info(`Request getCoproducerKpis`);
+    try {
+        const userAmpId = req.user.amapId;
+        const returnData = [];
+
+        // Request AMAP season
+        const amapSeason = await requestAmapSeason(userAmpId);
+
+        // Get value per season
+        for (const key in amapSeason) {
+            if (amapSeason.hasOwnProperty(key)) {
+                const season = amapSeason[key];
+                const startDate = season.startDate;
+                const endDate = season.endDate;
+                const seasonName = season.name;
+
+                // Get season data
+                const amapKpis = await requestCoproducerKpis(userAmpId, startDate, endDate);
 
                 // Check KPI data
                 if (amapKpis && Array.isArray(amapKpis) && amapKpis.length > 0) {
@@ -446,5 +497,6 @@ module.exports = {
     getProducerAccountBalance,
     getCoproducerAccountBalance,
     getProducerAccountValues,
-    getProducerKpis
+    getProducerKpis,
+    getCoproducerKpis
 };
