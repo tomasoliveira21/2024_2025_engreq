@@ -5,6 +5,7 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../../../components/Sidebar";
 import { fetchProducerCriticalKPIs } from "@/api/fetchProducerCriticalKPIs";
+import ProducerCriticalKPIs from "../../../../../components/ProducerCriticalKPIs";
 
 export default function KPIsPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -57,7 +58,7 @@ export default function KPIsPage() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-            {/* Faça o componente com Valor entregue por produtor por entrega e por periodo, apresente a info do endpoint aqui */}
+            <ProducerCriticalKPIs sessionToken={session.access_token} />
         </div>
       </main>
     </div>
