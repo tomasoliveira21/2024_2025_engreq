@@ -13,6 +13,11 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  "pk_test_51QgDGkGKHQBvF2vYycQckWdfnJIPNfO8Ry2GGMFOiUz34MT3cBT7HqFW6PXLJxCHVjlX43flixaiwnhBGKkwzQ1B000Pqpyo8n"
+);
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<Carts[]>([]);
@@ -20,7 +25,6 @@ const Cart = () => {
   const [error, setError] = useState("");
   const [session, setSession] = useState<Session | null>(null);
 
-  // Fetch session on component mount
   useEffect(() => {
     async function getSession() {
       const {
@@ -31,29 +35,37 @@ const Cart = () => {
     getSession();
   }, []);
 
-  // Fetch cart items from the backend
   useEffect(() => {
     const fetchCartItems = async () => {
       if (session) {
         try {
           const items = await fetchCart(session.access_token);
-          console.log("items: ", items);
           const itemsWithDetails = await Promise.all(
             items.map(async (item) => {
-              if (item.itemType === 'basket') {
-                const basket = await fetchBasket(session.access_token, item.itemId.toString());
-                console.log("item : ", item);
-                console.log("basket: ", basket);
-                return { ...item, basketName: basket[0].name, basketItems: basket[0].Products, basketPrice: basket[0].price };
+              if (item.itemType === "basket") {
+                const basket = await fetchBasket(
+                  session.access_token,
+                  item.itemId.toString()
+                );
+                return {
+                  ...item,
+                  basketName: basket[0].name,
+                  basketItems: basket[0].Products,
+                  basketPrice: basket[0].price,
+                };
               } else {
-                const product = await fetchProduct(session.access_token, item.itemId.toString());
-                console.log("item : ", item);
-                console.log("product: ", product);
-                return { ...item, productName: product[0].name, price: product[0].price };
+                const product = await fetchProduct(
+                  session.access_token,
+                  item.itemId.toString()
+                );
+                return {
+                  ...item,
+                  productName: product[0].name,
+                  price: product[0].price,
+                };
               }
             })
           );
-          console.log("itemsWithDetails: ", itemsWithDetails);
           setCartItems(itemsWithDetails);
         } catch (err) {
           setError("Failed to fetch cart items.");
@@ -66,61 +78,77 @@ const Cart = () => {
     fetchCartItems();
   }, [session]);
 
-
   const handleUpdateCartItem = async (id: number, quantity: number) => {
     if (!session) return;
 
     const success = await updateCartItem(id, quantity, session.access_token);
     if (success) {
       setCartItems((prevItems) =>
-        prevItems.map((item) => (item.itemId === id ? { ...item, quantity } : item))
+        prevItems.map((item) =>
+          item.itemId === id ? { ...item, quantity } : item
+        )
       );
     } else {
       setError("Failed to update item quantity.");
     }
-  }
+  };
 
   const handleDeleteCartItem = async (id: number) => {
     if (!session) return;
 
     const success = await deleteCartItem(id, session.access_token);
     if (success) {
-      setCartItems((prevItems) => prevItems.filter((item) => item.itemId !== id));
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.itemId !== id)
+      );
     } else {
       setError("Failed to delete item from the cart.");
     }
-  };    
-
-  const handleCheckoutSubmit = async () => {
-    if (!session) return;
-
-    const refreshToast = toast.loading("Processing checkout...");
-
-    const success = await handleCheckout(session.access_token);
-
-    if (success) {     
-      toast.success("Checkout successful!", {
-        id: refreshToast
-      });
-      setCartItems([]);
-    } else {
-      toast.error("Failed to checkout.", {
-        id: refreshToast,
-      });
-      setError("Failed to checkout.");
-    }
-  }
-
-  // Calculate total price
-  const calculateTotal = () =>
-    cartItems.reduce(
-      (total, item) => total + item.quantity * (item.price || 0),
-      0
-    ).toFixed(2);
+  };
 
   if (!session) {
     return <div>Loading session...</div>;
   }
+
+  const handleCheckoutSubmit = async () => {
+    const stripe = await stripePromise;
+
+    if (!stripe) {
+      toast.error("Stripe not loaded.");
+      return;
+    }
+
+    const refreshToast = toast.loading("Processing checkout...");
+
+    try {
+      await handleCheckout(session.access_token);
+      const { error } = await stripe.redirectToCheckout({
+        mode: "payment",
+        lineItems: [
+          {
+            price: "price_1QgDsVGKHQBvF2vYawX5KzMk",
+            quantity: 1,
+          },
+        ],
+        successUrl: `${window.location.origin}?success=true`,
+        cancelUrl: `${window.location.origin}?canceled=true`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Redirecting to Stripe...", { id: refreshToast });
+    } catch (error) {
+      toast.error("Failed to process payment.", { id: refreshToast });
+      setError("Failed to process payment.");
+    }
+  };
+
+  const calculateTotal = () =>
+    cartItems
+      .reduce((total, item) => total + item.quantity * (item.price || 0), 0)
+      .toFixed(2);
 
   if (loading) {
     return <p>Loading cart items...</p>;
@@ -139,7 +167,9 @@ const Cart = () => {
         <div className="col-span-8 grid gap-8 mt-8">
           <div className="w-3/5 mx-auto p-4 bg-blue-500 rounded-lg shadow-md">
             <Toaster />
-            <h2 className="text-2xl font-bold mb-4 text-center">Shopping Cart</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              Shopping Cart
+            </h2>
             {Array.isArray(cartItems) && cartItems.length > 0 ? (
               <div className="space-y-4">
                 {cartItems.map((item) => (
@@ -148,15 +178,23 @@ const Cart = () => {
                     className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
                   >
                     <div>
-                      {item.itemType === 'basket' ? (
+                      {item.itemType === "basket" ? (
                         <>
-                          <h3 className="text-lg font-semibold text-black">{item.basketName}</h3>
-                          <p className="text-gray-600">${(item.basketPrice || 0).toFixed(2)}</p>
+                          <h3 className="text-lg font-semibold text-black">
+                            {item.basketName}
+                          </h3>
+                          <p className="text-gray-600">
+                            ${(item.basketPrice || 0).toFixed(2)}
+                          </p>
                         </>
                       ) : (
                         <>
-                          <h3 className="text-lg font-semibold text-black">{item.productName}</h3>
-                          <p className="text-gray-600">${(item.price || 0).toFixed(2)}</p>
+                          <h3 className="text-lg font-semibold text-black">
+                            {item.productName}
+                          </h3>
+                          <p className="text-gray-600">
+                            ${(item.price || 0).toFixed(2)}
+                          </p>
                         </>
                       )}
                     </div>
@@ -166,7 +204,12 @@ const Cart = () => {
                         type="number"
                         min="1"
                         value={item.quantity}
-                        onChange={(e) => handleUpdateCartItem(item.itemId, parseInt(e.target.value))}
+                        onChange={(e) =>
+                          handleUpdateCartItem(
+                            item.itemId,
+                            parseInt(e.target.value)
+                          )
+                        }
                         className="w-16 p-1 border rounded text-center text-gray-600"
                       />
                       <button
