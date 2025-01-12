@@ -18,7 +18,6 @@ export const fetchProducerOrders = async (sessionToken: string, producerId?: num
     }
 
     const data: { orders: Subscription[] } = await response.json();
-    console.log("Producer Orders: ", data.orders);
 
     return data.orders;
   } catch (error) {

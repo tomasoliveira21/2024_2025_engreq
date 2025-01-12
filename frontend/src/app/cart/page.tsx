@@ -66,6 +66,12 @@ const Cart = () => {
               }
             })
           );
+          
+          itemsWithDetails.map((item) => {
+            console.log(item.price);
+            console.log(item.basketPrice);
+          });
+
           setCartItems(itemsWithDetails);
         } catch (err) {
           setError("Failed to fetch cart items.");
@@ -147,7 +153,10 @@ const Cart = () => {
 
   const calculateTotal = () =>
     cartItems
-      .reduce((total, item) => total + item.quantity * (item.price || 0), 0)
+      .reduce((total, item) => {
+        const itemTotal = item.quantity * ((item.basketPrice || 0) + (item.price || 0));
+        return total + itemTotal;
+      }, 0)
       .toFixed(2);
 
   if (loading) {
@@ -157,6 +166,9 @@ const Cart = () => {
   if (error) {
     return <p className="text-red-500">{error}</p>;
   }
+
+  const productItems = cartItems.filter(item => item.itemType === 'product');
+  const basketItems = cartItems.filter(item => item.itemType === 'basket');
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -172,55 +184,69 @@ const Cart = () => {
             </h2>
             {Array.isArray(cartItems) && cartItems.length > 0 ? (
               <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <div
-                    key={item.itemId}
-                    className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
-                  >
-                    <div>
-                      {item.itemType === "basket" ? (
-                        <>
-                          <h3 className="text-lg font-semibold text-black">
-                            {item.basketName}
-                          </h3>
-                          <p className="text-gray-600">
-                            ${(item.basketPrice || 0).toFixed(2)}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <h3 className="text-lg font-semibold text-black">
-                            {item.productName}
-                          </h3>
-                          <p className="text-gray-600">
-                            ${(item.price || 0).toFixed(2)}
-                          </p>
-                        </>
-                      )}
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                      <input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleUpdateCartItem(
-                            item.itemId,
-                            parseInt(e.target.value)
-                          )
-                        }
-                        className="w-16 p-1 border rounded text-center text-gray-600"
-                      />
-                      <button
-                        onClick={() => handleDeleteCartItem(item.itemId)}
-                        className="text-red-500 hover:underline"
+                {productItems.length > 0 && (
+                  <>
+                    <h3 className="text-xl font-semibold">Products</h3>
+                    {productItems.map((item) => (
+                      <div
+                        key={item.itemId}
+                        className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
                       >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                        <div>
+                          <h3 className="text-lg font-semibold text-black">{item.productName}</h3>
+                          <p className="text-gray-600">${(item.price || 0).toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => handleUpdateCartItem(item.itemId, parseInt(e.target.value))}
+                            className="w-16 p-1 border rounded text-center text-gray-600"
+                          />
+                          <button
+                            onClick={() => handleDeleteCartItem(item.itemId)}
+                            className="text-red-500 hover:underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {basketItems.length > 0 && (
+                  <>
+                    <h3 className="text-xl font-semibold">Baskets</h3>
+                    {basketItems.map((item) => (
+                      <div
+                        key={item.itemId}
+                        className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
+                      >
+                        <div>
+                          <h3 className="text-lg font-semibold text-black">{item.basketName}</h3>
+                          <p className="text-gray-600">${(item.basketPrice || 0).toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => handleUpdateCartItem(item.itemId, parseInt(e.target.value))}
+                            className="w-16 p-1 border rounded text-center text-gray-600"
+                          />
+                          <button
+                            onClick={() => handleDeleteCartItem(item.itemId)}
+                            className="text-red-500 hover:underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
 
                 <div className="text-right font-bold text-lg">
                   Total: ${calculateTotal()}

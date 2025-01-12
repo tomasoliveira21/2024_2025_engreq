@@ -709,6 +709,55 @@ const requestProducerAccountValues = async (amapId) => {
     }
 };
 
+/**
+ *
+ * @param userEmail
+ * @returns {Promise<*>}
+ */
+const requestCoproducerAccountValues = async (userEmail) => {
+    try {
+        // GET Coproducer Balance
+        const coproducerAccount = await Order.findAll({
+            attributes: [
+                [Sequelize.literal('SUM(COALESCE("Deliveries"."cost", 0))'), 'deliveryValue'],
+                [Sequelize.literal('SUM(COALESCE("Order"."paidCost", 0))'), 'paidValue'],
+                [Sequelize.literal('SUM(COALESCE("Deliveries"."cost", 0)) - SUM(COALESCE("Order"."paidCost", 0))'), 'pendingValue'],
+            ],
+            where: {
+                status: ['in-progress', 'completed'],
+            },
+            include: [
+                {
+                    model: OrderDetails,
+                    attributes: [],
+                },
+                {
+                    model: Delivery,
+                    attributes: []
+                },
+                {
+                    model: User,
+                    attributes: [],
+                    where: {
+                        email: userEmail,
+                    },
+                }
+            ],
+            group: ['Order.id', 'Deliveries.cost', 'User.id'],
+            having: Sequelize.literal('SUM(COALESCE("Deliveries"."cost", 0)) - SUM(COALESCE("Order"."paidCost", 0)) > 0'),
+            raw: true,
+            nest: true,
+        });
+
+        logger.info(`Request coproducer Account : ${coproducerAccount}`);
+        return coproducerAccount;
+    } catch (error) {
+        // Log the error and rethrow it
+        logger.error(`Error requesting coproducer Account : `, error);
+        throw error;
+    }
+};
+
 module.exports = {
     requestAmapsList,
     requestAmapsKpis,
@@ -724,6 +773,7 @@ module.exports = {
     requestProducerAccountBalance,
     requestCoproducerAccountBalance,
     requestProducerAccountValues,
+    requestCoproducerAccountValues,
     requestProducerKpis,
     requestCoproducerKpis
 };
