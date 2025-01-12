@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../../../components/Sidebar";
-import { fetchProducerCriticalKPIs } from "@/api/fetchProducerCriticalKPIs";
+import { fetchCoProducerCriticalKPIs } from "@/api/fetchCoProducerCriticalKPIs";
 
 export default function KPIsPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -26,7 +26,7 @@ export default function KPIsPage() {
       if (session) {
         try {
           setIsLoading(true);
-          const fetchedCriticalKPIs = await fetchProducerCriticalKPIs(session.access_token);
+          const fetchedCriticalKPIs = await fetchCoProducerCriticalKPIs(session.access_token);
           console.log('fetchedKPIs: ', fetchedCriticalKPIs);
         } catch (error) {
           console.error("Error fetching orders:", error);
