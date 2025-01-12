@@ -6,4 +6,5 @@ export type User = {
     name: string;
     authuserid: number;
     role: string;
+    photoUrl: string;
 };

@@ -37,6 +37,7 @@ export default function Profile({params}: { params: { id: string } }) {
     const [editableDescription, setEditableDescription] = useState("");
     const [editableLocation, setEditableLocation] = useState("");
 
+    // session
     useEffect(() => {
         async function getSession() {
             const {
@@ -50,16 +51,16 @@ export default function Profile({params}: { params: { id: string } }) {
             }
 
             const userId = session.user.id;
-            const role = session.user.user_metadata.role || 'Co-Producer';
             const user = await supabase.from('Users').select('*').eq('authuserid', userId).single();
 
             if (user.data) {
                 setUser(user.data);
                 // Set user name immediately when we have the data
                 setEditableName(user.data.name || "");
+                await fetchUserPhoto();
             }
 
-            if (role === 'Producer') {
+            if (user.data.role === 'Producer') {
                 const producerData = await supabase.from('Producers')
                     .select('*')
                     .eq('userId', user.data?.id)
@@ -78,6 +79,7 @@ export default function Profile({params}: { params: { id: string } }) {
         getSession();
     }, []);
 
+    // baskets
     useEffect(() => {
         const getBaskets = async () => {
             if (session && producer?.id) {
@@ -96,9 +98,10 @@ export default function Profile({params}: { params: { id: string } }) {
         getBaskets();
     }, [session, producer]);
 
+    // products
     useEffect(() => {
         const getProducts = async () => {
-            if (session) {
+            if (session && producer?.id) {
                 try {
                     setIsLoading(true);
                     const fetchedProducts = await fetchProducerProducts(session.access_token, producer?.id);
@@ -113,48 +116,28 @@ export default function Profile({params}: { params: { id: string } }) {
         getProducts();
     }, [session, producer]);
 
-    const handleSave = async () => {
-        if (!user) return;
-
+    // user photo
+    const fetchUserPhoto = async () => {
         try {
-            // Update user details
-            await supabase.from('Users')
-                .update({ name: editableName || "" })
-                .eq('id', user.id);
+            setIsLoading(true);
+            const { data, error } = await supabase.storage
+                .from('photos')
+                .download(`users/${user?.id}/profile.jpg`);
 
-            // Update producer details if applicable
-            if (producer) {
-                await supabase.from('Producers')
-                    .update({
-                        businessName: editableBusinessName || "",
-                        description: editableDescription || "",
-                        locationId: editableLocation || ""
-                    })
-                    .eq('id', producer.id);
-
-                setProducer(prev => ({
-                    ...prev!,
-                    businessName: editableBusinessName || "",
-                    description: editableDescription || "",
-                    locationId: editableLocation ? Number(editableLocation) : 0,
-                }));
+            if (error) {
+                console.error("Error fetching photo:", error.message);
+                return;
             }
 
-            setUser(prev => ({
-                ...prev!,
-                name: editableName || ""
-            }));
-
-            alert("Profile updated successfully!");
         } catch (error) {
-            console.error("Error updating profile:", error);
-            alert("Failed to update profile.");
+            console.error("Error fetching user photo:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-
     const renderContent = () => {
-        switch (session?.user.user_metadata.role) {
+        switch (user?.role) {
             case "Producer":
                 return (
                     <div>
@@ -170,6 +153,14 @@ export default function Profile({params}: { params: { id: string } }) {
                         />
                     </div>
                 );
+            case "Co-Producer":
+                return (<div>
+                    <ConsumerView
+                    user={user}
+                    session={session}
+                    supabase={supabase}
+                    />
+                </div>)
             case "AMAP Admin":
                 return <AMAPAdminView/>;
             case "Admin":
