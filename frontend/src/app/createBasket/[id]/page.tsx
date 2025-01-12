@@ -150,9 +150,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
 
   console.log("seasons: ", seasons);
 
-  if (!session) {
-    return <div>Loading session...</div>;
-  }
+
 
   const handleProductSelection = (selectedOptions: any) => {
     const selectedProducts = selectedOptions.map((option: any) => ({
@@ -167,7 +165,6 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     setSelectedSeason(season);
   };
 
-/*
   useEffect(() => {
     const getSeasonsDates = async () => {
       if (selectedSeason && session) {
@@ -187,11 +184,10 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
     };
     getSeasonsDates();
   }, [selectedSeason]);
+
   if (!session) {
     return <div>Loading session...</div>;
   }
-*/
-
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
