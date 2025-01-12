@@ -56,7 +56,6 @@ export default function Cart({ params }: { params: { id: number } }) {
     };
 
     try {
-      // Chama seu endpoint para criar a assinatura
       const success = await createSubscription(
         session?.access_token ?? "",
         subscriptionData
