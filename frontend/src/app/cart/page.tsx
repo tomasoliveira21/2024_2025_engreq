@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/Sidebar";
 import { fetchCart } from "@/api/fetchCart";
 import { fetchProduct } from "@/api/fetchProduct";
+import { fetchBasket } from "@/api/fetchBasket";
 import { deleteCartItem } from "@/api/deleteCartItem";
 import { updateCartItem } from "@/api/updateCartItem";
 import { handleCheckout } from "@/api/handleCheckout";
@@ -36,13 +37,24 @@ const Cart = () => {
       if (session) {
         try {
           const items = await fetchCart(session.access_token);
-          const itemsWithProductNames = await Promise.all(
+          console.log("items: ", items);
+          const itemsWithDetails = await Promise.all(
             items.map(async (item) => {
-              const product = await fetchProduct(session.access_token, item.itemId.toString());
-              return { ...item, productName: product[0].name, price: product[0].price };
+              if (item.itemType === 'basket') {
+                const basket = await fetchBasket(session.access_token, item.itemId.toString());
+                console.log("item : ", item);
+                console.log("basket: ", basket);
+                return { ...item, basketName: basket[0].name, basketItems: basket[0].Products, basketPrice: basket[0].price };
+              } else {
+                const product = await fetchProduct(session.access_token, item.itemId.toString());
+                console.log("item : ", item);
+                console.log("product: ", product);
+                return { ...item, productName: product[0].name, price: product[0].price };
+              }
             })
           );
-          setCartItems(itemsWithProductNames);
+          console.log("itemsWithDetails: ", itemsWithDetails);
+          setCartItems(itemsWithDetails);
         } catch (err) {
           setError("Failed to fetch cart items.");
         } finally {
@@ -136,8 +148,17 @@ const Cart = () => {
                     className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
                   >
                     <div>
-                      <h3 className="text-lg font-semibold text-black">{item.productName}</h3>
-                      <p className="text-gray-600">${(item.price || 0).toFixed(2)}</p>
+                      {item.itemType === 'basket' ? (
+                        <>
+                          <h3 className="text-lg font-semibold text-black">{item.basketName}</h3>
+                          <p className="text-gray-600">${(item.basketPrice || 0).toFixed(2)}</p>
+                        </>
+                      ) : (
+                        <>
+                          <h3 className="text-lg font-semibold text-black">{item.productName}</h3>
+                          <p className="text-gray-600">${(item.price || 0).toFixed(2)}</p>
+                        </>
+                      )}
                     </div>
 
                     <div className="flex items-center space-x-4">

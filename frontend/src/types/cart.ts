@@ -4,5 +4,13 @@ export type Carts = {
     quantity: number;
     productName: string;
     price: number;
+    basketName: string;
+    basketPrice: number;
+    basketProducts: Array<{
+      id: number;
+      name: string;
+      description: string;
+      price: number;
+    }>;
   };
   

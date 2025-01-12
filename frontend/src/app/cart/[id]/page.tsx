@@ -23,6 +23,7 @@ export default function Cart({ params }: { params: { id: number } }) {
   >(null);
   const searchParams = useSearchParams();
   const itemType = searchParams.get("itemType");
+  const actionType = searchParams.get("action");
   const [itemName, setItemName] = useState("");
 
   useEffect(() => {
@@ -37,18 +38,27 @@ export default function Cart({ params }: { params: { id: number } }) {
 
   const handleSubscription = async () => {
     setIsSubscribing(true);
+    const addToCartData = {
+      itemType: itemType || "",
+      itemId: id,
+      quantity: quantity,
+    };
+
     const subscriptionData = {
+      periodType: periodType,
       itemType: itemType || "",
       itemId: id,
       quantity: quantity,
     };
 
     try {
-      const success = await createCartItem(
-        session?.access_token ?? "",
-        subscriptionData
-      );
-      setSubscriptionSuccess(success);
+      let success;
+      if (actionType === "addToCart") {
+        success = await createCartItem(session?.access_token ?? "", addToCartData);
+      } else if (actionType === "subscribe") {
+        success = await createSubscription(session?.access_token ?? "", subscriptionData);
+      }
+      setSubscriptionSuccess(success ?? false);
     } catch (error) {
       setSubscriptionSuccess(false);
     } finally {
@@ -97,21 +107,39 @@ export default function Cart({ params }: { params: { id: number } }) {
                 </strong>{" "}
                 {itemName}
               </p>
-              <div className="mt-4">
-                <label htmlFor="subscriptionType" className="block mb-2">
-                  Subscription Type:
-                </label>
-                <select
-                  id="subscriptionType"
-                  value={periodType}
-                  onChange={(e) => setPeriodType(e.target.value)}
-                  className="text-black p-2 rounded-lg w-full"
-                >
-                  <option value="monthly">Monthly</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="single purchase">Single Purchase</option>
-                </select>
-              </div>
+
+              {actionType === "addToCart" && (
+                <div className="mt-4">
+                  <label htmlFor="subscriptionType" className="block mb-2">
+                    Purchase Type:
+                  </label>
+                  <select
+                    id="subscriptionType"
+                    value={periodType}
+                    onChange={(e) => setPeriodType(e.target.value)}
+                    className="text-black p-2 rounded-lg w-full"
+                  >
+                    <option value="single purchase">Single Purchase</option>
+                  </select>
+                </div>
+              )}
+              {actionType === "subscribe" && (
+                <div className="mt-4">
+                  <label htmlFor="subscriptionType" className="block mb-2">
+                    Subscription Type:
+                  </label>
+                  <select
+                    id="subscriptionType"
+                    value={periodType}
+                    onChange={(e) => setPeriodType(e.target.value)}
+                    className="text-black p-2 rounded-lg w-full"
+                  >
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                  </select>
+                </div>
+              )}
+
               <div className="mt-4">
                 <label htmlFor="quantity" className="block mb-2">
                   Quantity:
@@ -130,7 +158,7 @@ export default function Cart({ params }: { params: { id: number } }) {
                 type="submit"
                 className="mt-6 bg-green-500 text-white py-2 px-4 rounded-lg w-full"
               >
-                Add Subscription
+                {actionType === "addToCart" ? "Add to Cart" : "Subscribe Basket"}
               </button>
               {subscriptionSuccess !== null && (
                 <div
@@ -138,9 +166,14 @@ export default function Cart({ params }: { params: { id: number } }) {
                     subscriptionSuccess ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {subscriptionSuccess
-                    ? "Subscription created successfully!"
-                    : "Failed to create subscription."}
+                  { subscriptionSuccess
+                    ? actionType === "addToCart"
+                      ? "Basket added to cart successfully!"
+                      : "Subscription created successfully!"
+                    : actionType === "addToCart"
+                      ? "Failed to add item to cart."
+                      : "Failed to create subscription."
+                  }
                 </div>
               )}
             </form>

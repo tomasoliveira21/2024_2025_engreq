@@ -14,6 +14,7 @@ export default function Product({ params }: { params: { id: string } }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [product, setProduct] = useState<ProductDetails | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [userRole, setUserRole] = useState(null);
 
@@ -77,9 +78,14 @@ export default function Product({ params }: { params: { id: string } }) {
     return <div>Product not found</div>;
   }
 
-  const handleSubscription = async () => {
-    setIsSubscribing(true);
-    router.push(`/cart/${product.id}?itemType=product`);
+  const handleAddToCart = async (actionType: 'addToCart' | 'subscribe') => {
+    if (actionType === 'addToCart') {
+      setIsAddingToCart(true);
+      router.push(`/cart/${product.id}?itemType=product&action=addToCart`);
+    } else if (actionType === 'subscribe') {
+      setIsSubscribing(true);
+      router.push(`/cart/${product.id}?itemType=product&action=subscribe`);
+    }
   };
 
   return (
@@ -123,15 +129,26 @@ export default function Product({ params }: { params: { id: string } }) {
               </div>
               <div className="ml-24">
                 {userRole === "Co-Producer" && (
-                  <button
-                    onClick={handleSubscription}
-                    disabled={isSubscribing}
-                    className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
-                  >
-                    <div aria-live="assertive">
-                      {isSubscribing ? "Subscribing..." : "Subscribe to Product"}
-                    </div>
-                  </button>
+                  <div className="flex flex-col space-y-4">
+                    <button
+                        onClick={() => handleAddToCart('addToCart')}
+                        disabled={isAddingToCart}
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                      >
+                        <div aria-live="assertive">
+                          {isAddingToCart ? "Adding product to cart..." : "Add product to cart"}
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleAddToCart('subscribe')}
+                        disabled={isSubscribing}
+                        className="bg-green-500 text-white mt-4 py-2 px-4 rounded-lg"
+                      >
+                        <div aria-live="assertive">
+                          {isSubscribing ? "Subscribing to product..." : "Subscribe to product"}
+                        </div>
+                      </button>
+                  </div>
                 )}
               </div>
             </div>
