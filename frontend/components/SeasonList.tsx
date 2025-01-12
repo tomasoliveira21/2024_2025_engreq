@@ -33,12 +33,18 @@ const SeasonList = ({ seasons }: SeasonListProps) => {
                 {`End Date: ${new Date(season.endDate).toLocaleDateString()}`}
               </p>
             </div>
-            <button
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm"
-              onClick={() => console.log(`Edit season: ${season.id}`)}
-            >
-              Edit
-            </button>
+            <div className="flex space-x-2">
+              <button
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm"
+              >
+                Edit
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-sm"
+              >
+                Delete
+              </button>
+            </div>
           </div>
           {season.DeliveryDates.length > 0 ? (
             <div className="mt-4">
