@@ -40,11 +40,11 @@ const getProducerData = async (userEmail) => {
     try {
         // Query data
         const producerData = await Producer.findAll({
-            attributes: ['id', 'businessName', 'description', 'photoUrl'],
+            attributes: ['id', 'businessName', 'description'],
             include: [
                 {
                     model: User,
-                    attributes: [],
+                    attributes: ['photoUrl'],
                     where: {
                         email: userEmail,
                     },

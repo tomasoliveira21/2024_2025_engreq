@@ -9,6 +9,7 @@ User.init({
     role: { type: DataTypes.ENUM('Producer', 'Co-Producer', 'Admin', 'AMAP Admin'), allowNull: false },
     // Foreign key to Supabase auth.users
     authuserid: {type: DataTypes.UUID,allowNull: false, unique: true,},
+    photoUrl: {type: DataTypes.STRING, allowNull: true}
 }, {
     sequelize,
     timestamps: false,
