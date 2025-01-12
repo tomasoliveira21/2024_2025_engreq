@@ -21,35 +21,9 @@ export default function KPIsPage() {
     getSession();
   }, []);
 
-  
-  useEffect(() => {
-    const getProducts = async () => {
-      if (session) {
-        try {
-          setIsLoading(true);
-          const fetchedCriticalKPIs = await fetchProducerCriticalKPIs(session.access_token);
-          console.log('fetchedKPIs: ', fetchedCriticalKPIs);
-        } catch (error) {
-          console.error("Error fetching orders:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    getProducts();
-  }, [session]);
-
-
   if (!session) {
     return <div>Loading session...</div>;
   }
-
-  /*
-  if (isLoading) {
-    return <div>Loading data...</div>;
-  }
-   */
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -58,7 +32,7 @@ export default function KPIsPage() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-            <ProducerCriticalKPIs sessionToken={session.access_token} />
+          <ProducerCriticalKPIs sessionToken={session.access_token} />
         </div>
       </main>
     </div>

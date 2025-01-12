@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "../../../../../components/Sidebar";
-import { fetchCoProducerCriticalKPIs } from "@/api/fetchCoProducerCriticalKPIs";
+import CoProducerCriticalKPIs from "../../../../../components/CoProducerCriticalKPIs";
 
 export default function KPIsPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -20,35 +20,9 @@ export default function KPIsPage() {
     getSession();
   }, []);
 
-  
-  useEffect(() => {
-    const getProducts = async () => {
-      if (session) {
-        try {
-          setIsLoading(true);
-          const fetchedCriticalKPIs = await fetchCoProducerCriticalKPIs(session.access_token);
-          console.log('fetchedKPIs: ', fetchedCriticalKPIs);
-        } catch (error) {
-          console.error("Error fetching orders:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    getProducts();
-  }, [session]);
-
-
   if (!session) {
     return <div>Loading session...</div>;
   }
-
-  /*
-  if (isLoading) {
-    return <div>Loading data...</div>;
-  }
-   */
 
   return (
     <div className="lg:max-w-8xl mx-auto min-h-screen overflow-hidden text-white">
@@ -57,7 +31,7 @@ export default function KPIsPage() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-            Yo
+          <CoProducerCriticalKPIs sessionToken={session.access_token} />
         </div>
       </main>
     </div>
