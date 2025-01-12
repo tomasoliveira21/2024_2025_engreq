@@ -1,6 +1,7 @@
 const logger = require('../utils/logger');
 const {
     requestSubscriptionList,
+    requestProducerOrders,
     requestSubscriptionHistory,
     insertNewOrderSubscription,
     updateSubscription,
@@ -113,6 +114,53 @@ const getSubscriptionList = async (req, res, next) => {
         res.status(200).json({ subscription: subscriptionList });
     } catch (error) {
         logger.error('Error in getSubscriptionList:', error);
+        next(error);
+    }
+};
+
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns {Promise<void>}
+ */
+const getProducerOrders = async (req, res, next) => {
+    logger.info(`Request getProducerOrders`);
+    try {
+        const producerId = req.query.producerId;
+        let producerOrders;
+
+        producerOrders = await requestProducerOrders(producerId);
+
+        // Iterate data
+        if (producerOrders.length > 0) {
+            for (const order of producerOrders) {
+                // Iterate order details
+                for (const orderDetail of order.OrderDetails) {
+                    // Products details
+                    if (orderDetail.itemType === 'product') {
+                        const productData = await requestProductDetails(orderDetail.itemId);
+                        if (productData && productData.length > 0) {
+                            orderDetail.dataValues.Product = productData[0].get({ plain: true });
+                        }
+                        // Basket details
+                    } else if (orderDetail.itemType === 'basket') {
+                        const basketData = await requestBasketDetails(orderDetail.itemId);
+                        if (basketData && basketData.length > 0) {
+                            orderDetail.dataValues.Basket = basketData[0].get({ plain: true });
+                        }
+                    }
+                }
+            }
+        }
+
+        // Logger
+        logger.info("Returning data -> getProducerOrders:", producerOrders);
+
+        res.status(200).json({ orders: producerOrders });
+    } catch (error) {
+        logger.error('Error in getProducerOrders:', error);
         next(error);
     }
 };
@@ -590,6 +638,7 @@ const getUserKpis = async (req, res, next) => {
 
 module.exports = {
     getSubscriptionList,
+    getProducerOrders,
     getSubscriptionHistory,
     createOrderSubscription,
     updateOrderSubscription,

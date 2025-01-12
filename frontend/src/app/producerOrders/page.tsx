@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
-import { fetchOrders } from "@/api/fetchOrders";
 import { updateSubscription } from "@/api/updateSubscription";
 import Sidebar from "../../../components/Sidebar";
 import { Subscription } from "@/types/order";
 import OrderCard from "../../../components/OrderCard";
+import { fetchProducerOrders } from "@/api/fetchProducerOrders";
 
 export default function Orders() {
   const [session, setSession] = useState<Session | null>(null);
@@ -41,7 +41,25 @@ export default function Orders() {
       if (session) {
         try {
           setIsLoading(true);
-          const fetchedOrders = await fetchOrders(session.access_token);
+
+          const userId = session?.user.id;
+          const { data: existingUser } = await supabase
+          .from('Users')
+          .select('*')
+          .eq('authuserid', userId)
+          .single();
+
+          const { data: producer } = await supabase
+            .from('Producers')
+            .select('id')
+            .eq('userId', existingUser.id)
+            .single();
+          
+          const producerId = producer?.id;
+
+          console.log("producerId: ", producerId);
+          
+          const fetchedOrders = await fetchProducerOrders(session.access_token, producerId);
           setOrders(fetchedOrders);
   
           const initialQuantities = fetchedOrders.reduce((acc: { [key: number]: number }, order) => {
@@ -60,7 +78,7 @@ export default function Orders() {
     };
   
     getOrders();
-  }, [session]);
+  }, [session, userRole]);
 
   const handleUpdateSubscription = async (id: number, status: "pending" | "completed" | "cancelled") => {
     if (!session) return;

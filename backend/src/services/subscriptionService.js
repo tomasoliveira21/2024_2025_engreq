@@ -113,6 +113,50 @@ const requestSubscriptionList = async (userEmail) => {
 };
 
 /**
+ * 
+ * @param producerId 
+ * @returns {Promise<*|*[]>}
+ */
+const requestProducerOrders = async (producerId) => {
+    logger.info('Requesting producer orders', { producerId });
+
+    try {
+        // Fetch producer orders
+        const producerOrders = await Order.findAll({
+            attributes: ['id', 'periodType', 'totalCost', 'paidCost', 'orderDate', 'status'],
+            where: {
+                periodType: {
+                    [Op.ne]: 'single purchase'
+                },
+                status: {
+                    [Op.or]: ['pending', 'in-progress']
+                }
+            },
+            include: [
+                {
+                    model: Subscription,
+                    attributes: ['startDate', 'endDate'],
+                    required: false,
+                },
+                {
+                    model: OrderDetails,
+                    required: true,
+                    attributes: ['id', 'itemType', 'itemId', 'quantity', 'price'],
+                    where: { producerId: producerId }
+                }
+            ]
+        });
+
+        logger.info('Retrieve producer orders');
+        return producerOrders;
+    } catch (error) {
+        // Detailed logging for better debugging
+        logger.error('Error fetching producer orders', { message: error.message, stack: error.stack });
+        return [];
+    }
+};
+
+/**
  * Insert new order subscription
  * @param orderData
  * @returns {Promise<*>}
@@ -592,6 +636,7 @@ const requestOrderDetails = async (orderID) => {
 
 module.exports = {
     requestSubscriptionList,
+    requestProducerOrders,
     requestOrderDetails,
     requestSubscriptionHistory,
     insertNewOrderSubscription,
