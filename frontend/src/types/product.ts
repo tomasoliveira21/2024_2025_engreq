@@ -14,4 +14,5 @@ export type Product = {
   price: number;
   quantity: number;
   SalePeriods: SalePeriod[];
+  salesPeriod?: number;
 };

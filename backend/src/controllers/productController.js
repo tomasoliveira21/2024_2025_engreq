@@ -87,6 +87,9 @@ const updateProductData = async (req, res, next) => {
         // Data
         const productData = { name, description, type, price, quantity, producerId, photoUrl };
 
+        logger.info(`Update product data (productId: ${productId})`);
+        logger.info("salesPeriod " + salesPeriod);
+
         // Update Product
         const updatedProduct = await updateProduct(productId, productData);
 

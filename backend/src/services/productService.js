@@ -202,7 +202,13 @@ const getProductSalePeriods = async (productId) => {
             },
         });
 
-        return productSalePeriod;
+        const salePeriod = await SalePeriod.findOne({
+            where: {
+                id: productSalePeriod.SalePeriodId,
+            },
+        } );
+
+        return salePeriod;
     } catch (error) {
         // Log the error and rethrow it
         logger.error(`Error fetching ProductSalesPeriod for productID ${productId}: `, error);
@@ -502,7 +508,17 @@ const getBasketSalePeriods = async (basketId) => {
             },
         });
 
-        return basketSalePeriod;
+        const salePeriod = await SalePeriod.findOne({
+            where: {
+                id: basketSalePeriod.SalePeriodId,
+            },
+        } );
+
+        if (salePeriod) {
+           return salePeriod;
+        } else {
+            return null;
+        }
     } catch (error) {
         // Log the error and rethrow it
         logger.error(`Error fetching BasketSalesPeriod for basketID ${basketId}: `, error);

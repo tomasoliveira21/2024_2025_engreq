@@ -9,6 +9,14 @@ import {updateProduct} from "@/api/updateProduct";
 import {deleteBasket} from "@/api/deleteBasket";
 import {deleteProduct} from "@/api/deleteProduct";
 import {LocationPicker} from "@/app/profile/utils/location-picker";
+import {fetchSeasonDates} from "@/api/fetchSeasonDates";
+import {SalePeriod} from "@/types/salePeriods";
+import {fetchProductPeriod} from "@/api/fetchProductSubscriptionPeriod";
+import {fetchBasketPeriod} from "@/api/fetchBasketSubscriptionPeriod";
+import {fetchSeasons} from "@/api/fetchSeasons";
+import {SeasonResponse} from "@/types/seasons";
+
+
 
 
 
@@ -24,12 +32,34 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
         latitude: number;
         longitude: number;
     } | null>(null);
+    const [selectedDeliveryDates, setSelectedDeliveryDates] = useState<SalePeriod>({} as SalePeriod);
+    const [selectedId, setSelectedId] = useState<number>(0);
+
+    const [seasons, setSeasons] = useState<SeasonResponse[]>();
+
+
 
     useEffect(() => {
         if (producer?.locationId) {
             fetchLocationDetails(String(producer.locationId));
         }
     }, [producer]);
+
+    useEffect(() => {
+        const getSeasons = async () => {
+            if (session && user) {
+                try {
+                    const fetchedSeasons = await fetchSeasons(session.access_token, String(user?.AMAPId));
+                    console.log("Fetched Seasons:", fetchedSeasons);
+                    console.log("User Amap Id:", user?.AMAPId);
+                    setSeasons(fetchedSeasons);
+                } catch (error) {
+                    console.error("Error fetching Seasons:", error);
+                }
+            }
+        };
+        getSeasons();
+    }, [session, user]);
 
     const fetchLocationDetails = async (locationId: string) => {
         try {
@@ -80,7 +110,8 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
         setIsEditingDetails(true);
     };
 
-    const openEditModal = (item: Product | Basket) => {
+    const openEditModal = async (item: Product | Basket) => {
+        await getItemSalesPeriod(item);
         setSelectedItem(item);
         setModalOpen(true);
     };
@@ -179,6 +210,38 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
             alert("Failed to update details");
         }
     };
+
+
+    const getItemSalesPeriod = async (item: Product | Basket) => {
+                try {
+                    const isBasket = (item: any): item is Basket => "weight" in item; // Replace with unique property of Basket
+                    const isProduct = (item: any): item is Product => "quantity" in item;
+                    if(isProduct(item)){
+                        const associatedSubscriptionPeriod = await fetchProductPeriod(session.access_token,item.id.toString())
+                        setSelectedDeliveryDates(associatedSubscriptionPeriod);
+                        setSelectedId(associatedSubscriptionPeriod.id);
+                    } else if (isBasket(item)){
+                        const associatedSubscriptionPeriod = await fetchBasketPeriod(session.access_token,item.id.toString());
+                        setSelectedDeliveryDates(associatedSubscriptionPeriod);
+                        setSelectedId(associatedSubscriptionPeriod.id);
+                    }
+                } catch (error) {
+                    console.error("Error fetching Seasons:", error);
+                }
+        }
+
+    const handleSelectSeason = (seasonId: number) => {
+        setSelectedId(seasonId);
+        if (selectedItem && isModalOpen) {
+            const mockSalePeriod = {id: seasonId, startDate: new Date(), endDate: new Date()} as unknown as SalePeriod;
+            const arrayMock = [mockSalePeriod];
+            setSelectedItem({
+                ...selectedItem,
+                SalePeriods: arrayMock,
+                salesPeriod: seasonId
+            })
+        }
+    }
 
 
     return (
@@ -346,7 +409,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
             {/* Edit Modal */}
             {isModalOpen && selectedItem && selectedItem.hasOwnProperty("id") && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96">
+                    <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-2/5">
                         <h3 className="text-xl font-semibold text-gray-100 mb-4">Edit Product</h3>
                         <form
                             onSubmit={(e) => {
@@ -389,6 +452,45 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
                                     }
                                     className="w-full px-4 py-2 bg-gray-800 text-gray-100 rounded-lg border border-gray-700"
                                 />
+                            </div>
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="Sale Period"
+                                    className="block text-gray-400 font-medium mb-1"
+                                >
+                                    Sales Period
+                                </label>
+                                <table className="min-w-full bg-gray-700 text-white">
+                                    <thead>
+                                    <tr>
+                                        <th className="py-2 px-4">Select</th>
+                                        <th className="py-2 px-4">Season Name</th>
+                                        <th className="py-2 px-4">Start Date</th>
+                                        <th className="py-2 px-4">End Date</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {seasons?.map((season) => (
+                                        <tr key={season.id} className="border-t border-gray-600">
+                                            <td className="py-2 px-4 text-center">
+                                                <input
+                                                    type="radio"
+                                                    name="season"
+                                                    value={season.id}
+                                                    checked={selectedId === season.id}
+                                                    onChange={ () => handleSelectSeason(season.id)
+                                                    }
+                                                />
+                                            </td>
+                                            <td className="py-2 px-4 text-center">{season.name}</td>
+                                            <td className="py-2 px-4 text-center">{new Date(season.startDate).toLocaleDateString()}</td>
+                                            <td className="py-2 px-4 text-center">{new Date(season.endDate).toLocaleDateString()}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+
+
                             </div>
                             <div className="flex justify-end space-x-4">
                                 <button
