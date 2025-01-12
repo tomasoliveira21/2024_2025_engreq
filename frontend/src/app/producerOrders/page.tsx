@@ -56,8 +56,6 @@ export default function Orders() {
             .single();
           
           const producerId = producer?.id;
-
-          console.log("producerId: ", producerId);
           
           const fetchedOrders = await fetchProducerOrders(session.access_token, producerId);
           setOrders(fetchedOrders);
