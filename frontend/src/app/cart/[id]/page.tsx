@@ -68,30 +68,31 @@ export default function Cart({ params }: { params: { id: number } }) {
         success = await createCartItem(session?.access_token ?? "", addToCartData);
       } else if (actionType === "subscribe") {
         success = await createSubscription(session?.access_token ?? "", subscriptionData);
+
+        setSubscriptionSuccess(success ?? false);
+
+        if (!success) {
+          throw new Error("Failed to create subscription.");
+        }
+
+        const { error } = await stripe.redirectToCheckout({
+          mode: "payment",
+          lineItems: [
+            {
+              price: "price_1QgDsVGKHQBvF2vYawX5KzMk",
+              quantity,
+            },
+          ],
+          successUrl: `${window.location.origin}?success=true`,
+          cancelUrl: `${window.location.origin}?canceled=true`,
+        });
+
+        if (error) {
+          throw error;
+        }
       }
-      setSubscriptionSuccess(success ?? false);
 
-      if (!success) {
-        throw new Error("Failed to create subscription.");
-      }
-
-      const { error } = await stripe.redirectToCheckout({
-        mode: "payment",
-        lineItems: [
-          {
-            price: "price_1QgDsVGKHQBvF2vYawX5KzMk",
-            quantity,
-          },
-        ],
-        successUrl: `${window.location.origin}?success=true`,
-        cancelUrl: `${window.location.origin}?canceled=true`,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setSubscriptionSuccess(true);
+        setSubscriptionSuccess(true);
     } catch (error) {
       console.error(error);
       setSubscriptionSuccess(false);
@@ -199,7 +200,7 @@ export default function Cart({ params }: { params: { id: number } }) {
                 >
                   { subscriptionSuccess
                     ? actionType === "addToCart"
-                      ? "Basket added to cart successfully!"
+                      ? "Item dded to cart successfully!"
                       : "Subscription created successfully!"
                     : actionType === "addToCart"
                       ? "Failed to add item to cart."
