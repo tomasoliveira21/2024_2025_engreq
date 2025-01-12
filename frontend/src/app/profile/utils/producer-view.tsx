@@ -169,7 +169,7 @@ export function ProducerView({ products, baskets, producer, user,setProducts,set
 
             setEditableDetails((prevDetails) => ({
                 ...prevDetails,
-                photo: uploadedPhotoUrl,
+                photoUrl: uploadedPhotoUrl,
             }));
 
             const locationData = {
