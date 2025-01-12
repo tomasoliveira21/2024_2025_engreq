@@ -122,7 +122,7 @@ export default function CreateBasket({ params }: { params: { id: string } }) {
 
       if (isSuccess) {
         alert("Basket created successfully!");
-        router.push("/dashboard"); // Redirect to dashboard or appropriate page
+        router.push(`/amap/${id}`);
       } else {
         alert("Failed to create basket.");
       }
