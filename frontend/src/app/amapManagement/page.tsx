@@ -124,19 +124,14 @@ export default function Orders() {
           </button>
 
           <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
-            Triggering the Calculation of Amounts to be Paid by Co-Producers
+            Amounts to be Paid by Co-Producers
           </h1>
           <CoProducerBalanceList balanceDetails={coproducerBalance} />
 
           <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
-            Triggering the Calculation of Amounts to be Received by Producers
+            Amounts to be Received by Producers
           </h1>
           <ProducerBalanceList balanceDetails={producerBalance} />
-
-          <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
-            Producer Account Balances and Pending Values
-          </h1>
-          <ProducerAccountValues accountDetails={producerAccountValues} />
         </div>
       </main>
     </div>
