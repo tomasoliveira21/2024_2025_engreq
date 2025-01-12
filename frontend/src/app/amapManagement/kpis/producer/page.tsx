@@ -57,7 +57,7 @@ export default function KPIsPage() {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-            Yo
+            {/* Faça o componente com Valor entregue por produtor por entrega e por periodo, apresente a info do endpoint aqui */}
         </div>
       </main>
     </div>

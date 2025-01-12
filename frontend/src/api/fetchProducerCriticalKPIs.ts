@@ -1,5 +1,8 @@
+import { KpisResponse } from "@/types/producerCriticalKPIs";
 
-export const fetchProducerCriticalKPIs = async (sessionToken: string): Promise<[]> => {
+export const fetchProducerCriticalKPIs = async (
+  sessionToken: string
+): Promise<KpisResponse> => {
   const apiUrl = "http://127.0.0.1:3001/";
   try {
     const response = await fetch(`${apiUrl}amap/producer/kpis`, {
@@ -16,7 +19,7 @@ export const fetchProducerCriticalKPIs = async (sessionToken: string): Promise<[
 
     const data = await response.json();
 
-    return data.kpis;
+    return data as KpisResponse;
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);
     throw error;
