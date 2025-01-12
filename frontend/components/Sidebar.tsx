@@ -41,6 +41,10 @@ function Sidebar() {
     router.push("/orders");
   };
 
+  const goToProducerOrders = () => {
+    router.push("/producerOrders");
+  };
+
   const goToProfile = () => {
     router.push("/profile");
   };
@@ -84,7 +88,17 @@ function Sidebar() {
       <SidebarRow Icon={HomeIcon} title="AMAP's" onClick={goToHome} aria-label="Go to AMAP's page" />
       <SidebarRow Icon={ShoppingCartIcon} title="Cart" onClick={goToCart} aria-label="Go to Cart's page" />
 
-      <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
+      {
+        userRole === "Co-Producer" && (
+          <SidebarRow Icon={ClipboardIcon} title="Orders" onClick={goToOrders}/>
+        )
+      }
+
+      {
+        userRole === "Producer" && (
+          <SidebarRow Icon={ClipboardIcon} title="Producer Orders" onClick={goToProducerOrders}/>
+        )
+      }
 
       <SidebarRow Icon={ClipboardListIcon} title="History" onClick={goToHistory} aria-label="Go to History page"/>
       {/* SidebarRow only visible to Producers and Admins */}

@@ -90,6 +90,17 @@ export default function Orders() {
             Navigate to Subscription Period page
           </button>
 
+          <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2">
+            Critical KPIs
+          </h1>
+          <button
+            onClick={() => router.push(`amapManagement/kpis`)}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium text-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            style={{ alignSelf: "flex-start" }}
+          >
+            Navigate to KPIs page
+          </button>
+
           <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
             Triggering the Calculation of Amounts to be Paid by Co-Producers
           </h1>

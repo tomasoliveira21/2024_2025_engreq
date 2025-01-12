@@ -4,20 +4,22 @@ import React, { useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { supabase } from "@/lib/supabase";
 import { createSubscription } from "@/api/createSubscription";
-
-import { createCartItem } from "@/api/createCartItem";
-
 import { useSearchParams } from "next/navigation";
 import { fetchBasket } from "@/api/fetchBasket";
 import { fetchProduct } from "@/api/fetchProduct";
 import Sidebar from "../../../../components/Sidebar";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  "pk_test_51QgDGkGKHQBvF2vYycQckWdfnJIPNfO8Ry2GGMFOiUz34MT3cBT7HqFW6PXLJxCHVjlX43flixaiwnhBGKkwzQ1B000Pqpyo8n"
+);
 
 export default function Cart({ params }: { params: { id: number } }) {
   const [session, setSession] = useState<Session | null>(null);
   const { id } = params;
   const [periodType, setPeriodType] = useState("monthly");
   const [quantity, setQuantity] = useState(1);
-  const [isSubscribing, setIsSubscribing] = useState(false); // State for tracking subscription status
+  const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscriptionSuccess, setSubscriptionSuccess] = useState<
     boolean | null
   >(null);
@@ -38,28 +40,50 @@ export default function Cart({ params }: { params: { id: number } }) {
 
   const handleSubscription = async () => {
     setIsSubscribing(true);
-    const addToCartData = {
-      itemType: itemType || "",
-      itemId: id,
-      quantity: quantity,
-    };
+    const stripe = await stripePromise;
+
+    if (!stripe) {
+      alert("Stripe not loaded!");
+      setIsSubscribing(false);
+      return;
+    }
 
     const subscriptionData = {
-      periodType: periodType,
+      periodType,
       itemType: itemType || "",
       itemId: id,
-      quantity: quantity,
+      quantity,
     };
 
     try {
-      let success;
-      if (actionType === "addToCart") {
-        success = await createCartItem(session?.access_token ?? "", addToCartData);
-      } else if (actionType === "subscribe") {
-        success = await createSubscription(session?.access_token ?? "", subscriptionData);
+      const success = await createSubscription(
+        session?.access_token ?? "",
+        subscriptionData
+      );
+
+      if (!success) {
+        throw new Error("Failed to create subscription.");
       }
-      setSubscriptionSuccess(success ?? false);
+
+      const { error } = await stripe.redirectToCheckout({
+        mode: "payment",
+        lineItems: [
+          {
+            price: "price_1QgDsVGKHQBvF2vYawX5KzMk",
+            quantity,
+          },
+        ],
+        successUrl: `${window.location.origin}?success=true`,
+        cancelUrl: `${window.location.origin}?canceled=true`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setSubscriptionSuccess(true);
     } catch (error) {
+      console.error(error);
       setSubscriptionSuccess(false);
     } finally {
       setIsSubscribing(false);
@@ -69,11 +93,8 @@ export default function Cart({ params }: { params: { id: number } }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSubscription();
-    console.log({ id, periodType, quantity });
-    // Stripe checkout can be implemented here
   };
 
-  // Fetch product or basket details based on the itemType
   useEffect(() => {
     if (session) {
       if (itemType === "product") {
@@ -95,7 +116,7 @@ export default function Cart({ params }: { params: { id: number } }) {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-          <h1 className="text-2xl font-bold mb-4">Cart</h1>
+          <h1 className="text-2xl font-bold mb-4">Subscription</h1>
           {id ? (
             <form
               onSubmit={handleSubmit}
@@ -108,21 +129,6 @@ export default function Cart({ params }: { params: { id: number } }) {
                 {itemName}
               </p>
 
-              {actionType === "addToCart" && (
-                <div className="mt-4">
-                  <label htmlFor="subscriptionType" className="block mb-2">
-                    Purchase Type:
-                  </label>
-                  <select
-                    id="subscriptionType"
-                    value={periodType}
-                    onChange={(e) => setPeriodType(e.target.value)}
-                    className="text-black p-2 rounded-lg w-full"
-                  >
-                    <option value="single purchase">Single Purchase</option>
-                  </select>
-                </div>
-              )}
               {actionType === "subscribe" && (
                 <div className="mt-4">
                   <label htmlFor="subscriptionType" className="block mb-2">
@@ -158,7 +164,7 @@ export default function Cart({ params }: { params: { id: number } }) {
                 type="submit"
                 className="mt-6 bg-green-500 text-white py-2 px-4 rounded-lg w-full"
               >
-                {actionType === "addToCart" ? "Add to Cart" : "Subscribe Basket"}
+                Subscribe
               </button>
               {subscriptionSuccess !== null && (
                 <div
@@ -166,14 +172,9 @@ export default function Cart({ params }: { params: { id: number } }) {
                     subscriptionSuccess ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  { subscriptionSuccess
-                    ? actionType === "addToCart"
-                      ? "Basket added to cart successfully!"
-                      : "Subscription created successfully!"
-                    : actionType === "addToCart"
-                      ? "Failed to add item to cart."
-                      : "Failed to create subscription."
-                  }
+                  {subscriptionSuccess
+                    ? "Subscription created successfully!"
+                    : "Failed to create subscription."}
                 </div>
               )}
             </form>
