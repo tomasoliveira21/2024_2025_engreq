@@ -17,7 +17,7 @@ export default function Cart({ params }: { params: { id: number } }) {
   const { id } = params;
   const [periodType, setPeriodType] = useState("monthly");
   const [quantity, setQuantity] = useState(1);
-  const [isSubscribing, setIsSubscribing] = useState(false); // State for tracking subscription status
+  const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscriptionSuccess, setSubscriptionSuccess] = useState<
     boolean | null
   >(null);
@@ -38,12 +38,6 @@ export default function Cart({ params }: { params: { id: number } }) {
 
   const handleSubscription = async () => {
     setIsSubscribing(true);
-    const addToCartData = {
-      itemType: itemType || "",
-      itemId: id,
-      quantity: quantity,
-    };
-
     const subscriptionData = {
       periodType: periodType,
       itemType: itemType || "",
@@ -53,11 +47,12 @@ export default function Cart({ params }: { params: { id: number } }) {
 
     try {
       let success;
-      if (actionType === "addToCart") {
-        success = await createCartItem(session?.access_token ?? "", addToCartData);
-      } else if (actionType === "subscribe") {
-        success = await createSubscription(session?.access_token ?? "", subscriptionData);
-      }
+
+      success = await createSubscription(
+        session?.access_token ?? "",
+        subscriptionData
+      );
+
       setSubscriptionSuccess(success ?? false);
     } catch (error) {
       setSubscriptionSuccess(false);
@@ -70,10 +65,8 @@ export default function Cart({ params }: { params: { id: number } }) {
     e.preventDefault();
     handleSubscription();
     console.log({ id, periodType, quantity });
-    // Stripe checkout can be implemented here
   };
 
-  // Fetch product or basket details based on the itemType
   useEffect(() => {
     if (session) {
       if (itemType === "product") {
@@ -95,7 +88,7 @@ export default function Cart({ params }: { params: { id: number } }) {
           <Sidebar />
         </div>
         <div className="col-span-8 grid gap-8 mt-8">
-          <h1 className="text-2xl font-bold mb-4">Cart</h1>
+          <h1 className="text-2xl font-bold mb-4">Subscription</h1>
           {id ? (
             <form
               onSubmit={handleSubmit}
@@ -108,21 +101,6 @@ export default function Cart({ params }: { params: { id: number } }) {
                 {itemName}
               </p>
 
-              {actionType === "addToCart" && (
-                <div className="mt-4">
-                  <label htmlFor="subscriptionType" className="block mb-2">
-                    Purchase Type:
-                  </label>
-                  <select
-                    id="subscriptionType"
-                    value={periodType}
-                    onChange={(e) => setPeriodType(e.target.value)}
-                    className="text-black p-2 rounded-lg w-full"
-                  >
-                    <option value="single purchase">Single Purchase</option>
-                  </select>
-                </div>
-              )}
               {actionType === "subscribe" && (
                 <div className="mt-4">
                   <label htmlFor="subscriptionType" className="block mb-2">
@@ -158,7 +136,7 @@ export default function Cart({ params }: { params: { id: number } }) {
                 type="submit"
                 className="mt-6 bg-green-500 text-white py-2 px-4 rounded-lg w-full"
               >
-                {actionType === "addToCart" ? "Add to Cart" : "Subscribe Basket"}
+                Subscribe
               </button>
               {subscriptionSuccess !== null && (
                 <div
@@ -166,14 +144,13 @@ export default function Cart({ params }: { params: { id: number } }) {
                     subscriptionSuccess ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  { subscriptionSuccess
+                  {subscriptionSuccess
                     ? actionType === "addToCart"
                       ? "Basket added to cart successfully!"
                       : "Subscription created successfully!"
                     : actionType === "addToCart"
-                      ? "Failed to add item to cart."
-                      : "Failed to create subscription."
-                  }
+                    ? "Failed to add item to cart."
+                    : "Failed to create subscription."}
                 </div>
               )}
             </form>
