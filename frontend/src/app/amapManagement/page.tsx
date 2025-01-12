@@ -10,6 +10,9 @@ import { fetchCoproducerBalance } from "@/api/fetchCoproducerBalance";
 import { BalanceDetail } from "@/types/producerBalance";
 import ProducerBalanceList from "../../../components/ProducerBalanceList";
 import CoProducerBalanceList from "../../../components/CoProducerBalanceList";
+import { fetchProducerAccountValues } from "@/api/fetchProducerAccountValues";
+import ProducerAccountValues from "../../../components/ProducerAccountValues";
+import { AccountValues } from "@/types/producerBalance";
 
 export default function Orders() {
   const router = useRouter();
@@ -17,6 +20,7 @@ export default function Orders() {
   const [isLoading, setIsLoading] = useState(true);
   const [producerBalance, setProducerBalance] = useState<BalanceDetail[]>([]);
   const [coproducerBalance, setCoproducerBalance] = useState<BalanceDetail[]>([]);
+  const [producerAccountValues, setProducerAccountValues] = useState<AccountValues[]>([]);
 
   useEffect(() => {
     async function getSession() {
@@ -62,6 +66,24 @@ export default function Orders() {
     };
 
     getProducerBalance();
+  }, [session]);
+
+  useEffect(() => {
+    const getProducerAccountValues = async () => {
+      if (session) {
+        try {
+          setIsLoading(true);
+          const fetchedProducerAccountValues = await fetchProducerAccountValues(session.access_token);
+          setProducerAccountValues(fetchedProducerAccountValues);
+        } catch (error) {
+          console.error("Error fetching Producer Account Values:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    getProducerAccountValues();
   }, [session]);
 
   if (!session) {
@@ -110,6 +132,11 @@ export default function Orders() {
             Triggering the Calculation of Amounts to be Received by Producers
           </h1>
           <ProducerBalanceList balanceDetails={producerBalance} />
+
+          <h1 className="text-3xl font-extrabold text-gray-100 border-b border-gray-700 pb-2 mt-8">
+            Producer Account Balances and Pending Values
+          </h1>
+          <ProducerAccountValues accountDetails={producerAccountValues} />
         </div>
       </main>
     </div>

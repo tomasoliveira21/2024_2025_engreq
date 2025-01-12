@@ -22,4 +22,10 @@ export interface BalanceUser {
   export interface BalanceResponse {
     balance: BalanceDetail[];
   }
+
+  export interface AccountValues {
+    pendingValue: number;
+    User: BalanceUser;
+    Producer: BalanceProducer;
+  }
   
