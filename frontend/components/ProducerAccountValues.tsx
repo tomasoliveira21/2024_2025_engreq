@@ -18,28 +18,10 @@ const ProducerAccountValues = ({ accountDetails }: ProducerAccountValuesListProp
         {accountDetails.map((account, index) => (
           <li key={index} className="border-b border-gray-700 pb-4">
             <p className="text-white">
-              <strong>Current Balance:</strong> €{account.pendingValue.toFixed(2)}
+              <strong>Delivery Value:</strong> €{account.deliveryValue.toFixed(2)}
             </p>
             <p className="text-white">
-              <strong>User ID:</strong> {account.User.id}
-            </p>
-            <p className="text-white">
-              <strong>Email:</strong> {account.User.email}
-            </p>
-            <p className="text-white">
-              <strong>NIF:</strong> {account.User.nif}
-            </p>
-            <p className="text-white">
-              <strong>Name:</strong> {account.User.name}
-            </p>
-            <p className="text-white">
-              <strong>Producer ID:</strong> {account.Producer.id}
-            </p>
-            <p className="text-white">
-              <strong>Business Name:</strong> {account.Producer.businessName || 'Not specified'}
-            </p>
-            <p className="text-white">
-              <strong>Description:</strong> {account.Producer.description || 'Not specified'}
+              <strong>Paid Value:</strong> €{account.paidValue.toFixed(2)}
             </p>
             <p className="text-white">
               <strong>Pending Value:</strong> €{account.pendingValue.toFixed(2)}
