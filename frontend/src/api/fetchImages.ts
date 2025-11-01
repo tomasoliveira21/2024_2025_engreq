@@ -1,5 +1,5 @@
-const API_KEY = "XJNrKpIxQT5zzanoRN7Ur9N0IQHXKmKr1VAxPrT76LUkzFwacrCGM8pi";
-const BASE_URL = "https://api.pexels.com/v1/search";
+const API_KEY = "";
+const BASE_URL = "";
 
 /**
  * Fetches images from the Pexels API based on a search query.
